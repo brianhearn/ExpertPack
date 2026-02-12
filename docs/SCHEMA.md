@@ -1,423 +1,478 @@
-# ExpertPack Schema
+# ExpertPack Schema (V1)
 
 ## Overview
 
-This document defines the structure of an ExpertPack — a knowledge package that gives AI agents deep product/domain expertise.
+This document defines the structure of an ExpertPack — a knowledge package that gives AI agents deep product expertise.
+
+**V1 Focus:** Enable agents to *guide humans* through a product (support, sales, training).
+
+---
 
 ## Design Principles
 
 1. **Markdown-first** — Human-readable, AI-consumable
-2. **Modular** — Break into logical chunks (screens, workflows, concepts)
-3. **Linkable** — Cross-reference between components
-4. **Versionable** — Track product version compatibility
+2. **Modular** — Break into logical chunks for efficient context loading
+3. **Flexible** — One schema, optional sections based on pack focus
+4. **Linkable** — Cross-reference between components
+5. **Versionable** — Track product version compatibility
 
-## Proposed Structure
+---
+
+## Directory Structure
 
 ```
 packs/
 └── {product-name}/
-    ├── manifest.yaml          # Pack metadata
-    ├── overview.md            # Product overview, positioning
-    ├── concepts/              # Core concepts and terminology
+    ├── manifest.yaml          # Pack metadata (required)
+    ├── overview.md            # Product overview (required)
+    │
+    ├── concepts/              # Mental model, terminology
     │   ├── _index.md
     │   └── {concept}.md
-    ├── ui/                    # UI documentation
+    │
+    ├── screens/               # UI documentation
     │   ├── _index.md
-    │   ├── screens/
-    │   │   └── {screen}.md
-    │   ├── dialogs/
-    │   │   └── {dialog}.md
-    │   └── components/
-    │       └── {component}.md
+    │   └── {screen}.md
+    │
     ├── workflows/             # Step-by-step procedures
     │   ├── _index.md
     │   └── {workflow}.md
-    ├── decisions/             # Decision trees / troubleshooting
-    │   ├── _index.md
-    │   └── {decision}.md
-    ├── verticals/             # Industry-specific context
-    │   ├── _index.md
-    │   └── {industry}.md
-    ├── faq/                   # Q&A pairs
-    │   ├── _index.md
+    │
+    ├── troubleshooting/       # Problem resolution
+    │   ├── errors/            # Explicit error messages
+    │   │   └── {error}.md
+    │   ├── diagnostics/       # "Not working as expected" trees
+    │   │   └── {issue}.md
+    │   └── common-mistakes/   # Gotchas, forgotten steps
+    │       └── {mistake}.md
+    │
+    ├── faq/                   # Common questions
     │   └── {category}.md
-    └── glossary.md            # Terminology definitions
+    │
+    └── commercial/            # Sales/business info (optional)
+        ├── pricing.md
+        ├── deployment.md
+        ├── security.md
+        └── capabilities.md
 ```
+
+**Required:** `manifest.yaml`, `overview.md`
+**Everything else:** Optional, based on pack focus
+
+---
 
 ## Manifest Schema
 
 ```yaml
 # manifest.yaml
+
+# Identity
 name: "EasyTerritory Designer"
 slug: "easyterritory-designer"
 version: "1.0.0"
 product_version: "2024.1+"
 vendor: "EasyTerritory"
-description: "Expert knowledge for EasyTerritory Territory Designer"
 website: "https://www.easyterritory.com"
+description: "Expert knowledge for EasyTerritory Territory Designer"
 
-# What this pack covers
+# What personas this pack serves
+focus:
+  - support      # Customer support scenarios
+  - sales        # Sales/marketing scenarios
+  # - training   # Internal training (future)
+
+# What sections are included (for consumers to know what to expect)
+sections:
+  - concepts
+  - screens
+  - workflows
+  - troubleshooting
+  - faq
+  - commercial    # Only if sales focus
+
+# What topics/features are covered
 scope:
   - territory-design
   - capacity-planning
   - data-import
+  - routing
   - power-bi-integration
 
-# Target use cases
-use_cases:
-  - customer-support
-  - sales-engineering
-  - user-training
+# Entry points
+entry_point: "overview.md"
+index_files: "_index.md"
 
 # Dependencies (other packs required)
 dependencies: []
-
-# Pack structure for loaders
-structure:
-  entry_point: "overview.md"
-  index_files: "_index.md"
 ```
+
+---
 
 ## Component Templates
 
-### Screen Documentation (`ui/screens/{screen}.md`)
+### Overview (`overview.md`)
+
+```markdown
+# {Product Name}
+
+## What It Is
+One paragraph: what the product does, who it's for.
+
+## Key Capabilities
+- Capability 1
+- Capability 2
+- Capability 3
+
+## How It Fits
+Where this product sits in the broader ecosystem (other tools, integrations).
+
+## Getting Started
+How to access the product, first steps.
+```
+
+---
+
+### Concepts (`concepts/{concept}.md`)
+
+Mental model, terminology, how things work.
+
+```markdown
+# {Concept Name}
+
+## What It Is
+Clear explanation of the concept.
+
+## Why It Matters
+When/why users encounter this concept.
+
+## How It Works
+Mechanics, rules, behavior.
+
+## Example
+Concrete example to illustrate.
+
+## Related
+- [Other Concept](other-concept.md)
+- [Relevant Screen](../screens/relevant-screen.md)
+```
+
+---
+
+### Screens (`screens/{screen}.md`)
+
+Every screen in the product.
 
 ```markdown
 # {Screen Name}
 
 ## Purpose
-What this screen is for.
+What this screen is for, when users come here.
 
-## Access
-How to navigate here.
+## How to Get Here
+Navigation path(s) to reach this screen.
 
 ## Layout
-Description of major sections/areas.
 
-## Fields/Controls
-| Element | Type | Description | Validation |
-|---------|------|-------------|------------|
-| ... | ... | ... | ... |
+### {Section Name}
+Description of this area of the screen.
 
-## Actions
-- **{Button/Action}**: What it does, when to use it
+**Elements:**
+| Element | Type | Purpose |
+|---------|------|---------|
+| {Label} | Button | {What it does} |
+| {Label} | Text field | {What data, validation rules} |
+| {Label} | Dropdown | {What choices, what they mean} |
+| {Label} | Grid | {What data it shows} |
+
+### {Another Section}
+...
 
 ## Common Tasks
-- Link to relevant workflows
+- [Create a Territory](../workflows/create-territory.md)
+- [Import Data](../workflows/import-data.md)
 
-## Gotchas
-- Edge cases, common mistakes
+## Tips
+- Helpful hints for this screen
+- Things users often miss
 ```
 
-### Workflow Documentation (`workflows/{workflow}.md`)
+**Element detail guidelines:**
+- **Buttons:** What it does, any prerequisites, what happens after
+- **Text fields:** What data, required/optional, validation (length, format), examples
+- **Dropdowns:** What choices exist, what each means, default
+- **Checkboxes/toggles:** What setting it controls, default state, implications
+- **Grids:** What columns, what row actions are available
+
+---
+
+### Workflows (`workflows/{workflow}.md`)
+
+Step-by-step procedures.
 
 ```markdown
-# {Workflow Name}
+# {Task Name}
 
 ## Goal
 What the user is trying to accomplish.
 
 ## Prerequisites
-- What's needed before starting
+- What must be true before starting
+- What they need to have ready
 
 ## Steps
-1. Step one
-   - Details, gotchas
-2. Step two
-   - Details, gotchas
 
-## Variations
-- Industry-specific or conditional paths
+### 1. {First Step}
+{Action to take}
 
-## Troubleshooting
-- Common issues and solutions
+- **Where:** {Screen or location}
+- **What to click/enter:** {Specific element and value}
+- **You should see:** {Expected result}
 
-## Related
-- Links to screens, concepts, other workflows
-```
-
-### Decision Tree (`decisions/{decision}.md`)
-
-```markdown
-# {Decision/Troubleshooting Topic}
-
-## Situation
-When this decision tree applies.
-
-## Questions
-
-### Q1: {First question}
-- **Yes** → {Action or next question}
-- **No** → {Action or next question}
-
-### Q2: {Second question}
+### 2. {Second Step}
 ...
 
-## Outcomes
-- **{Outcome A}**: What to do
-- **{Outcome B}**: What to do
+## Completion
+How to know it worked. What they should see when done.
+
+## Common Issues
+- **{Problem}:** {Solution}
+- **{Problem}:** {Solution}
+
+## Variations
+- {Alternative path or option}
+
+## Related
+- [Relevant Screen](../screens/relevant-screen.md)
+- [Related Workflow](related-workflow.md)
 ```
 
 ---
 
-## UI Automation Layer
+### Troubleshooting: Errors (`troubleshooting/errors/{error}.md`)
 
-For packs that support autonomous agent operation (browser automation), add an `automation/` directory with element registries and executable workflows.
+Explicit error messages with resolutions.
 
-### Directory Structure
+```markdown
+# {Error Message or Code}
+
+## When It Appears
+What action triggers this error.
+
+## What It Means
+Why this error occurs.
+
+## How to Fix
+Step-by-step resolution.
+
+## Prevention
+How to avoid this error in the future.
+```
+
+---
+
+### Troubleshooting: Diagnostics (`troubleshooting/diagnostics/{issue}.md`)
+
+"Not working as expected" decision trees.
+
+```markdown
+# {Problem Description}
+
+*"I'm trying to {action} but {unexpected result}."*
+
+## Expected Behavior
+What *should* happen when everything is working correctly.
+
+## Diagnostic Questions
+
+### What are you seeing?
+- **{Symptom A}** → [Check X](#check-x)
+- **{Symptom B}** → [Check Y](#check-y)
+- **{Symptom C}** → [Check Z](#check-z)
+
+### Check X
+{Diagnostic step}
+
+- **If {result}:** {Resolution or next step}
+- **If not:** [Check Y](#check-y)
+
+### Check Y
+...
+
+## Common Causes
+1. {Cause} — {Quick fix}
+2. {Cause} — {Quick fix}
+
+## Still Not Working?
+Escalation path or contact info.
+```
+
+---
+
+### Troubleshooting: Common Mistakes (`troubleshooting/common-mistakes/{mistake}.md`)
+
+Gotchas, forgotten steps, easy-to-miss things.
+
+```markdown
+# {Mistake Description}
+
+## Symptom
+What the user experiences when they make this mistake.
+
+## The Mistake
+What they did (or didn't do).
+
+## The Fix
+How to correct it.
+
+## How to Avoid
+What to remember for next time.
+```
+
+---
+
+### FAQ (`faq/{category}.md`)
+
+Common questions grouped by topic.
+
+```markdown
+# {Category} FAQ
+
+## {Question 1}
+{Answer}
+
+## {Question 2}
+{Answer}
+
+## {Question 3}
+{Answer}
+```
+
+---
+
+### Commercial (`commercial/`)
+
+Business information for sales scenarios. Optional section.
+
+#### `pricing.md`
+```markdown
+# Pricing
+
+## Model
+How pricing works (per user, per tier, etc.)
+
+## Tiers
+| Tier | Includes | Price |
+|------|----------|-------|
+| ... | ... | ... |
+
+## What Affects Cost
+- Factor 1
+- Factor 2
+
+## Common Questions
+- Q: ...
+- A: ...
+```
+
+#### `deployment.md`
+```markdown
+# Deployment
+
+## Architecture
+How the product is deployed (cloud, on-prem, hybrid).
+
+## Requirements
+What's needed to run it.
+
+## Data Residency
+Where data is stored.
+
+## Integration
+How it connects to other systems.
+```
+
+#### `security.md`
+```markdown
+# Security
+
+## Certifications
+- SOC 2, ISO 27001, etc.
+
+## Data Protection
+How data is secured (encryption, access control).
+
+## Authentication
+SSO, MFA, etc.
+
+## Compliance
+GDPR, HIPAA, etc.
+```
+
+#### `capabilities.md`
+```markdown
+# Capabilities
+
+## What It Can Do
+| Capability | Details |
+|------------|---------|
+| ... | ... |
+
+## What It Can't Do (Yet)
+- Limitation 1
+- Limitation 2
+
+## Roadmap Highlights
+Upcoming features (if public).
+```
+
+---
+
+## Cross-Referencing
+
+Use relative markdown links to connect content:
+
+```markdown
+See [Territory Screen](../screens/territory-list.md) for details.
+Related workflow: [Create Territory](../workflows/create-territory.md)
+```
+
+Index files (`_index.md`) in each folder list and link to all items in that section.
+
+---
+
+## Context Loading Strategy
+
+Packs should be loadable in layers:
+
+1. **Minimal:** `manifest.yaml` + `overview.md` (product awareness)
+2. **Topical:** Add specific sections based on query (screens, workflows, etc.)
+3. **Full:** Entire pack (comprehensive expertise)
+
+Keep individual files focused and reasonably sized (<2KB each recommended) so loaders can pull just what's needed.
+
+---
+
+## V2: Automation Layer (Future)
+
+V2 adds browser automation capabilities on top of V1 knowledge:
 
 ```
 packs/
 └── {product-name}/
-    └── automation/
-        ├── selectors.yaml       # Global selector conventions
-        ├── elements/            # Element registries by screen
-        │   └── {screen}.yaml
-        └── playbooks/           # Executable workflow scripts
-            └── {workflow}.yaml
+    └── automation/           # V2 addition
+        ├── selectors.yaml    # Element selector registry
+        ├── elements/         # Per-screen element mappings
+        └── playbooks/        # Executable workflows
 ```
 
-### Selector Conventions (`automation/selectors.yaml`)
+**V2 adds:**
+- CSS selectors / data-testid mappings
+- Executable playbooks (Playwright/Puppeteer)
+- State verification and assertions
+- Visual anchors for fallback detection
 
-Define how elements are identified in the target application:
-
-```yaml
-# automation/selectors.yaml
-conventions:
-  # Primary selector strategy
-  primary: "data-testid"
-  
-  # Attribute format: data-testid="{area}-{element}-{type}"
-  # Example: data-testid="territory-list-save-btn"
-  pattern: "{area}-{element}-{type}"
-  
-  # Fallback strategies (in order)
-  fallbacks:
-    - aria-label
-    - id
-    - text-content
-
-  # Element type suffixes
-  types:
-    button: "btn"
-    input: "input"
-    select: "select"
-    checkbox: "chk"
-    grid: "grid"
-    dialog: "dialog"
-    link: "link"
-    tab: "tab"
-    panel: "panel"
-
-# Framework-specific notes
-framework:
-  name: "Durandal (Knockout.js)"
-  notes: |
-    - Add data-testid to Knockout templates
-    - Use data-bind alongside data-testid
-    - Example: <button data-testid="save-btn" data-bind="click: save">Save</button>
-```
-
-### Element Registry (`automation/elements/{screen}.yaml`)
-
-Map semantic elements to selectors:
-
-```yaml
-# automation/elements/territory-list.yaml
-screen:
-  name: "Territory List"
-  path: "/territories"
-  
-elements:
-  # Toolbar
-  - id: new-territory-btn
-    type: button
-    label: "New Territory"
-    description: "Opens dialog to create a new territory"
-    selector:
-      primary: "[data-testid='territory-new-btn']"
-      fallback: "button:contains('New Territory')"
-    action:
-      type: opens
-      target: territory-create-dialog
-      
-  - id: import-btn
-    type: button
-    label: "Import"
-    description: "Opens import wizard for bulk territory upload"
-    selector:
-      primary: "[data-testid='territory-import-btn']"
-      
-  # Data Grid
-  - id: territory-grid
-    type: grid
-    label: "Territory List"
-    description: "Main grid showing all territories"
-    selector:
-      primary: "[data-testid='territory-grid']"
-    columns:
-      - name: name
-        label: "Territory Name"
-        sortable: true
-        filterable: true
-      - name: assignee
-        label: "Assigned Rep"
-        sortable: true
-        filterable: true
-      - name: account_count
-        label: "Accounts"
-        sortable: true
-      - name: revenue
-        label: "Revenue"
-        sortable: true
-        format: currency
-    row_actions:
-      - id: edit
-        label: "Edit"
-        selector: "[data-testid='territory-edit-btn']"
-      - id: delete
-        label: "Delete"
-        selector: "[data-testid='territory-delete-btn']"
-        confirmation: true
-
-# Visual anchors (for vision-based automation)
-visual_anchors:
-  - element: new-territory-btn
-    region: "top-right toolbar"
-    appearance: "Blue primary button"
-  - element: territory-grid
-    region: "main content area"
-    appearance: "Data table with sortable column headers"
-```
-
-### Executable Playbooks (`automation/playbooks/{workflow}.yaml`)
-
-Turn workflows into executable scripts:
-
-```yaml
-# automation/playbooks/create-territory.yaml
-playbook:
-  name: "Create Territory"
-  description: "Create a new geography-based territory"
-  
-inputs:
-  - name: territory_name
-    type: string
-    required: true
-  - name: geography_type
-    type: enum
-    options: [postal_code, county, state, country]
-    default: postal_code
-  - name: geographies
-    type: array
-    description: "List of geography codes to include"
-    required: true
-  - name: assignee
-    type: string
-    required: false
-
-preconditions:
-  - screen: territory-list
-    description: "Must be on Territory List screen"
-
-steps:
-  - id: open-dialog
-    action: click
-    target: new-territory-btn
-    wait_for: territory-create-dialog
-    
-  - id: enter-name
-    action: fill
-    target: territory-name-input
-    value: "{{territory_name}}"
-    
-  - id: select-geo-type
-    action: select
-    target: geography-type-select
-    value: "{{geography_type}}"
-    
-  - id: add-geographies
-    action: multi-select
-    target: geography-picker
-    values: "{{geographies}}"
-    
-  - id: set-assignee
-    action: fill
-    target: assignee-input
-    value: "{{assignee}}"
-    condition: "assignee is not null"
-    
-  - id: save
-    action: click
-    target: save-btn
-    wait_for:
-      type: toast
-      message: "Territory created"
-
-postconditions:
-  - screen: territory-list
-  - assertion: "Territory '{{territory_name}}' appears in grid"
-
-error_handling:
-  - condition: "validation error"
-    action: capture-screenshot
-    then: abort
-  - condition: "timeout"
-    action: retry
-    max_attempts: 2
-```
-
-### Adding Selectors to Your Application
-
-For applications without existing test selectors, add `data-testid` attributes to interactive elements:
-
-**Knockout.js (Durandal) Example:**
-
-```html
-<!-- Before -->
-<button class="btn btn-primary" data-bind="click: createTerritory">
-  New Territory
-</button>
-
-<!-- After -->
-<button class="btn btn-primary" 
-        data-testid="territory-new-btn"
-        data-bind="click: createTerritory">
-  New Territory
-</button>
-```
-
-**Naming Convention:**
-```
-{area}-{element}-{type}
-
-Examples:
-- territory-new-btn
-- territory-name-input  
-- territory-grid
-- import-wizard-dialog
-- settings-save-btn
-```
-
-**Priority Elements to Tag:**
-1. Primary action buttons (Save, Create, Delete, Submit)
-2. Navigation elements (tabs, menu items, breadcrumbs)
-3. Form inputs (especially those referenced in workflows)
-4. Data grids and their row actions
-5. Dialogs and modals
-6. Error/success message containers
+V2 schema will be defined when we reach that phase.
 
 ---
 
-## Open Items
-
-- [ ] Finalize manifest schema
-- [ ] Define linking/cross-reference syntax
-- [ ] Define chunking hints for RAG
-- [ ] Create validation tooling
-- [ ] Build playbook executor (Playwright integration)
-- [ ] Define visual anchor format for vision-based automation
-
----
-
-*Last updated: 2026-02-11*
+*Last updated: 2026-02-12*
