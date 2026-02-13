@@ -25,6 +25,7 @@ packs/
 └── {product-name}/
     ├── manifest.yaml          # Pack metadata (required)
     ├── overview.md            # Product overview (required)
+    ├── entities.json          # Entity cross-reference index (recommended)
     │
     ├── concepts/              # Mental model, terminology
     │   ├── _index.md

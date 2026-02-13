@@ -187,6 +187,69 @@ ExpertPacks are designed to be loadable by any AI agent system. OpenClaw's `memo
 
 ---
 
+## Entity Cross-Reference (`entities.json`)
+
+Since ExpertPack content lives outside the RAG index, we need a different mechanism for an agent to know *where* to look when new information arrives. That mechanism is `entities.json` — a manually maintained cross-reference index at the pack root.
+
+### What It Solves
+
+When Brian says "capacity planning now supports shift-based scheduling," the agent needs to:
+1. Know that `capacity-planning` is a documented entity
+2. Find the concept file (`concepts/capacity-planning.md`), the workflow (`workflows/capacity-planning.md`), and every other file that mentions it
+3. Update all relevant files, not just one
+
+Without a cross-reference, the agent would have to grep or scan every file — slow, error-prone, and likely to miss mentions in unexpected places (like `faq/general.md`).
+
+### Structure
+
+```json
+{
+  "entities": [
+    {
+      "id": "capacity-planning",
+      "name": "Capacity Planning",
+      "type": "core-feature",
+      "description": "Modeling workloads and rep capacity to balance territories",
+      "related": ["scheduling", "workload-partitioning"],
+      "files": {
+        "concept": "concepts/capacity-planning.md",
+        "workflows": ["workflows/capacity-planning.md"],
+        "mentions": ["overview.md", "faq/general.md", "..."]
+      }
+    }
+  ]
+}
+```
+
+### Entity Types
+
+| Type | Examples |
+|------|---------|
+| `core-feature` | Territories, Capacity Planning, Routing, REST API |
+| `integration` | Dynamics 365, Salesforce, SugarCRM, Power BI |
+| `product` | EasyMap, Rep Locator |
+| `infrastructure` | Azure Maps, Authentication/SSO |
+| `category` | CRM Integrations (umbrella for D365/SF/Sugar) |
+
+### How the Agent Uses It
+
+1. **New information arrives** → Agent loads `entities.json`
+2. **Identify affected entity** → Match the topic to an entity ID
+3. **Find all files** → `files.concept` is the primary doc, `files.workflows` are procedures, `files.mentions` are secondary references
+4. **Update what's needed** → Edit the concept file, check if workflows need changes, update mentions if significant
+5. **Update the cross-reference** → If the new information creates a new entity or new file references, update `entities.json` itself
+
+### Maintenance
+
+`entities.json` should be updated whenever:
+- A new concept, workflow, or feature file is added
+- A new entity is introduced in the product
+- Cross-references change (a feature is mentioned in a new file)
+
+This is analogous to `people.json` in BrianGPT — structured data that sits alongside the prose content and serves as a navigation index.
+
+---
+
 ## Open Questions
 
 1. **Validation methodology** — How do we systematically verify pack accuracy against the live product?
