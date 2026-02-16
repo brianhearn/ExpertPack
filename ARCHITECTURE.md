@@ -1,262 +1,188 @@
-# ARCHITECTURE.md — Design Rationale & Data Strategy
+# ARCHITECTURE.md — ExpertPack Framework
 
-*Why ExpertPacks are structured the way they are, how agents consume them, and what we've learned building the first one.*
+*What ExpertPacks are, how they work, and why they're structured this way.*
 
 ---
 
 ## The Problem
 
-Frontier AI models know a lot about the world, but they know almost nothing about *your* product. Ask Claude or GPT about EasyTerritory and you'll get vague, outdated, or hallucinated answers. RAG helps — stuff some docs into a vector store — but raw documentation makes a poor expert. Docs are written for humans browsing, not for AI reasoning.
+Frontier AI models know a lot about the world, but they know almost nothing about *your* product, *your* life, or *your* process. Ask Claude about EasyTerritory and you'll get vague, outdated, or hallucinated answers. Ask it about your childhood and it has nothing. Ask it how to build a custom home and you'll get generic advice that misses the gotchas.
 
-An AI support agent needs something different: structured knowledge that mirrors how a veteran support engineer thinks about the product — concepts, workflows, decision trees, edge cases, and the tribal knowledge that never makes it into docs.
+RAG helps — stuff some documents into a vector store — but raw documentation makes a poor expert. Docs are written for humans browsing, not for AI reasoning. An expert system needs something different: structured knowledge that mirrors how a veteran practitioner thinks.
 
 That's what an ExpertPack is.
 
 ---
 
-## Core Design Principles
+## What is an ExpertPack?
 
-### 1. Markdown-First
-Every piece of knowledge is a Markdown file. This makes content human-readable, AI-consumable, git-versionable, and compatible with any RAG system. No proprietary formats, no databases, no lock-in.
+An ExpertPack is a structured knowledge package that gives an AI agent deep expertise in a specific domain. It's a portable, git-native, Markdown-first knowledge base designed to be consumed by AI agents and readable by humans.
 
-### 2. Chunking by Design
-Files are kept small (~1-3KB each) and focused on a single topic. Each file has `##` section headers at natural topic breaks. This is intentional — RAG chunkers split on ~400-token windows, and well-structured Markdown with headers produces high-quality, semantically coherent chunks. A file about "Capacity Planning" shouldn't also contain pricing information.
+ExpertPacks come in three types:
 
-### 3. Layered Loading
-Not every query needs the full pack. The structure supports three loading levels:
+| Type | What It Captures | Example |
+|------|-----------------|---------|
+| **Person** | A human being — stories, mind, beliefs, relationships, voice | BrianGPT |
+| **Product** | A software product — concepts, workflows, troubleshooting, tribal knowledge | EZT Designer |
+| **Process** | A complex endeavor — phases, decisions, checklists, gotchas | Building a Custom Home |
 
-| Level | What to Load | When |
-|-------|-------------|------|
-| **Minimal** | `manifest.yaml` + `overview.md` | Product awareness, routing queries |
-| **Topical** | Specific `concepts/`, `workflows/`, or `faq/` files | Answering a focused question |
-| **Full** | Entire pack | Deep support session, complex troubleshooting |
-
-This matters for token efficiency — a 50-file pack at full load burns context. Topical loading keeps costs down while maintaining depth.
-
-### 4. Separation of Knowledge Types
-Different types of knowledge serve different purposes and get queried differently:
-
-| Directory | Knowledge Type | Query Example |
-|-----------|---------------|---------------|
-| `concepts/` | What things are, how they work | "What is capacity planning?" |
-| `workflows/` | How to do things, step-by-step | "How do I import data?" |
-| `troubleshooting/` | What went wrong, how to fix it | "Why can't I see my territories?" |
-| `faq/` | Common questions, quick answers | "Does it work with Salesforce?" |
-| `commercial/` | Pricing, deployment, security | "How much does it cost?" |
-
-An agent answering a "how do I..." question should pull from `workflows/`. An agent answering a "what is..." question should pull from `concepts/`. This separation makes retrieval more precise.
-
-### 5. Cross-Referencing via Links
-Files reference each other with relative Markdown links. This creates a knowledge graph the agent can navigate:
-
-```markdown
-See [Territory Concepts](../concepts/territories.md) for background.
-Related workflow: [Create Territory](../workflows/create-territory.md)
-```
-
-Index files (`_index.md`) in each directory serve as entry points — an agent can read the index to discover what's available before loading specific files.
+Each type follows a type-specific schema that defines its directory structure and content patterns. All types share a common set of core principles.
 
 ---
 
-## Pack Structure — What Each Part Does
+## Core Principles
 
-```
-packs/{product-name}/
-├── manifest.yaml       ← Pack identity, version, scope, entry points
-├── overview.md          ← Product summary — load this first, always
-│
-├── concepts/            ← The mental model
-│   ├── _index.md        ← Directory of all concepts
-│   └── {concept}.md     ← One concept per file
-│
-├── workflows/           ← Step-by-step procedures
-│   ├── _index.md        ← Directory of all workflows
-│   └── {workflow}.md    ← One task per file
-│
-├── troubleshooting/     ← Problem resolution (planned)
-│   ├── errors/          ← Specific error messages + fixes
-│   ├── diagnostics/     ← "Not working" decision trees
-│   └── common-mistakes/ ← Gotchas and forgotten steps
-│
-├── faq/                 ← Common questions by category
-│   └── {category}.md
-│
-└── commercial/          ← Business/sales information
-    ├── _index.md
-    ├── capabilities.md
-    ├── pricing.md
-    ├── deployment.md
-    └── security.md
-```
+These apply to every ExpertPack. See [schemas/core.md](schemas/core.md) for the full specification.
 
-### Why These Categories?
-
-These aren't arbitrary. They map to how support interactions actually flow:
-
-1. **Customer asks a question** → Check `faq/` for a quick answer
-2. **Customer needs to do something** → Load the relevant `workflow/`
-3. **Customer doesn't understand something** → Load the relevant `concept/`
-4. **Something went wrong** → Navigate `troubleshooting/` decision tree
-5. **Prospect evaluating the product** → Load `commercial/` + `overview.md`
+| Principle | Rule |
+|-----------|------|
+| **MD-Canonical** | Markdown is the source of truth for all content; JSON is navigation only |
+| **One Source of Truth** | Each fact lives in exactly one place |
+| **Small Files** | 1–3KB per content file, one topic per file |
+| **RAG-Optimized** | `##` section headers at natural topic breaks for quality chunking |
+| **Layered Loading** | Minimal → topical → full context loading |
+| **Cross-Referenced** | Relative markdown links between related files |
+| **Git-Native** | Version controlled, diffable, collaborative |
+| **Never Overwrite** | Contradictions are flagged for human resolution |
 
 ---
 
-## How an Agent Consumes a Pack
+## How Schemas Work
+
+The schema system has two layers:
+
+### Core Schema ([schemas/core.md](schemas/core.md))
+Shared principles and conventions that apply to every ExpertPack:
+- The MD-canonical principle
+- Required files (`manifest.yaml`, `overview.md`)
+- Directory conventions (`_index.md`, `_access.json`)
+- File structure rules (size, naming, headers)
+- Cross-referencing patterns
+- Layered loading strategy
+- Conflict resolution
+- Agent consumption patterns
+
+### Type-Specific Schemas
+Each pack type has its own schema that extends core with domain-specific structure:
+
+- **[schemas/person.md](schemas/person.md)** — Verbatim content, summaries, biographical facts, relationships, worldview, legacy/memorial mode, presentation (voice, appearance)
+- **[schemas/product.md](schemas/product.md)** — Concepts, workflows, troubleshooting (errors, diagnostics, common mistakes), screens, FAQ, commercial info, entity cross-references
+- **[schemas/process.md](schemas/process.md)** — Phases, decisions, checklists, resources, examples, gotchas
+
+A pack declares its type in `manifest.yaml`, which determines which type-specific schema applies.
+
+---
+
+## Packs Are Instances
+
+A pack is an instantiation of a schema — a concrete knowledge base about a specific person, product, or process.
+
+```
+ExpertPack/
+├── schemas/               ← The blueprints
+│   ├── core.md
+│   ├── person.md
+│   ├── product.md
+│   └── process.md
+│
+└── packs/                 ← The instances
+    ├── brian-gpt/         ← Person pack: Brian Hearn
+    └── ezt-designer/      ← Product pack: EasyTerritory Designer
+```
+
+Creating a new pack means:
+1. Choose the type (person, product, or process)
+2. Create a directory under `packs/`
+3. Add `manifest.yaml` and `overview.md` (required)
+4. Populate directories per the type-specific schema
+5. Follow core principles for all content
+
+---
+
+## How Agents Consume Packs
 
 ### Discovery
-The agent reads `manifest.yaml` to understand what the pack covers, then `overview.md` for product context. This gives enough awareness to route queries to the right section.
+1. Read `manifest.yaml` — understand what the pack covers, its type, and scope
+2. Read `overview.md` — get enough context to route queries
+3. This is the **minimal** loading level — enough for pack awareness
 
 ### Retrieval
-For a specific question, the agent either:
-- **Navigates:** Reads `_index.md` for the relevant section, picks the right file
-- **Searches:** Uses RAG/vector search to find relevant chunks across all files
-- **Both:** RAG finds candidates, agent reads the full file for context
+For a specific question:
+- **Navigate:** Read `_index.md` for the relevant directory → pick the right file
+- **Search:** Use RAG/vector search across all `.md` files for semantic matching
+- **Both:** RAG finds candidates, agent reads full files for complete context
 
-### Answering
-The agent synthesizes an answer from the retrieved content, cross-referencing related files as needed. Good answers cite specific workflows or concepts rather than paraphrasing vaguely.
+### Update
+When adding or changing content:
+1. Identify the canonical file
+2. Check for contradictions
+3. Edit the Markdown file
+4. Update any affected JSON indexes
+5. Commit with a descriptive message
 
 ---
 
-## The Creation Process
+## Content Creation
 
 ### Where Pack Content Comes From
 
-| Source | Quality | Coverage | Effort |
-|--------|---------|----------|--------|
-| **Web docs / help sites** | Medium — written for browsing, not AI | Good for concepts, basic workflows | Low — can be crawled and restructured |
-| **Video tutorials** | High — shows actual UI flow | Great for workflows, screen knowledge | Medium — requires transcription + extraction |
-| **Screenshots** | High — visual ground truth | Screens, element locations | Medium — requires analysis |
-| **Guided walkthroughs** | Highest — captures tribal knowledge | Edge cases, gotchas, undocumented behavior | High — requires expert time |
-| **Support tickets** | High — real user problems | Troubleshooting, FAQ | Medium — requires curation |
+| Source | Quality | Coverage |
+|--------|---------|----------|
+| **Expert interviews / dictation** | Highest — captures tribal knowledge | Decisions, gotchas, real experience |
+| **Existing documentation** | Medium — written for human browsing | Concepts, basic workflows |
+| **Video tutorials / walkthroughs** | High — shows actual usage | Workflows, screen knowledge |
+| **Support tickets / forums** | High — real problems | Troubleshooting, FAQ |
+| **Personal experience** | Highest — authentic, specific | Stories, beliefs, examples |
 
-### The Crawl → Structure → Refine Pipeline
-
-For the EasyTerritory Designer pack, we:
-
-1. **Crawled** the docs site (`/docs-sitemap.xml`) — 68 pages of product documentation
-2. **Structured** the raw content into pack format — concepts, workflows, commercial, FAQ
-3. **Added section headers** — ensuring every file chunks well for RAG
-4. **Cross-referenced** — linked related concepts and workflows
-5. **Identified gaps** — screens and troubleshooting sections not yet populated
-
-This gets you ~70% of V1. The remaining 30% — edge cases, tribal knowledge, undocumented behavior — requires guided walkthroughs with product experts.
+### The Creation Pipeline
+1. **Gather** raw content from sources
+2. **Structure** into the appropriate schema directories
+3. **Add section headers** for RAG chunking
+4. **Cross-reference** related files with markdown links
+5. **Build indexes** (`_index.md`, JSON navigation files)
+6. **Identify gaps** — what's missing? What questions can't we answer yet?
+7. **Iterate** — fill gaps with expert input, support data, or guided walkthroughs
 
 ---
 
 ## Version Strategy
 
 ### V1: Knowledge Layer (Current)
-The agent can **guide humans** through the product. It knows what things are, how to do tasks, and what can go wrong. It cannot operate the product autonomously.
+Packs contain knowledge that enables an agent to *guide humans*:
+- Answer questions accurately
+- Walk through procedures step by step
+- Troubleshoot problems
+- Make recommendations
+- Retell stories and represent views (person packs)
 
-**Success criteria:** Agent with ExpertPack answers support questions better than agent with raw docs alone.
+### V2: Automation Layer (Future — Product Packs)
+Adds the ability for agents to *operate products* via browser automation:
+- CSS selectors and element mappings
+- Executable playbooks
+- State verification
+- Visual anchors for fallback detection
 
-### V2: Automation Layer (Future)
-The agent can **operate the product** via browser automation — clicking, typing, navigating. This adds an `automation/` directory with CSS selectors, executable playbooks, and state verification.
-
-**V2 builds on V1** — all knowledge layer content remains; automation hooks are layered on top.
-
----
-
-## Lessons Learned
-
-### Docs ≠ Knowledge
-Product documentation is written for a human who can see the screen and click around. An AI agent needs explicit information that docs assume — navigation paths, element names, what "success" looks like after completing a step. Restructuring docs into ExpertPack format forces this explicitness.
-
-### File Size Matters for RAG
-Large files produce poor search results. A 20KB file about "everything the product does" will match almost any query with mediocre relevance. Small, focused files (1-3KB) with clear headers produce high-relevance matches. One concept per file, one workflow per file.
-
-### Section Headers Are Infrastructure
-Without `##` headers, RAG chunkers produce arbitrary ~400-token slices that split mid-thought. With headers, chunks align to semantic boundaries. This is cheap to do and has outsized impact on retrieval quality. Every file should have descriptive section headers.
-
-### Index Files Are Navigation
-`_index.md` files serve two purposes: (1) they let an agent discover what's available without loading every file, and (2) they provide a table of contents that RAG can match against broad queries like "what workflows are documented?"
-
-### The Two Hardest Things to Capture
-1. **What the UI actually looks like** — Docs describe features, not screens. Screen documentation (`screens/`) requires screenshots or live app access.
-2. **What goes wrong** — Troubleshooting knowledge lives in support engineers' heads. It's the highest-value content and the hardest to extract.
+V2 builds on V1 — all knowledge content remains; automation hooks are layered on top.
 
 ---
 
-## Relationship to Other Projects
+## Current Packs
 
-### BrianGPT
-BrianGPT uses a similar markdown-first, RAG-optimized approach to capture a *person's* knowledge and identity. The structural patterns overlap (verbatim content + summaries, section headers for chunking, JSON for structured data), but the domains are fundamentally different. A person's life story and a SaaS product's knowledge base have different shapes — keeping them separate preserves clarity of purpose.
-
-### OpenClaw
-ExpertPacks are designed to be loadable by any AI agent system. OpenClaw's `memorySearch` can index pack files via `extraPaths` for RAG-based retrieval, but packs are not OpenClaw-specific. Any system that can read Markdown files can consume an ExpertPack.
-
----
-
-## Entity Cross-Reference (`entities.json`)
-
-Since ExpertPack content lives outside the RAG index, we need a different mechanism for an agent to know *where* to look when new information arrives. That mechanism is `entities.json` — a manually maintained cross-reference index at the pack root.
-
-### What It Solves
-
-When Brian says "capacity planning now supports shift-based scheduling," the agent needs to:
-1. Know that `capacity-planning` is a documented entity
-2. Find the concept file (`concepts/capacity-planning.md`), the workflow (`workflows/capacity-planning.md`), and every other file that mentions it
-3. Update all relevant files, not just one
-
-Without a cross-reference, the agent would have to grep or scan every file — slow, error-prone, and likely to miss mentions in unexpected places (like `faq/general.md`).
-
-### Structure
-
-```json
-{
-  "entities": [
-    {
-      "id": "capacity-planning",
-      "name": "Capacity Planning",
-      "type": "core-feature",
-      "description": "Modeling workloads and rep capacity to balance territories",
-      "related": ["scheduling", "workload-partitioning"],
-      "files": {
-        "concept": "concepts/capacity-planning.md",
-        "workflows": ["workflows/capacity-planning.md"],
-        "mentions": ["overview.md", "faq/general.md", "..."]
-      }
-    }
-  ]
-}
-```
-
-### Entity Types
-
-| Type | Examples |
-|------|---------|
-| `core-feature` | Territories, Capacity Planning, Routing, REST API |
-| `integration` | Dynamics 365, Salesforce, SugarCRM, Power BI |
-| `product` | EasyMap, Rep Locator |
-| `infrastructure` | Azure Maps, Authentication/SSO |
-| `category` | CRM Integrations (umbrella for D365/SF/Sugar) |
-
-### How the Agent Uses It
-
-1. **New information arrives** → Agent loads `entities.json`
-2. **Identify affected entity** → Match the topic to an entity ID
-3. **Find all files** → `files.concept` is the primary doc, `files.workflows` are procedures, `files.mentions` are secondary references
-4. **Update what's needed** → Edit the concept file, check if workflows need changes, update mentions if significant
-5. **Update the cross-reference** → If the new information creates a new entity or new file references, update `entities.json` itself
-
-### Maintenance
-
-`entities.json` should be updated whenever:
-- A new concept, workflow, or feature file is added
-- A new entity is introduced in the product
-- Cross-references change (a feature is mentioned in a new file)
-
-This is analogous to `people.json` in BrianGPT — structured data that sits alongside the prose content and serves as a navigation index.
+| Pack | Type | Status | Description |
+|------|------|--------|-------------|
+| [BrianGPT](packs/brian-gpt/) | Person | Active — growing | Digital archive of Brian Hearn: stories, worldview, relationships |
+| [EZT Designer](packs/ezt-designer/) | Product | V1 — core content complete | Expert knowledge for EasyTerritory Territory Designer |
 
 ---
 
-## Open Questions
+## Future Directions
 
-1. **Validation methodology** — How do we systematically verify pack accuracy against the live product?
-2. **Automated generation** — Can we crawl + restructure docs into pack format with minimal human intervention?
-3. **Pack distribution** — How should packs be shared/installed? (npm package, git submodule, download)
-4. **Licensing** — Open source? Per-pack licensing? Vendor-created vs community-created?
-5. **Multi-version support** — How to handle packs for different product versions simultaneously?
+- **Pack distribution** — How should packs be shared? npm packages, git submodules, downloads?
+- **Community packs** — Can anyone create an ExpertPack? What's the quality bar?
+- **Licensing** — Open framework, per-pack licensing for commercial packs?
+- **Multi-version support** — Product packs for different product versions
+- **Validation** — Systematic testing that pack content matches reality
+- **Pack marketplace** — A hub for discovering and sharing ExpertPacks
 
 ---
 
@@ -264,8 +190,9 @@ This is analogous to `people.json` in BrianGPT — structured data that sits alo
 
 | Date | Changed By | Notes |
 |------|-----------|-------|
-| 2026-02-13 | EasyBot | Initial draft — documenting decisions from first pack build |
+| 2026-02-13 | EasyBot | Initial ExpertPack ARCHITECTURE.md (product-focused) |
+| 2026-02-16 | EasyBot | Unified framework — merged BrianGPT + ExpertPack, added schemas, three pack types |
 
 ---
 
-*This is a living document. Update it as the approach evolves.*
+*This is a living document. Update it as the framework evolves.*
