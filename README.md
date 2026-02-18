@@ -57,11 +57,17 @@ ExpertPacks are designed to be built by AI agents, not manually. You provide the
    - Process → [schemas/process.md](schemas/process.md)
    - All types → [schemas/core.md](schemas/core.md)
 
-2. **Start talking.** The agent reads the schema to understand the structure, then guides you through providing content — asking questions, capturing your answers, and filing everything into the right place.
+2. **Feed it knowledge.** The agent structures everything — you just supply the raw material. Multiple sources work:
+
+   - **Conversation** — Talk to the agent. It asks questions based on the schema, captures your answers, and files them. Great for stories, opinions, tribal knowledge, and anything in your head that's never been written down.
+   - **Websites** — Point the agent at a URL. It scrapes and restructures the content into pack-formatted files. Ideal for product docs, company sites, personal blogs, or wikis.
+   - **Existing documents** — Drop in PDFs, Word docs, spreadsheets, slide decks, or plain text. The agent reads them, extracts the knowledge, and organizes it according to the schema.
+   - **Data exports** — CRM exports, support ticket archives, FAQ databases, knowledge bases. Anything structured or semi-structured that the agent can parse.
+   - **Combination** — Most packs use a mix. Scrape the website for the basics, ingest the docs for depth, then fill the gaps through conversation.
 
 3. **Review what it built.** The agent creates the `manifest.yaml`, `overview.md`, directory structure, and all content files. You review, correct, and iterate.
 
-That's it. The schema is the agent's blueprint. You're the domain expert. The agent does the filing.
+The schema is the agent's blueprint. You supply the raw expertise in whatever form you have it. The agent does the filing.
 
 ### Using an Existing Pack
 
