@@ -63,6 +63,31 @@ ExpertPacks are designed to be built by AI agents, not manually. You provide the
 
 That's it. The schema is the agent's blueprint. You're the domain expert. The agent does the filing.
 
+### Using an Existing Pack
+
+A completed ExpertPack is a folder of Markdown files — ready to plug into any AI agent that supports file-based context or RAG. Clone (or copy) the pack into your agent's workspace, point the agent at it, and it becomes a domain expert immediately.
+
+**Steps:**
+
+1. **Get the pack** into your agent's workspace:
+   ```bash
+   # Clone directly, or copy a pack folder from an existing ExpertPack repo
+   git clone https://github.com/someone/their-expertpack.git
+   ```
+
+2. **Tell your agent where it is.** How you do this depends on your platform:
+
+   | Platform | Integration |
+   |----------|-------------|
+   | **OpenClaw** | Add the pack path to `memorySearch.extraPaths` in your config. The agent's RAG indexes all `.md` files automatically. |
+   | **Cursor** | Place the pack in your project. Cursor indexes workspace files for context. |
+   | **Claude Code** | Place the pack in your project. Reference it from `CLAUDE.md` or let the agent discover it. |
+   | **Custom / API** | Feed the `.md` files into your vector store or context window. The small-file structure (1–3KB each) is optimized for chunked retrieval. |
+
+3. **Start asking questions.** The agent now has deep, structured expertise. No prompt engineering required — the pack's structure (entry point, cross-references, focused files) guides retrieval naturally.
+
+**Why it works:** ExpertPacks aren't just document dumps. Every file is sized for precise retrieval, cross-referenced for context, and organized around how experts actually think. Your agent doesn't need special instructions — it just needs access to the files.
+
 ---
 
 ## Repository Structure
