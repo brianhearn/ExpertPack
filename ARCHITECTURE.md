@@ -65,7 +65,7 @@ Shared principles and conventions that apply to every ExpertPack:
 ### Type-Specific Schemas
 Each pack type has its own schema that extends core with domain-specific structure:
 
-- **[schemas/person.md](schemas/person.md)** — Verbatim content, summaries, biographical facts, relationships, worldview, legacy/memorial mode, presentation (voice, appearance)
+- **[schemas/person.md](schemas/person.md)** — Verbatim content, summaries, biographical facts, relationships,  mind, legacy/memorial mode, presentation (voice, appearance)
 - **[schemas/product.md](schemas/product.md)** — Concepts, workflows, troubleshooting (errors, diagnostics, common mistakes), screens, FAQ, commercial info, entity cross-references
 - **[schemas/process.md](schemas/process.md)** — Phases, decisions, checklists, resources, examples, gotchas
 
@@ -170,7 +170,7 @@ V2 builds on V1 — all knowledge content remains; automation hooks are layered 
 
 | Pack | Type | Status | Description |
 |------|------|--------|-------------|
-| [BrianGPT](packs/brian-gpt/) | Person | Active — growing | Digital archive of Brian Hearn: stories, worldview, relationships |
+| [BrianGPT](packs/brian-gpt/) | Person | Active — growing | Digital archive of Brian Hearn: stories,  mind, relationships |
 | [EZT Designer](packs/ezt-designer/) | Product | V1 — core content complete | Expert knowledge for EasyTerritory Territory Designer |
 
 ---

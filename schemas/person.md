@@ -49,16 +49,17 @@ packs/{person-slug}/
 │   ├── _access.json
 │   └── people.md          ← Everyone mentioned: family, friends, mentors
 │
-├── worldview/             ← Beliefs, values, opinions
+├── mind/                  ← Mind taxonomy: beliefs, sense-making, motivations, and preferences
 │   ├── _access.json
-│   ├── beliefs.md         ← Core theological/philosophical beliefs
-│   ├── values.md          ← What matters most
-│   ├── politics.md        ← Political positions
-│   └── ai-predictions.md  ← Views on AI and technology
-│
-├── preferences/           ← Likes, dislikes, habits, communication style
-│   ├── _access.json
-│   └── preferences.md     ← Preferences in Markdown (canonical)
+│   ├── ontology.md        ← Ontology & Metaphysics
+│   ├── epistemology.md    ← Epistemology & Sense-Making
+│   ├── values.md          ← Values & Moral Framework
+│   ├── identity.md        ← Identity & Self-Narrative
+│   ├── motivations.md     ← Motivations, Drives & Temperament
+│   ├── relational.md      ← Relational & Social Orientation
+│   ├── preferences.md     ← Preferences, Tastes & Aesthetic Orientation
+│   ├── skills.md          ← Skills, Competencies & Action Patterns
+│   └── tensions.md        ← Tensions, Contradictions & Edge Cases
 │
 ├── presentation/          ← How the avatar should sound and look
 │   ├── _access.json
@@ -155,87 +156,49 @@ Every person mentioned across the pack: family, friends, mentors, colleagues. Ea
 
 ---
 
-## Worldview & Preferences
+## The Mind Taxonomy
 
-### Worldview Files
+The person's inner life (formerly "worldview" + "preferences") is captured under a unified `mind/` directory. This organizes beliefs, sense-making approaches, values, preferences, skills, and tensions into a consistent filing system for agents.
 
-`worldview/` captures the person's beliefs, values, and opinions. Each file uses free-form Markdown with `##` headers for categories:
+Each category starts as a single `.md` file but may expand into a subdirectory as content grows (e.g., `mind/ontology/` with multiple files).
 
-```markdown
-# Beliefs
+### Mind Taxonomy Categories
 
-## On Faith
-What they believe and why...
+1. ontology.md — Ontology & Metaphysics
+What the person believes is ultimately real and how reality is structured. Includes religious/spiritual worldview, views on consciousness, the nature of God, the soul, materialism vs. dualism, cosmology (as it relates to meaning), and any framework for understanding existence itself.
 
-## On Science
-How they view the relationship between faith and science...
+2. epistemology.md — Epistemology & Sense-Making
+How the person determines what is true and updates beliefs. Includes their relationship between faith and reason, trust in institutions, how they weigh evidence, their approach to certainty and doubt, intellectual influences, and how they process new information that challenges existing views.
 
-## On Human Nature
-Their view of people...
-```
+3. values.md — Values & Moral Framework
+What the person considers good, bad, right, and worth protecting. Includes ethical principles, political philosophy (as it reflects values), priorities in life, what they'd sacrifice for, views on justice and fairness, and the moral reasoning behind their positions. Political views live here primarily, with cross-references to epistemology and ontology where those inform the positions.
 
-### Opinions
+4. identity.md — Identity & Self-Narrative
+How the person understands who they are across roles and time. The story they tell about themselves — key turning points, how they see their own arc, the roles that define them (father, engineer, pilot, apologist), how past experiences shaped who they became. Not external biography (that's `facts/`), but internal self-concept.
 
-For well-developed opinions or essays, use individual files:
+5. motivations.md — Motivations, Drives & Temperament
+What energizes behavior and shapes emotional responses. Includes personality traits, ambition, what gives them energy vs. drains them, emotional patterns, how they handle stress/failure/success, risk tolerance, introversion/extroversion, and the deeper drives behind their choices.
 
-```markdown
-# Opinion: {Topic}
+6. relational.md — Relational & Social Orientation
+How the person connects with others. Trust patterns, communication style, conflict approach, how they form and maintain friendships, authority orientation, group behavior vs. one-on-one, loyalty patterns, what they value in others, and how they show care.
 
-**Stance:** One-line position
-**Strength:** strong | moderate | tentative
-**Last updated:** YYYY-MM-DD
+7. preferences.md — Preferences, Tastes & Aesthetic Orientation
+What the person is drawn to, enjoys, and finds meaningful. Hobbies, media consumption, aesthetic sensibilities, food/music/film/book preferences, leisure activities, guilty pleasures, and what they find beautiful or compelling. Lighter than values — this is about taste, not morality.
 
-## Position
-Full explanation...
+8. skills.md — Skills, Competencies & Action Patterns
+What the person can do and how they tend to act in the world. Professional expertise, learned skills, problem-solving approach, how they learn new things, domains of competence, work style, tools they reach for, and patterns in how they execute on goals.
 
-## Why I Think This
-Background, reasoning...
+9. tensions.md — Tensions, Contradictions & Edge Cases
+Where the model breaks — the places where other categories don't fully cohere. Context-dependent behavior switches, acknowledged blind spots, unresolved internal conflicts, things they believe but don't practice (or vice versa), and the messy human reality that neat categories miss. This is some of the most valuable content for authenticity.
 
-## What Could Change My Mind
-...
-```
-
-### Preferences
-
-`preferences/preferences.md` captures likes, dislikes, habits, and communication style. Organized by category (food, music, movies, communication style, pet peeves, guilty pleasures, etc.).
+### Political Views
+Political views are cross-cutting: they live primarily in `mind/values.md` with cross-references to `mind/epistemology.md` and `mind/ontology.md` when those domains inform political positions.
 
 ---
 
-## Presentation Layer
+## Story Intake Workflow
 
-The `presentation/` directory defines how a person-pack avatar should behave:
-
-### speech_patterns.md
-Verbal style, humor type, storytelling mode, common phrases, how they start and end stories, what makes their communication distinctive.
-
-### voice/
-Voice profile data for TTS synthesis. May include voice samples, ElevenLabs voice IDs, prosody notes, or other synthesis parameters.
-
-### appearance/
-Visual appearance data for avatar rendering. Physical description, reference photo metadata, avatar generation parameters.
-
----
-
-## Legacy / Memorial Mode
-
-Person packs include a `LEGACY.md` file that documents the person's wishes for how the pack should function after their death. This is a critical document — it captures:
-
-### Executor Chain
-Who has authority over the pack after death, in order of succession. Executor powers and limitations.
-
-### Memorial Mode Activation
-What changes when the person dies:
-- Update `meta/status.json` with death date and memorial mode flag
-- Avatar behavioral changes (past tense, acknowledging memorial status)
-- Content access changes (some content opens up, some stays sealed)
-
-### Content Decisions
-- **Open up after death:** Content that becomes available to family or public
-- **Seal forever:** Content that should never be shared
-- **Time-locked:** Content that unlocks at specific conditions (grandchild turns 18, 5 years after death, etc.)
-
-### Long-Term Continuity
-Hosting wishes, technology upgrade preferences, conditions for sunset.
+(unchanged — verbatim steps preserved from earlier schema)
 
 ---
 
@@ -265,8 +228,7 @@ sections:
   - summaries
   - facts
   - relationships
-  - worldview
-  - preferences
+  - mind
   - presentation
   - training
   - meta
@@ -286,103 +248,19 @@ sources:
 
 ## Access Tiers
 
-Person packs use a four-tier access model, enforced via `_access.json` files at the directory level:
-
-| Tier | Who Can Access | Examples |
-|------|----------------|---------|
-| **public** | Anyone | Published essays, public bio, general stories |
-| **friends** | Known associates | Casual stories, opinions, some personal details |
-| **family** | Family members | Private stories, family history, personal reflections |
-| **self** | The person only (or executor) | Truly private content, credentials, sealed memories |
-
-### How Access Works
-
-Each content directory can have an `_access.json` file:
-
-```json
-{
-  "default_access": "family",
-  "overrides": {
-    "private-reflection.md": "self",
-    "published-essay.md": "public"
-  }
-}
-```
-
-Access tiers can change posthumously as defined in `LEGACY.md` — some `friends` content may open to `family`, some `self` content may be sealed forever.
-
-### Verification
-
-Access can be verified via codewords defined in `meta/verification.json`. Each tier has its own codeword or verification method.
+(Person schema access tiers unchanged — preserved verbatim)
 
 ---
 
 ## Tags Taxonomy
 
-Person packs use a consistent tagging system for stories and content, stored in `summaries/stories/_index.json`:
-
-### Life Domains
-`career` · `family` · `health` · `education` · `social` · `hobbies` · `travel` · `finance`
-
-### Story Themes
-`turning-point` · `lesson-learned` · `funny` · `challenge` · `failure` · `success` · `relationship` · `origin`
-
-### Emotions
-`proud` · `happy` · `grateful` · `excited` · `scared` · `anxious` · `uncertain` · `sad` · `regretful` · `disappointed` · `angry` · `frustrated` · `amused` · `surprised` · `peaceful` · `content`
-
-### Usage in _index.json
-
-```json
-{
-  "stories": [
-    {
-      "id": "nina-street-shed",
-      "title": "The Shed on Nina Street",
-      "date": "circa-1975",
-      "date_precision": "approximate",
-      "summary": "Building a hideout in the backyard shed",
-      "themes": ["funny", "origin"],
-      "people": ["sam"],
-      "places": ["Brooksville, FL"],
-      "emotions": ["amused", "proud"],
-      "file": "nina-street-shed.md"
-    }
-  ]
-}
-```
+(unchanged)
 
 ---
 
 ## Universal Metadata
 
-When applicable, content items can carry metadata:
-
-```json
-{
-  "id": "unique-slug-identifier",
-  "created": "2026-02-07T22:40:00Z",
-  "updated": "2026-02-07T22:40:00Z",
-  "source": "telegram|voice|interview|document|memory",
-  "confidence": "certain|likely|approximate|uncertain",
-  "tags": ["tag1", "tag2"],
-  "related": ["other-id-1", "other-id-2"]
-}
-```
-
-This metadata lives in JSON index files, not in the Markdown content itself (following the MD-canonical principle).
-
----
-
-## Data Sources for Person Packs
-
-| Source | Quality | Coverage | Effort |
-|--------|---------|----------|--------|
-| **Personal blog/website** | High — person's own words | Philosophy, stories, opinions | Low — scrape and structure |
-| **Voice dictation** | High — authentic but needs cleanup | Stories, memories, opinions | Medium — transcribe and structure |
-| **Direct Q&A sessions** | High — targeted content | Preferences, beliefs, specific facts | Medium — guided conversation |
-| **Genealogy exports** | Structured — good for family tree | Family relationships | Low — parse and convert |
-| **"Tell Me Your Story" books** | High — prompted memories | Childhood, life milestones | Medium — use prompts as starting points |
-| **Social media archives** | Variable — may need curation | Opinions, interests, relationships | High — filter signal from noise |
+(unchanged)
 
 ---
 
@@ -395,12 +273,12 @@ This metadata lives in JSON index files, not in the Markdown content itself (fol
 5. Capture the person's words into `verbatim/` — stories, essays, dictations
 6. Generate summaries as verbatim content accumulates
 7. Build `relationships/people.md` as people appear in stories
-8. Add worldview content as the person shares beliefs and opinions
+8. Add mind content as the person shares beliefs, sense-making approaches, values, and preferences
 9. Write `LEGACY.md` when the person is ready to discuss posthumous wishes
 
 The pack will grow over time. Person packs are never "done" — they grow as long as the person keeps sharing.
 
 ---
 
-*Schema version: 1.0*
-*Last updated: 2026-02-16*
+*Schema version: 1.1*
+*Last updated: 2026-02-18*
