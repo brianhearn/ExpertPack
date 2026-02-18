@@ -28,15 +28,17 @@ packs/{person-slug}/
 ├── verbatim/              ← The person's actual words (source of truth)
 │   ├── stories/           ← Life stories, childhood memories, adventures
 │   │   └── _access.json
-│   ├── philosophy/        ← Essays, thought pieces
-│   └── politics/          ← Political writing
+│   ├── reflections/       ← Essays, thought pieces, intellectual writing
+│   ├── opinions/          ← Positions on issues, arguments, commentary
+│   └── {custom}/          ← Additional content types as needed
 │
 ├── summaries/             ← AI-generated summaries of verbatim content
 │   ├── stories/           ← Story summaries with themes, people, lessons
 │   │   ├── _index.json    ← Master story navigation index
 │   │   └── _access.json
-│   ├── philosophy/        ← Philosophy summaries with key arguments
-│   └── politics/          ← Politics summaries with positions
+│   ├── reflections/       ← Reflection summaries with key arguments
+│   ├── opinions/          ← Opinion summaries with positions
+│   └── {custom}/          ← Mirrors verbatim/ structure
 │
 ├── facts/                 ← Biographical data (Markdown — canonical)
 │   ├── _access.json
@@ -105,13 +107,25 @@ An AI retelling a person's story needs their actual words — the humor, the pac
 
 ### Organizing Verbatim and Summary Content
 
-Verbatim and summary directories should mirror each other — if `verbatim/stories/nina-street.md` exists, there should be a corresponding `summaries/stories/nina-street.md`. Subdirectories within verbatim/ and summaries/ are organized by content type:
+Verbatim and summary directories should mirror each other — if `verbatim/stories/nina-street.md` exists, there should be a corresponding `summaries/stories/nina-street.md`. Subdirectories within verbatim/ and summaries/ are organized by content type.
 
-- `stories/` — Life stories, childhood memories, adventures
-- `philosophy/` — Essays, thought pieces, intellectual writing
-- `politics/` — Political writing and commentary
+Content Type Taxonomy
 
-Additional subdirectories can be added as content warrants (e.g., `humor/`, `travel/`, `career-stories/`).
+Verbatim and summary directories are organized by content type. The following taxonomy provides recommended categories — use what fits, extend as needed:
+
+| Content Type | Directory | Description |
+|---|---|---|
+| Life stories & memories | `stories/` | Narratives, experiences, adventures, childhood memories. Recommended for all person packs. |
+| Essays & reflections | `reflections/` | Thought pieces, intellectual writing, personal essays, philosophical or theological exploration |
+| Opinions & commentary | `opinions/` | Positions on specific issues, arguments, responses to events, political or cultural commentary |
+| Conversations | `conversations/` | Captured dialogues, interviews, dictated Q&A sessions |
+| Creative works | `creative/` | Fiction, poetry, song lyrics, music notes, artistic expression |
+| Letters & correspondence | `letters/` | Written communications worth preserving |
+| Speeches & presentations | `speeches/` | Talks, sermons, keynotes, prepared remarks, toasts |
+
+**Extending the taxonomy:** Packs may add content types not listed here. A pastor might add `sermons/`, a musician `lyrics/`, a traveler `journals/`. Create the subdirectory in both `verbatim/` and `summaries/` and add it to the pack's `_index.md`.
+
+**Mirror rule:** Verbatim and summary directories should always mirror each other. If `verbatim/reflections/` exists, `summaries/reflections/` should too.
 
 ---
 
@@ -280,5 +294,5 @@ The pack will grow over time. Person packs are never "done" — they grow as lon
 
 ---
 
-*Schema version: 1.1*
+*Schema version: 1.2*
 *Last updated: 2026-02-18*
