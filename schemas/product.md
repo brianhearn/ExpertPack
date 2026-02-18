@@ -1,6 +1,6 @@
 # Product Pack Schema
 
-*Blueprint for ExpertPacks that capture deep knowledge about a software product — concepts, workflows, troubleshooting, and the tribal knowledge that lives in support teams' heads. This schema extends [core.md](core.md); all shared principles apply.*
+*Blueprint for ExpertPacks that capture deep knowledge about a product or platform — concepts, workflows, troubleshooting, and the tribal knowledge that lives in support teams' heads. Applicable to software, hardware, medical devices, consumer products, or any product with enough complexity to benefit from structured expert knowledge. This schema extends [core.md](core.md); all shared principles apply.*
 
 ---
 

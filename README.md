@@ -24,11 +24,11 @@ Capture a person — stories, beliefs, relationships, voice, and legacy.
 **Example:** *BobGPT* — a father captures his life stories, beliefs, and family history so his kids and grandkids can talk to an AI that actually knows him.
 
 ### 📦 Product Packs
-Capture deep knowledge about a software product — concepts, workflows, troubleshooting.
+Capture deep knowledge about a product or platform — concepts, workflows, troubleshooting.
 
-**Use cases:** AI support agent, sales assistant, training tool, onboarding guide
+**Use cases:** AI support agent, sales assistant, training tool, onboarding guide, product documentation
 
-**Example:** *AcmeHQ* — a project management SaaS company packages their product knowledge so an AI agent can handle tier-1 support, walk new users through onboarding, and answer sales questions.
+**Example:** *AcmeHQ* — a project management company packages their product knowledge so an AI agent can handle tier-1 support, walk new users through onboarding, and answer sales questions. Works equally well for software platforms, hardware products, medical devices, or any product with enough complexity to warrant expert knowledge.
 
 ### 🔄 Process Packs
 Capture complex multi-phase processes — phases, decisions, checklists, gotchas.

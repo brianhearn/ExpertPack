@@ -23,7 +23,7 @@ ExpertPacks come in three types:
 | Type | What It Captures | Example |
 |------|-----------------|---------|
 | **Person** | A human being — stories, mind, beliefs, relationships, voice | BobGPT — a father's life archive for his family |
-| **Product** | A software product — concepts, workflows, troubleshooting, tribal knowledge | AcmeHQ — expert knowledge for a project management platform |
+| **Product** | A product or platform — concepts, workflows, troubleshooting, tribal knowledge | AcmeHQ — expert knowledge for a project management platform |
 | **Process** | A complex endeavor — phases, decisions, checklists, gotchas | Building a custom home, starting a business, landscape design |
 
 Each type follows a type-specific schema that defines its directory structure and content patterns. All types share a common set of core principles.
