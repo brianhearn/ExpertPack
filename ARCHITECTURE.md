@@ -6,7 +6,7 @@
 
 ## The Problem
 
-Frontier AI models know a lot about the world, but they know almost nothing about *your* product, *your* life, or *your* process. Ask Claude about EasyTerritory and you'll get vague, outdated, or hallucinated answers. Ask it about your childhood and it has nothing. Ask it how to build a custom home and you'll get generic advice that misses the gotchas.
+Frontier AI models know a lot about the world, but they know almost nothing about *your* product, *your* life, or *your* process. Ask an LLM about your company's software and you'll get vague, outdated, or hallucinated answers. Ask it about your grandfather and it has nothing. Ask it how to build a custom home and you'll get generic advice that misses the gotchas.
 
 RAG helps — stuff some documents into a vector store — but raw documentation makes a poor expert. Docs are written for humans browsing, not for AI reasoning. An expert system needs something different: structured knowledge that mirrors how a veteran practitioner thinks.
 
@@ -22,9 +22,9 @@ ExpertPacks come in three types:
 
 | Type | What It Captures | Example |
 |------|-----------------|---------|
-| **Person** | A human being — stories, mind, beliefs, relationships, voice | BrianGPT |
-| **Product** | A software product — concepts, workflows, troubleshooting, tribal knowledge | EZT Designer |
-| **Process** | A complex endeavor — phases, decisions, checklists, gotchas | Building a Custom Home |
+| **Person** | A human being — stories, mind, beliefs, relationships, voice | A family member, a founder, a historical figure |
+| **Product** | A software product — concepts, workflows, troubleshooting, tribal knowledge | A SaaS platform, a developer tool, an enterprise app |
+| **Process** | A complex endeavor — phases, decisions, checklists, gotchas | Building a custom home, starting a business, landscape design |
 
 Each type follows a type-specific schema that defines its directory structure and content patterns. All types share a common set of core principles.
 
@@ -65,7 +65,7 @@ Shared principles and conventions that apply to every ExpertPack:
 ### Type-Specific Schemas
 Each pack type has its own schema that extends core with domain-specific structure:
 
-- **[schemas/person.md](schemas/person.md)** — Verbatim content, summaries, biographical facts, relationships,  mind, legacy/memorial mode, presentation (voice, appearance)
+- **[schemas/person.md](schemas/person.md)** — Mind taxonomy (9 universal categories), verbatim content, summaries, biographical facts, relationships, legacy/memorial mode, presentation (voice, appearance)
 - **[schemas/product.md](schemas/product.md)** — Concepts, workflows, troubleshooting (errors, diagnostics, common mistakes), screens, FAQ, commercial info, entity cross-references
 - **[schemas/process.md](schemas/process.md)** — Phases, decisions, checklists, resources, examples, gotchas
 
@@ -86,8 +86,7 @@ ExpertPack/
 │   └── process.md
 │
 └── packs/                 ← The instances
-    ├── brian-gpt/         ← Person pack: Brian Hearn
-    └── ezt-designer/      ← Product pack: EasyTerritory Designer
+    └── my-pack/           ← Your pack here
 ```
 
 Creating a new pack means:
@@ -166,15 +165,6 @@ V2 builds on V1 — all knowledge content remains; automation hooks are layered 
 
 ---
 
-## Current Packs
-
-| Pack | Type | Status | Description |
-|------|------|--------|-------------|
-| [BrianGPT](packs/brian-gpt/) | Person | Active — growing | Digital archive of Brian Hearn: stories,  mind, relationships |
-| [EZT Designer](packs/ezt-designer/) | Product | V1 — core content complete | Expert knowledge for EasyTerritory Territory Designer |
-
----
-
 ## Future Directions
 
 - **Pack distribution** — How should packs be shared? npm packages, git submodules, downloads?
@@ -190,8 +180,9 @@ V2 builds on V1 — all knowledge content remains; automation hooks are layered 
 
 | Date | Changed By | Notes |
 |------|-----------|-------|
-| 2026-02-13 | EasyBot | Initial ExpertPack ARCHITECTURE.md (product-focused) |
-| 2026-02-16 | EasyBot | Unified framework — merged BrianGPT + ExpertPack, added schemas, three pack types |
+| 2026-02-13 | EasyBot | Initial ARCHITECTURE.md |
+| 2026-02-16 | EasyBot | Unified framework — three pack types, shared schemas |
+| 2026-02-18 | EasyBot | Person schema: mind taxonomy (9 categories); removed project-specific references |
 
 ---
 

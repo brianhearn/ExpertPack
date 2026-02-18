@@ -19,23 +19,17 @@ Every ExpertPack is:
 ### 🧑 Person Packs
 Capture a person — stories, beliefs, relationships, voice, and legacy.
 
-**Use cases:** Personal AI assistant, family archive, memorial AI, digital legacy
-
-**Example:** [BrianGPT](packs/brian-gpt/) — Brian Hearn's life stories, philosophy, family history, and worldview
+**Use cases:** Personal AI assistant, family archive, memorial AI, digital legacy, founder knowledge capture
 
 ### 📦 Product Packs
 Capture deep knowledge about a software product — concepts, workflows, troubleshooting.
 
 **Use cases:** AI support agent, sales assistant, training tool, onboarding guide
 
-**Example:** [EZT Designer](packs/ezt-designer/) — EasyTerritory platform knowledge for support and sales
-
 ### 🔄 Process Packs
 Capture complex multi-phase processes — phases, decisions, checklists, gotchas.
 
-**Use cases:** Guided navigation of home building, business formation, project management
-
-**Example:** *(None yet — schema is defined, first pack TBD)*
+**Use cases:** Guided navigation of home building, business formation, project management, certification processes
 
 ---
 
@@ -89,24 +83,8 @@ ExpertPack/
 │   ├── product.md           ← Product-pack schema
 │   └── process.md           ← Process-pack schema
 │
-└── packs/                   ← Pack instances
-    ├── brian-gpt/           ← Person pack: Brian Hearn
-    └── ezt-designer/        ← Product pack: EasyTerritory Designer
+└── packs/                   ← Pack instances (your packs go here)
 ```
-
----
-
-## Current Packs
-
-### BrianGPT (Person Pack)
-A structured knowledge base capturing Brian Hearn's life, mind, and worldview. Includes verbatim stories, philosophy essays, biographical facts, family tree, relationship data, and worldview content.
-
-**Status:** Active — content collection ongoing
-
-### EZT Designer (Product Pack)
-Expert knowledge for the EasyTerritory platform — Territory Designer, Power BI Visual, EasyMap for Dynamics 365, and CRM integrations.
-
-**Status:** V1 ~70% complete — concepts and workflows documented, troubleshooting and screens pending
 
 ---
 
@@ -124,7 +102,7 @@ See [schemas/core.md](schemas/core.md) for the full set of principles.
 
 ## Status
 
-🚧 **Active development** — schemas defined, two packs in progress, framework stabilizing.
+🚧 **Active development** — schemas defined, framework stabilizing.
 
 ## License
 
