@@ -21,15 +21,21 @@ Capture a person — stories, beliefs, relationships, voice, and legacy.
 
 **Use cases:** Personal AI assistant, family archive, memorial AI, digital legacy, founder knowledge capture
 
+**Example:** *BobGPT* — a father captures his life stories, beliefs, and family history so his kids and grandkids can talk to an AI that actually knows him.
+
 ### 📦 Product Packs
 Capture deep knowledge about a software product — concepts, workflows, troubleshooting.
 
 **Use cases:** AI support agent, sales assistant, training tool, onboarding guide
 
+**Example:** *AcmeHQ* — a project management SaaS company packages their product knowledge so an AI agent can handle tier-1 support, walk new users through onboarding, and answer sales questions.
+
 ### 🔄 Process Packs
 Capture complex multi-phase processes — phases, decisions, checklists, gotchas.
 
 **Use cases:** Guided navigation of home building, business formation, project management, certification processes
+
+**Example:** *Custom Home Build* — a veteran builder captures every phase, decision point, and gotcha from 30 years of building homes, so first-time homebuilders get expert guidance without a consultant.
 
 ---
 
@@ -83,7 +89,9 @@ ExpertPack/
 │   ├── product.md           ← Product-pack schema
 │   └── process.md           ← Process-pack schema
 │
-└── packs/                   ← Pack instances (your packs go here)
+└── packs/                   ← Pack instances
+    ├── bob-gpt/             ← Example: Person pack
+    └── acme-hq/             ← Example: Product pack
 ```
 
 ---

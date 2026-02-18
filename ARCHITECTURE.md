@@ -22,8 +22,8 @@ ExpertPacks come in three types:
 
 | Type | What It Captures | Example |
 |------|-----------------|---------|
-| **Person** | A human being — stories, mind, beliefs, relationships, voice | A family member, a founder, a historical figure |
-| **Product** | A software product — concepts, workflows, troubleshooting, tribal knowledge | A SaaS platform, a developer tool, an enterprise app |
+| **Person** | A human being — stories, mind, beliefs, relationships, voice | BobGPT — a father's life archive for his family |
+| **Product** | A software product — concepts, workflows, troubleshooting, tribal knowledge | AcmeHQ — expert knowledge for a project management platform |
 | **Process** | A complex endeavor — phases, decisions, checklists, gotchas | Building a custom home, starting a business, landscape design |
 
 Each type follows a type-specific schema that defines its directory structure and content patterns. All types share a common set of core principles.
@@ -86,7 +86,8 @@ ExpertPack/
 │   └── process.md
 │
 └── packs/                 ← The instances
-    └── my-pack/           ← Your pack here
+    ├── bob-gpt/           ← Person pack: BobGPT
+    └── acme-hq/           ← Product pack: AcmeHQ
 ```
 
 Creating a new pack means:

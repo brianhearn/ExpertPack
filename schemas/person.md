@@ -217,7 +217,7 @@ entry_point: "overview.md"
 
 # Person-specific
 subject:
-  full_name: "Brian Franklin Hearn"
+  full_name: "Robert James Smith"
   born: "YYYY-MM-DD"
   location: "City, State"
   alive: true
