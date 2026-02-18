@@ -172,17 +172,6 @@ Notes
 
 ---
 
-## Future Directions
-
-- **Pack distribution** — How should packs be shared? npm packages, git submodules, downloads?
-- **Community packs** — Can anyone create an ExpertPack? What's the quality bar?
-- **Licensing** — Open framework, per-pack licensing for commercial packs?
-- **Multi-version support** — Product packs for different product versions
-- **Validation** — Systematic testing that pack content matches reality
-- **Pack marketplace** — A hub for discovering and sharing ExpertPacks
-
----
-
 ## Revision History
 
 | Date | Changed By | Notes |
