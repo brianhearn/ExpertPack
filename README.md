@@ -43,36 +43,25 @@ Capture complex multi-phase processes — phases, decisions, checklists, gotchas
 
 ### Creating a New Pack
 
-1. **Choose your type:** person, product, or process
+ExpertPacks are designed to be built by AI agents, not manually. You provide the knowledge — the AI reads the schema, asks the right questions, and handles all the structuring, file creation, and organization.
 
-2. **Create the directory:**
-   ```
-   packs/my-pack/
-   ```
+**What you need:**
+- An AI agent with file access (OpenClaw, Cursor, Claude Code, etc.)
+- A decision: person, product, or process pack
 
-3. **Add required files:**
-   ```yaml
-   # manifest.yaml
-   name: "My Pack"
-   slug: "my-pack"
-   type: "product"  # or "person" or "process"
-   version: "1.0.0"
-   schema_version: "1.1"  # Version of the type-specific schema this pack conforms to
-   description: "What this pack contains"
-   entry_point: "overview.md"
-   ```
+**The workflow:**
 
-   ```markdown
-   # overview.md
-   What this pack is about and who it's for.
-   ```
-
-4. **Follow the schema** for your pack type:
+1. **Point your AI agent at this repo** and tell it to read the schema for your pack type:
    - Person → [schemas/person.md](schemas/person.md)
    - Product → [schemas/product.md](schemas/product.md)
    - Process → [schemas/process.md](schemas/process.md)
+   - All types → [schemas/core.md](schemas/core.md)
 
-5. **Read the core rules** that apply to all packs: [schemas/core.md](schemas/core.md)
+2. **Start talking.** The agent reads the schema to understand the structure, then guides you through providing content — asking questions, capturing your answers, and filing everything into the right place.
+
+3. **Review what it built.** The agent creates the `manifest.yaml`, `overview.md`, directory structure, and all content files. You review, correct, and iterate.
+
+That's it. The schema is the agent's blueprint. You're the domain expert. The agent does the filing.
 
 ---
 
