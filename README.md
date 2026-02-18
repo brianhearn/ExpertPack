@@ -1,15 +1,18 @@
 # ExpertPack
 
-Structured knowledge packages that give AI agents deep expertise — in products, people, and processes.
+Structured knowledge packages that turn AI agents into domain experts — for products, people, and processes. Feed an agent your docs, websites, data, or just talk to it. The schema handles the rest.
 
 ---
 
 ## What Is ExpertPack?
 
-ExpertPack is a framework for building knowledge packs that AI agents can consume to become instant domain experts. Unlike generic RAG (stuffing docs into a vector store), ExpertPacks are structured around how experts actually think — concepts, workflows, decision trees, edge cases, and the tribal knowledge that never makes it into documentation.
+ExpertPack is an open framework for building knowledge packs that AI agents consume to become instant domain experts. Point an agent at the schema, feed it your raw materials — documents, websites, conversations, data exports — and it organizes everything into a structured pack that any AI system can use.
+
+Unlike generic RAG (stuffing docs into a vector store), ExpertPacks are structured around how experts actually think — concepts, workflows, decision trees, edge cases, and the tribal knowledge that never makes it into documentation.
 
 Every ExpertPack is:
 - **Markdown-first** — human-readable, AI-consumable, git-versionable
+- **AI-built** — agents create packs from conversations, websites, documents, and data exports
 - **Structured for retrieval** — small files, section headers, cross-references optimized for RAG
 - **Type-aware** — person, product, and process packs each have their own schema
 - **Agent-agnostic** — works with any AI system that can read Markdown files
@@ -111,8 +114,8 @@ ExpertPack/
 │   └── process.md           ← Process-pack schema
 │
 └── packs/                   ← Pack instances
-    ├── bob-gpt/             ← Example: Person pack
-    └── acme-hq/             ← Example: Product pack
+    ├── your-person-pack/    ← e.g., a founder's knowledge & stories
+    └── your-product-pack/   ← e.g., a product's docs & workflows
 ```
 
 ---
