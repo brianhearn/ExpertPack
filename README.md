@@ -105,7 +105,7 @@ A completed ExpertPack is a folder of Markdown files — ready to plug into any 
 ExpertPack/
 ├── ARCHITECTURE.md          ← Framework design philosophy
 ├── README.md                ← This file
-├── LICENSE.md               ← License (TBD)
+├── LICENSE                  ← Apache 2.0
 │
 ├── schemas/                 ← Pack blueprints
 │   ├── core.md              ← Shared principles for all pack types
@@ -138,4 +138,6 @@ See [schemas/core.md](schemas/core.md) for the full set of principles.
 
 ## License
 
-TBD
+Apache 2.0 — see [LICENSE](LICENSE) for details.
+
+The ExpertPack framework (schemas, architecture, tooling) is open source. Individual pack instances contain original content and can be licensed independently by their creators.
