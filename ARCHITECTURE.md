@@ -145,27 +145,6 @@ When adding or changing content:
 
 ---
 
-## Version Strategy
-
-### V1: Knowledge Layer (Current)
-Packs contain knowledge that enables an agent to *guide humans*:
-- Answer questions accurately
-- Walk through procedures step by step
-- Troubleshoot problems
-- Make recommendations
-- Retell stories and represent views (person packs)
-
-### V2: Automation Layer (Future — Product Packs)
-Adds the ability for agents to *operate products* via browser automation:
-- CSS selectors and element mappings
-- Executable playbooks
-- State verification
-- Visual anchors for fallback detection
-
-V2 builds on V1 — all knowledge content remains; automation hooks are layered on top.
-
----
-
 ## Future Directions
 
 - **Pack distribution** — How should packs be shared? npm packages, git submodules, downloads?

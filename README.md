@@ -57,6 +57,7 @@ Capture complex multi-phase processes — phases, decisions, checklists, gotchas
    slug: "my-pack"
    type: "product"  # or "person" or "process"
    version: "1.0.0"
+   schema_version: "1.1"  # Version of the type-specific schema this pack conforms to
    description: "What this pack contains"
    entry_point: "overview.md"
    ```

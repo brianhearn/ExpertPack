@@ -6,11 +6,9 @@
 
 ## Purpose
 
-A product pack gives an AI agent the same depth of knowledge as a veteran support engineer. Unlike generic RAG over documentation (which is written for humans browsing, not AI reasoning), a product pack structures knowledge around how support interactions actually flow — what things are, how to do things, what went wrong, and what the product costs.
+A product pack gives an AI agent the same depth of knowledge as a veteran product expert. Unlike generic RAG over documentation (which is written for humans browsing, not AI reasoning), a product pack structures knowledge around how support interactions actually flow — what things are, how to do things, what went wrong, and what the product costs.
 
 **V1 Goal:** An agent that can *guide humans* through the product — answering questions, walking through workflows, and troubleshooting issues.
-
-**V2 Goal (Future):** An agent that can *operate the product* via browser automation.
 
 ---
 
@@ -30,9 +28,13 @@ packs/{product-slug}/
 │   ├── _index.md          ← Directory of all workflows
 │   └── {workflow}.md      ← One task per file
 │
-├── screens/               ← UI documentation (V1+)
-│   ├── _index.md          ← Directory of all screens
-│   └── {screen}.md        ← One screen per file
+├── interfaces/            ← Interface documentation (UI screens, panels, endpoints, or physical controls)
+│   ├── _index.md          ← Directory of all interfaces
+│   └── {interface}.md     ← One interface per file (include variant notes where applicable)
+│
+├── specifications/        ← Technical specs, requirements, compliance (optional)
+│   ├── _index.md
+│   └── {spec}.md          ← One spec category per file
 │
 ├── troubleshooting/       ← Problem resolution
 │   ├── errors/            ← Specific error messages + fixes
@@ -121,7 +123,7 @@ Concrete example to illustrate.
 
 ### Workflow File (workflows/{workflow}.md)
 
-Step-by-step procedures for accomplishing tasks.
+Step-by-step procedures for accomplishing tasks. The Steps section adapts to the product type — for software this may describe screens and UI interactions; for hardware or physical products it may describe physical operations, adjustments, or checks; for APIs it may describe request sequences and expected responses.
 
 ```markdown
 # {Task Name}
@@ -138,15 +140,15 @@ What the user is trying to accomplish.
 ### 1. {First Step}
 {Action to take}
 
-- **Where:** {Screen or location}
-- **What to click/enter:** {Specific element and value}
-- **You should see:** {Expected result}
+- **Where:** {Screen, panel, component, or area}
+- **What to do:** {Specific action — click, adjust, connect, configure}
+- **You should see/hear/feel:** {Expected result}
 
 ### 2. {Second Step}
 ...
 
 ## Completion
-How to know it worked. What they should see when done.
+How to know it worked. What they should observe when done.
 
 ## Common Issues
 - **{Problem}:** {Solution}
@@ -156,44 +158,47 @@ How to know it worked. What they should see when done.
 - [Related Workflow](related-workflow.md)
 ```
 
-### Screen File (screens/{screen}.md)
+### Interface File (interfaces/{interface}.md)
 
-UI documentation — every screen in the product.
+Documentation for an interface — UI screen, physical panel, API endpoint, or other interaction surface.
 
 ```markdown
-# {Screen Name}
+# {Interface Name}
 
 ## Purpose
-What this screen is for, when users come here.
+What this interface is for, when users interact with it.
 
-## How to Get Here
-Navigation path(s) to reach this screen.
+## How to Access
+Navigation path(s), physical location, or endpoint URL to reach this interface.
 
-## Layout
+## Variants
+Notes about platform-specific or model-specific differences (desktop vs mobile, firmware revision, API version).
 
-### {Section Name}
-Description of this area of the screen.
+## Layout / Contract
+For UI / physical interfaces: describe sections and elements. For APIs: describe request/response contract.
 
-**Elements:**
-| Element | Type | Purpose |
-|---------|------|---------|
+### {Section or Operation}
+Description of this area or operation.
+
+**Elements / Fields / Controls:**
+| Name | Type | Purpose |
+|------|------|---------|
 | {Label} | Button | {What it does} |
 | {Label} | Text field | {What data, validation rules} |
-| {Label} | Dropdown | {Choices and their meanings} |
+| {Field} | JSON body | {Request/response field description} |
 
 ## Common Tasks
 - [Create a Territory](../workflows/create-territory.md)
 
 ## Tips
-- Helpful hints for this screen
+- Helpful hints for using this interface
 ```
 
 **Element detail guidelines:**
-- **Buttons:** What it does, prerequisites, what happens after
-- **Text fields:** What data, required/optional, validation, examples
-- **Dropdowns:** Choices, what each means, default
-- **Checkboxes/toggles:** What it controls, default state, implications
-- **Grids:** Columns, row actions available
+- **Buttons / Controls:** What it does, prerequisites, what happens after
+- **Fields / Parameters:** What data, required/optional, validation, examples
+- **States:** Normal, loading, error states and how to detect them
+- **Variants:** Platform or model differences to be aware of
 
 ### Error File (troubleshooting/errors/{error}.md)
 
@@ -274,9 +279,38 @@ What to remember for next time.
 Business information for sales scenarios. See individual templates:
 
 - **pricing.md** — Pricing model, tiers, what affects cost
-- **deployment.md** — Architecture, requirements, data residency
+- **deployment.md** — Architecture, requirements, data residency, or installation/unboxing and site requirements for hardware
 - **security.md** — Certifications, data protection, authentication
 - **capabilities.md** — What it can do, limitations, roadmap
+
+---
+
+## Specifications Directory (specifications/)
+
+Optional directory for technical specifications, requirements, and compliance information. Use when the product has formal specs, regulatory constraints, or technical compatibility matrices.
+
+- **Software:** System requirements, API specifications, browser compatibility, performance benchmarks
+- **Hardware:** Dimensions, materials, electrical ratings, operating conditions, safety certifications
+- **Any product:** Compliance standards, regulatory certifications, compatibility matrices
+
+Template for specifications/{spec}.md:
+
+```markdown
+# {Specification Name}
+
+## Summary
+One-paragraph summary of what this specification covers.
+
+## Scope
+What components, models, or versions this spec applies to.
+
+## Details
+Technical parameters, tolerances, compliance statements, or API contracts.
+
+## Related
+- [Related Specification](../specifications/other-spec.md)
+- [Related Concept](../concepts/related-concept.md)
+```
 
 ---
 
@@ -318,11 +352,12 @@ Without a cross-reference, the agent would have to search every file — slow, e
 
 | Type | Examples |
 |------|---------|
-| `core-feature` | Territories, Capacity Planning, Routing |
-| `integration` | Dynamics 365, Salesforce, Power BI |
-| `product` | Sub-products or components |
-| `infrastructure` | Authentication, hosting, map providers |
-| `category` | Umbrella groupings (e.g., "CRM Integrations") |
+| `core-feature` | Key capabilities, primary functions |
+| `component` | Sub-systems, modules, physical parts |
+| `integration` | Third-party connections, accessories, companion products |
+| `infrastructure` | Underlying systems the product depends on |
+| `category` | Umbrella groupings |
+| `specification` | Technical specs, compliance standards, certifications |
 
 ### Maintenance
 
@@ -412,11 +447,12 @@ dependencies: []
 
 | Source | What It Provides | Quality | Effort |
 |--------|------------------|---------|--------|
-| **Web docs / help sites** | Concepts, features, basic workflows | Medium — written for browsing, not AI | Low — crawl and restructure |
-| **Video tutorials** | UI flow, step-by-step procedures | High — shows actual UI | Medium — transcribe and extract |
-| **Screenshots** | Screen layouts, element locations | High — visual ground truth | Medium — requires analysis |
-| **Guided walkthroughs** | Edge cases, tribal knowledge | Highest — captures what docs miss | High — requires expert time |
-| **Support tickets** | Real user problems, FAQ content | High — real pain points | Medium — requires curation |
+| **Product documentation** | Concepts, features, basic procedures | Medium — written for browsing | Low — restructure |
+| **Video tutorials / demos** | Real usage, step-by-step procedures | High — shows actual product | Medium — transcribe and extract |
+| **Product imagery** | Interface layouts, component locations | High — visual ground truth | Medium — requires analysis |
+| **Expert walkthroughs** | Edge cases, tribal knowledge | Highest — captures what docs miss | High — requires expert time |
+| **Support tickets / forums** | Real user problems, FAQ content | High — real pain points | Medium — requires curation |
+| **Technical specifications** | Specs, compliance, requirements | High — authoritative | Low — reformat |
 
 ### The Crawl → Structure → Refine Pipeline
 
@@ -428,33 +464,6 @@ dependencies: []
 6. **Identify gaps** — Screens, troubleshooting, and tribal knowledge are usually missing
 
 This gets you ~70% of V1. The remaining 30% — edge cases, tribal knowledge, undocumented behavior — requires guided walkthroughs with product experts.
-
----
-
-## Version Roadmap
-
-### V1: Knowledge Layer (Current)
-
-The agent can **guide humans** through the product. It knows what things are, how to do tasks, and what can go wrong. It cannot operate the product autonomously.
-
-**V1 includes:** Concepts, workflows, screens, troubleshooting, FAQ, commercial.
-
-**Success criteria:** Agent with ExpertPack answers support questions better than agent with raw docs alone.
-
-### V2: Automation Layer (Future)
-
-The agent can **operate the product** via browser automation — clicking, typing, navigating. This adds an `automation/` directory:
-
-```
-automation/
-├── selectors.yaml    ← Element selector registry
-├── elements/         ← Per-screen element mappings
-└── playbooks/        ← Executable workflows
-```
-
-**V2 adds:** CSS selectors, executable playbooks (Playwright/Puppeteer), state verification, visual anchors for fallback detection.
-
-**V2 builds on V1** — all knowledge layer content remains; automation hooks are layered on top.
 
 ---
 
@@ -473,5 +482,5 @@ automation/
 
 ---
 
-*Schema version: 1.0*
-*Last updated: 2026-02-16*
+*Schema version: 1.1*
+*Last updated: 2026-02-18*

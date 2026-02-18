@@ -218,6 +218,42 @@ ExpertPacks are designed to live in git repositories. This gives you:
 
 ---
 
+## Versioning
+
+ExpertPacks use three complementary versioning layers: schema versioning (for the pack type blueprint), pack versioning (for the pack instance), and content versioning (git commits).
+
+### Schema Versioning
+
+- Each type-specific schema file (e.g., `schemas/core.md`, `schemas/person.md`, `schemas/product.md`, `schemas/process.md`) carries a semantic schema version at the bottom of the file in the format `Schema version: MAJOR.MINOR` (for example `1.0`, `1.1`, `2.0`).
+- A **MAJOR** schema bump indicates a breaking structural change: renamed directories, removed required files, or fundamental reorganization that may require pack migration.
+- A **MINOR** schema bump indicates additive, backwards-compatible changes: new optional directories, clarified guidance, new templates, or additional recommendations. Packs targeting an older minor version remain conformant — the new features are optional.
+- Every pack's `manifest.yaml` MUST include a `schema_version` field declaring which version of the type-specific schema it was built against. Example (add to the required fields section in `manifest.yaml`):
+
+```yaml
+schema_version: "1.0"  # Version of the type-specific schema this pack conforms to
+```
+
+- When a schema receives a MAJOR bump, pack authors and consumers should treat the change as requiring migration. When a schema receives a MINOR bump, packs on the previous minor version remain valid and can adopt new features at their discretion.
+
+### Pack Versioning
+
+Packs already include a `version` field in `manifest.yaml`. Follow semantic versioning practices for pack releases:
+- **MAJOR**: Fundamental restructuring of content or directories, incompatible reorganizations
+- **MINOR**: Significant new content sections or new directories that add capability without breaking consumers
+- **PATCH**: Content updates, corrections, or additions that do not change the pack's structure
+
+Bundle changes logically into commits and tag releases to mark pack versions.
+
+### Content Versioning
+
+Git is the content versioning system — every commit is a version of the pack's content. Follow clear commit message conventions to make history machine-readable and human-friendly:
+- Content additions: `Add {type}: {description}` (e.g., `Add story: childhood fishing trip`)
+- Content updates: `Update {file}: {what changed}` (e.g., `Update career.md: add 2025 role change`)
+- Structure changes: `Refactor {what}: {why}` (e.g., `Refactor mind/: add tensions category`)
+- Schema changes: `Schema {version}: {what changed}` (e.g., `Schema 1.1: add mind taxonomy`)
+
+---
+
 ## Agent Consumption Patterns
 
 These patterns describe how an AI agent should work with any ExpertPack:
@@ -262,5 +298,5 @@ These principles apply to every ExpertPack, regardless of type:
 
 ---
 
-*Schema version: 1.0*
-*Last updated: 2026-02-16*
+*Schema version: 1.1*
+*Last updated: 2026-02-18*
