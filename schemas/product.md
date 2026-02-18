@@ -478,7 +478,7 @@ This gets you ~70% of V1. The remaining 30% — edge cases, tribal knowledge, un
 7. Write `_index.md` files for each content directory
 8. Add `faq/` from common support questions
 9. Add `commercial/` if the pack serves sales scenarios
-10. Identify gaps — `troubleshooting/` and `screens/` usually need expert walkthroughs
+10. Identify gaps — `troubleshooting/` and `interfaces/` usually need expert walkthroughs
 
 ---
 
