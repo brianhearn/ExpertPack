@@ -469,16 +469,71 @@ This gets you ~70% of V1. The remaining 30% — edge cases, tribal knowledge, un
 
 ## Creating a New Product Pack
 
-1. Create the directory structure
-2. Write `manifest.yaml` with type `product` and the product-specific fields
-3. Write `overview.md` — what the product does, who it's for, key capabilities
-4. Crawl existing documentation and restructure into `concepts/` and `workflows/`
-5. Add `##` section headers to every file for RAG chunking
-6. Build `entities.json` as entities emerge
-7. Write `_index.md` files for each content directory
-8. Add `faq/` from common support questions
-9. Add `commercial/` if the pack serves sales scenarios
-10. Identify gaps — `troubleshooting/` and `interfaces/` usually need expert walkthroughs
+This section is a playbook for an AI agent creating and maintaining a product pack. Read the schema and use it as your filing map: determine where incoming documentation, expert input, and support data belong and file them accordingly.
+
+Agent-first step-by-step
+
+1. Read the schema and product blueprint
+   - Load this file and core.md to understand required sections, expected files, and recommended data structures (entities.json, _index.md files).
+   - Treat the schema as the authoritative navigation map for filing content.
+
+2. Initialize the pack
+   - Create packs/{product-slug}/ and the minimal required files: manifest.yaml (type: product) and overview.md. Create directories: concepts/, workflows/, interfaces/, troubleshooting/, faq/, commercial/, and a placeholder entities.json.
+   - Commit the initial skeleton and record sources and creation notes in manifest.yaml.
+
+3. Crawl and ingest existing documentation
+   - Harvest official docs, help sites, API specs, manuals, and public support articles. Prioritize canonical sources listed by the domain expert.
+   - For each source, extract sections and restructure them into concept or workflow files. Chunk large text into RAG-friendly sections by adding `##` headers without changing technical meaning.
+   - Record provenance (source URL, scrape date) for every ingested file in frontmatter or manifest sources.
+
+4. Build concepts/ and workflows/ from documentation
+   - Convert conceptual explanations into concepts/{concept}.md with the template fields (What It Is, Why It Matters, How It Works, Example, Related).
+   - Convert step-by-step procedures into workflows/{workflow}.md with Goal, Prerequisites, Steps, Completion, and Common Issues.
+   - Add cross-links between related concept and workflow files.
+
+5. Extract interfaces and specifications
+   - From screenshots, UI docs, API contracts, and device manuals, create interfaces/{interface}.md and specifications/{spec}.md as appropriate. Include navigation paths, field-level details, and variant notes.
+
+6. Build entities.json as the knowledge graph emerges
+   - As concepts, workflows, or interfaces are added, create entity entries with id, name, type, description, related entities, and file references.
+   - Use entities.json to speed updates: when new information arrives, consult entities.json to find all affected files.
+
+7. Gather tribal knowledge via expert interviews
+   - Schedule and run structured interviews with the domain expert (the pack owner or SME). Ask targeted questions to elicit edge cases, recent gotchas, and undocumented behaviors: "What do new users get wrong first?" "Describe a time something failed and how you fixed it."
+   - Record experts' verbatim answers and then distill them into concepts, workflows, or troubleshooting entries. Mark those entries as expert-sourced.
+
+8. Build troubleshooting/ from support data
+   - Ingest support tickets, forum threads, and incident reports. Extract recurring failure modes, errors, and diagnostic steps into troubleshooting/errors/ and diagnostics/ files.
+   - Link these troubleshooting files to workflows and concepts where relevant.
+
+9. Compile FAQ and commercial content
+   - Derive FAQ entries from common support questions and expert interviews. Organize by persona or category in faq/.
+   - If the pack supports sales or go-to-market scenarios, populate commercial/ with capabilities.md, pricing.md, deployment.md, and security.md using a combination of documentation and conversations with product management.
+
+10. Identify gaps and report them
+   - Run an automated gaps analysis: compare expected sections (interfaces, troubleshooting decision trees, workflows for critical tasks) to the current inventory.
+   - Produce a prioritized gap report for the domain expert: what needs expert walkthroughs, missing screens, undocumented error states, or incomplete specs.
+
+11. Maintain entities and cross-references
+   - Whenever files are added or updated, update entities.json and relevant _index.md files.
+   - Use entities.json for targeted updates when new product info arrives (release notes, patch fixes).
+
+12. Commit, document provenance, and create status reports
+   - Commit changes with descriptive messages, including source references.
+   - Maintain a pack-level README with guidance for future updates and a changelog of significant content additions.
+   - Periodically generate a status summary showing new content, resolved gaps, and outstanding high-priority items.
+
+Practical prompting guidance
+
+- Use concise, task-focused prompts during expert interviews: one question per turn, with specific examples and requests for steps, error messages, or screenshots.
+- When extracting from docs, ask for clarifications from the domain expert for ambiguous behavior or undocumented edge cases.
+- Present the gap report as a short checklist the expert can act on.
+
+Notes and principles
+
+- The schema is your filing guide — decide where content belongs; create new directories when a new content type is needed and document the change in the manifest.
+- Record provenance for every file and never overwrite expert-verified content without reconfirmation.
+- Prioritize building troubleshooting/ and interfaces/ early for support readiness; these are high-value for user-facing agents.
 
 ---
 

@@ -280,17 +280,80 @@ sources:
 
 ## Creating a New Person Pack
 
-1. Create the directory structure (start with `facts/`, `verbatim/`, `relationships/`)
-2. Write `manifest.yaml` with type `person`
-3. Write `overview.md` — who the person is and what this pack will capture
-4. Begin with biographical facts — `personal.md`, `career.md`, `education.md`
-5. Capture the person's words into `verbatim/` — stories, essays, dictations
-6. Generate summaries as verbatim content accumulates
-7. Build `relationships/people.md` as people appear in stories
-8. Add mind content as the person shares beliefs, sense-making approaches, values, and preferences
-9. Write `LEGACY.md` when the person is ready to discuss posthumous wishes
+This section is written as a playbook for an AI agent that will create and maintain the person pack. Treat the schema above as your filing guide: read it to learn the canonical structure, then decide where incoming content belongs based on the taxonomy.
 
-The pack will grow over time. Person packs are never "done" — they grow as long as the person keeps sharing.
+Agent-first step-by-step
+
+1. Read the schema and directory blueprint
+   - Load this file and core.md to understand required files, directories, and content types.
+   - Use the schema as the authoritative filing map: when content arrives, determine its target directory by content type (verbatim, summaries, facts, mind, relationships, presentation, training, meta).
+
+2. Initialize the pack
+   - Create the pack directory at packs/{person-slug}/.
+   - Create required files and minimal structure: manifest.yaml (type: person), overview.md, and starter directories: facts/, verbatim/, relationships/, summaries/, mind/, presentation/, meta/.
+   - Commit the initial skeleton to git with a clear message.
+
+3. Onboard the pack owner (the person / pack owner)
+   - Introduce yourself as the agent and explain your role: you will guide them through capturing biographical facts, stories, and internal beliefs, and you will file everything using the schema.
+   - Ask for consent and access to source materials (documents, websites, recorded audio, support exports, GEDCOMs) and preferred modes of capture (voice dictation, email, shared doc).
+
+4. Collect canonical biographical facts first
+   - Guide the person to provide core facts for facts/personal.md: full name, birth date/place, major life locations, family roles, and contact details for immediate relatives.
+   - Create facts/career.md as a timeline: ask for employers, roles, dates, notable projects, and transitions. When unsure, suggest prompts: "Where did you work between YEAR and YEAR?" or "Tell me about the role that changed your career trajectory."
+   - Create facts/education.md: schools, degrees, certifications, informal study. Use targeted prompts: "List the institutions and years, or say 'unknown' if you prefer not to provide dates."
+   - As each fact is confirmed, commit and annotate sources in manifest.yaml sources:[]
+
+5. Drive story collection (verbatim first)
+   - Prioritize capturing the person's exact words into verbatim/stories/, verbatim/reflections/, verbatim/opinions/ as appropriate. Use voice dictation or written prompts depending on the owner's preference.
+   - Use structured prompts to elicit stories while preserving voice. Examples the agent should use: "Tell me about a childhood memory that shaped you," "Describe a time you failed and what you learned," "Tell the story of how you met [person]." Ask follow-ups for sensory details, dates, feelings, and dialogue.
+   - Preserve verbatim text: do not rewrite the person's phrasing. You may insert structural headers (##) between natural breaks but never alter original words.
+   - When the person references a person, place, or event, create or update cross-references (see step 7).
+
+6. Summarize continuously
+   - After each substantial verbatim entry, generate a summary file in summaries/ that captures themes, people mentioned, places, emotions, and a short TL;DR.
+   - Maintain a master index summaries/stories/_index.json and update it with metadata (title, date, tags, people referenced, file path).
+   - Use summaries for downstream searches and fast context loading; keep verbatim as the source of truth.
+
+7. Build and maintain the relationships graph
+   - As people appear in stories, create or update relationships/people.md with: name, relationship to the subject, key facts (how they met, roles), and cross-references to verbatim and summary files where they appear.
+   - When ambiguity or conflicting relationships appear, flag conflicts and ask the pack owner to resolve.
+
+8. Populate the mind taxonomy through guided interviews
+   - Use the mind/ files as structured prompts. For each file (ontology.md, epistemology.md, values.md, identity.md, motivations.md, relational.md, preferences.md, skills.md, tensions.md) run a short interview designed to fill that category.
+   - Example prompt for values.md: "What principles guide your major life choices? Describe two decisions where those values mattered." For epistemology.md: "How do you decide what to trust? Tell me about a time you changed your mind and why."
+   - Store the person's answers as both verbatim (if spoken) and a distilled summary entry under mind/. If the owner prefers, allow iterative refinement: draft a summary, read it back, and ask for corrections.
+
+9. Proactively identify gaps and suggest topics
+   - Continuously run a gaps analysis: compare the schema's expected sections and common topic lists to the current content inventory.
+   - Present the pack owner with concise gap prompts prioritized by value (e.g., missing childhood stories, unclear career transitions, absent values statements). Use checklists and suggested questions to close gaps.
+
+10. Build LEGACY.md when the owner is ready
+   - When the pack owner signals readiness, guide them through legacy conversations: posthumous wishes, memorial preferences, executors, access rules, and any codeword/verification choices.
+   - Draft LEGACY.md from their answers and have them confirm. Store final version under the pack root.
+
+11. Verification, conflicts, and provenance
+   - Record the source for each piece of information in manifest.yaml and in individual file frontmatter or index files.
+   - When contradictions arise between verbatim entries or facts, flag them and request the owner's adjudication. Do not resolve factual conflicts without explicit confirmation.
+
+12. Iterative improvement and maintenance
+   - As new content arrives, repeat intake: save raw verbatim, generate summaries, update relationships, augment mind taxonomy, and re-run the gaps analysis.
+   - Periodically (monthly or on-demand) generate a status summary that lists newly added content, unresolved conflicts, and remaining high-priority gaps.
+
+13. Commit and document actions
+   - Commit changes with descriptive messages and update the pack-level README.md and manifest sources.
+   - Maintain session logs in meta/sessions.json for auditability.
+
+Practical prompting guidance
+
+- Use short, specific prompts that request a single story or fact at a time.
+- Ask targeted follow-ups for sensory detail, dates, and significance: "What did you see/hear?" "How did that make you feel?" "Why does this memory matter to you?"
+- Preserve voice: when summarizing, mark the summary as AI-generated and keep the original verbatim as canonical.
+
+Notes and principles
+
+- Treat verbatim/ as the canonical source of the person's voice; summaries must never overwrite verbatim.
+- The schema is your filing guide — you decide where incoming content lives based on the taxonomy. If a new type is needed, create matching directories under verbatim/ and summaries/ and document them in the pack manifest.
+- Always record provenance and ask the pack owner to resolve contradictions.
 
 ---
 
