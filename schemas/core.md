@@ -242,6 +242,29 @@ This is a safe default — no content is hidden from search, and identity files 
 
 ---
 
+## Content Changelog
+
+Every pack should maintain a `meta/changelog.md` — an append-only log of what content was added, updated, or removed, when, and from what source. This is the pack's provenance record.
+
+```markdown
+## YYYY-MM-DD
+- Added {N} verbatim stories (source: voice dictation): {file-list}
+- Generated summaries for {file-list}
+- Updated relationships/people.md: added {person}
+- Source: {channel/method}
+```
+
+**Rules:**
+- Append new entries at the top (most recent first)
+- One entry per intake session or batch of related changes
+- Include the source (voice dictation, website scrape, document import, conversation)
+- Include file names or counts so the log is auditable against git history
+- Agents should update the changelog as part of every content intake workflow
+
+**Context tier:** `meta/changelog.md` defaults to Tier 3 (on-demand). It is not loaded during normal conversations — only when someone asks about content history, provenance, or what's been captured.
+
+---
+
 ## Conflict Resolution
 
 **Never overwrite, always ask the human.**

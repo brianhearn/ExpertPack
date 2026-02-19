@@ -140,7 +140,8 @@ When the person dictates a new story or memory:
 5. **Update relationships** — Check `relationships/people.md` for new or updated people; add entries
 6. **Update index** — Add entry to `summaries/stories/_index.json`
 7. **Contradiction check** — Flag any conflicts with existing data for the person to resolve (see [core.md](core.md) conflict resolution rules)
-8. **Commit** — Git commit and push to preserve versioning
+8. **Update changelog** — Append an entry to `meta/changelog.md` with what was captured, the source, and file names (see [core.md](core.md) content changelog)
+9. **Commit** — Git commit and push to preserve versioning
 
 ### Voice Dictation Notes
 
