@@ -250,12 +250,12 @@ sections:
 # Data sources
 sources:
   - type: "website"
-    url: "https://bfhearn.com"
-    description: "Personal blog — philosophy, politics, stories"
-  - type: "voice-dictation"
-    description: "Ongoing story capture via Telegram"
+    url: "https://example.com"
+    description: "Personal blog — philosophy, hobbies, stories"
+  - type: "conversation"
+    description: "Ongoing story capture via voice/chat"
   - type: "genealogy"
-    description: "Ancestry.com GEDCOM export"
+    description: "Family tree export (GEDCOM or similar)"
 ```
 
 ---

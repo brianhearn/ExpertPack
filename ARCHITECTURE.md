@@ -176,9 +176,9 @@ Notes
 
 | Date | Changed By | Notes |
 |------|-----------|-------|
-| 2026-02-13 | EasyBot | Initial ARCHITECTURE.md |
-| 2026-02-16 | EasyBot | Unified framework — three pack types, shared schemas |
-| 2026-02-18 | EasyBot | Person schema: mind taxonomy (9 categories); removed project-specific references |
+| 2026-02-13 | — | Initial ARCHITECTURE.md |
+| 2026-02-16 | — | Unified framework — three pack types, shared schemas |
+| 2026-02-18 | — | Person schema: mind taxonomy (9 categories); broadened examples |
 
 ---
 
