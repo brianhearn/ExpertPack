@@ -263,6 +263,12 @@ Every pack should maintain a `meta/changelog.md` — an append-only log of what 
 
 **Context tier:** `meta/changelog.md` defaults to Tier 3 (on-demand). It is not loaded during normal conversations — only when someone asks about content history, provenance, or what's been captured.
 
+**Session continuity:** Agents maintaining a pack across multiple sessions should keep a persistent reference to the changelog in their session state or working memory. This ensures that even after session restarts, the agent can quickly determine what content exists, what's missing, and where intake left off — without reloading the entire pack. A one-line pointer is sufficient:
+
+```
+Pack status → {pack-path}/meta/changelog.md (content inventory at bottom)
+```
+
 ---
 
 ## Conflict Resolution
