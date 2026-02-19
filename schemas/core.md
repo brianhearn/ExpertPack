@@ -72,13 +72,13 @@ Index files serve two purposes:
 **Example** `_index.md` for a product pack's concepts directory:
 
 ```markdown
-# Concepts
+# {Section Name}
 
-Overview of documented concepts in this pack.
+{Brief description of what this directory contains.}
 
-- [User Roles](user-roles.md) — How roles and permissions work
-- [Pricing Tiers](pricing-tiers.md) — Plan levels and feature gates
-- [Notifications](notifications.md) — Alert types and delivery channels
+- [{Topic}]({topic}.md) — {One-line description}
+- [{Topic}]({topic}.md) — {One-line description}
+- [{Topic}]({topic}.md) — {One-line description}
 ```
 
 ### _access.json Files
