@@ -20,40 +20,43 @@ The target user is someone undertaking a process for the first (or second) time 
 
 ---
 
-## Directory Structure
+## High-level design goals
+
+1. Capture the sequential flow (phases) and the decision points that cause branches.
+2. Surface the hard-won heuristics (gotchas) and examples that make novices competent quickly.
+3. Provide the operational artifacts people actually need: checklists, templates, budgets, schedules, and regulatory references.
+4. Keep files small and focused so RAG retrieves precise chunks (1–3KB per file guideline).
+5. Make the pack discoverable via `_index.md` files and manifest-declared context tiers.
+
+---
+
+## Directory Structure (recommended)
 
 ```
 packs/{process-slug}/
 ├── manifest.yaml          ← Pack identity and metadata (required)
 ├── overview.md            ← What this process is, who it's for (required)
 │
-├── phases/                ← Sequential stages of the process
-│   ├── _index.md          ← Phase overview with sequence and dependencies
-│   └── {phase}.md         ← One phase per file
-│
+├── fundamentals/          ← Core concepts & domain knowledge required before starting
+├── glossary/              ← Terminology and short definitions (searchable)
+├── phases/                ← Sequential stages of the process (backbone)
 ├── decisions/             ← Key decision points with criteria and tradeoffs
-│   ├── _index.md          ← Directory of all decision points
-│   └── {decision}.md      ← One decision per file
-│
-├── checklists/            ← Actionable items per phase or milestone
-│   ├── _index.md          ← Directory of all checklists
-│   └── {checklist}.md     ← One checklist per file
-│
-├── resources/             ← Tools, vendors, materials, references
-│   ├── _index.md          ← Directory of resources
-│   └── {resource}.md      ← One resource category per file
-│
-├── examples/              ← Real-world case studies and lessons learned
-│   ├── _index.md          ← Directory of examples
-│   └── {example}.md       ← One case study per file
-│
-├── gotchas/               ← Things people miss, common mistakes, warnings
-│   ├── _index.md          ← Directory of gotchas
-│   └── {gotcha}.md        ← One gotcha per file
-│
-└── faq/                   ← Common questions grouped by topic
-    └── {category}.md      ← One FAQ category per file
+├── checklists/            ← Actionable, phase-aligned checklists
+├── scheduling/           ← Timelines, dependencies, lead times, seasonal constraints
+├── budget/                ← Cost breakdowns, financing, templates, cost drivers
+├── roles/                 ← Stakeholders, responsibilities, how to work with them
+├── regulations/           ← Permits, codes, licensing, compliance & region notes
+├── templates/             ← Document templates, contracts, applications, forms
+├── resources/             ← Tools, vendors, materials, buying guides
+├── examples/              ← Case studies and post-mortems
+├── gotchas/               ← Common mistakes, traps, and recovery patterns
+└── faq/                   ← Frequently asked questions by category
 ```
+
+Notes:
+- Each directory should include `_index.md` describing contents and links to files.
+- Files should be named kebab-case and kept focused (one topic per file).
+- `fundamentals/` and `glossary/` help novices build mental models before they act.
 
 ---
 
@@ -72,55 +75,108 @@ entry_point: "overview.md"
 
 # Process-specific fields
 domain: "construction"              # High-level domain (construction, business, creative, etc.)
-typical_duration: "12-18 months"    # How long the process typically takes
+typical_duration: "12-18 months"    # Typical timeline
 complexity: "high"                  # low | medium | high
 cost_range: "$250K–$1M+"           # Approximate cost range (optional)
-professional_required: true         # Whether professionals are typically needed
+professional_required: true          # Whether professionals are typically needed
 regions: ["US"]                     # Geographic relevance (if applicable)
 
-# Sections included
+# Sections included (manifest-driven inventory)
 sections:
+  - fundamentals
+  - glossary
   - phases
   - decisions
   - checklists
+  - scheduling
+  - budget
+  - roles
+  - regulations
+  - templates
   - resources
   - examples
   - gotchas
   - faq
+
+# Recommended context strategy (manifest context block supported by core.md)
+context:
+  always:
+    - overview.md
+    - manifest.yaml
+  searchable:
+    - fundamentals/
+    - glossary/
+    - phases/
+    - decisions/
+    - checklists/
+    - resources/
+    - roles/
+    - regulations/
+    - examples/
+    - gotchas/
+    - faq/
+  on_demand:
+    - templates/
+    - budget/
+    - scheduling/
 ```
 
 ---
 
-## Component Templates
+## Component Templates (high-level)
+
+Below are templates and guidance for the most important directories.
 
 ### Overview (`overview.md`)
+
+Keep this short and always-loadable. The agent should load this on every session to understand the pack's scope.
 
 ```markdown
 # {Process Name}
 
 ## What This Process Is
-One paragraph: what you're trying to accomplish, the end result.
+One paragraph describing the end result and who benefits.
 
 ## Who This Is For
-Who benefits from this guide — first-time homebuilders, aspiring entrepreneurs, etc.
+Primary audience and skill level.
 
-## How Long It Takes
-Typical timeline from start to finish, with caveats.
-
-## What It Costs
-Rough cost range and the biggest cost drivers.
+## Typical Duration & Cost
+High-level ranges and major cost drivers.
 
 ## The Big Picture
-High-level flow: Phase 1 → Phase 2 → ... → Done.
-What makes this process hard or where people typically struggle.
+Phase sequence and where the tricky bits are.
 
 ## When to Get Professional Help
-Which parts can be DIY vs. where you need experts.
+Which parts typically require external experts.
 ```
+
+### Fundamentals (`fundamentals/{topic}.md`)
+
+Conceptual material that helps the user understand *why* steps exist.
+
+```markdown
+# Fundamentals: {Topic}
+
+## What It Is
+Short definition and why it matters.
+
+## How It Works
+High-level mechanics and mental models.
+
+## Where It Shows Up
+Links to phases/decisions where this concept matters.
+
+## Further Reading
+Links to deeper resources.
+```
+
+### Glossary (`glossary/{term}.md`)
+
+Short, plain-English definitions for domain terms. Useful for RAG when users ask "what is X?".
 
 ### Phases (`phases/{phase}.md`)
 
-Phases are the backbone of a process pack. They represent sequential (or sometimes parallel) stages of the process.
+Phases remain the backbone but now explicitly reference scheduling and budget artifacts.
 
 ```markdown
 # Phase: {Phase Name}
@@ -129,269 +185,78 @@ Phases are the backbone of a process pack. They represent sequential (or sometim
 What this phase accomplishes and why it matters.
 
 ## When This Happens
-Where this falls in the overall timeline. Prerequisites from prior phases.
+Prerequisites and triggers.
 
-## Duration
-Typical time for this phase.
+## Duration & Lead Times
+Typical duration and items with long lead times (e.g., windows, custom cabinets).
 
 ## Key Activities
-- Activity 1 — what it involves
-- Activity 2 — what it involves
-- Activity 3 — what it involves
+- Activity 1
+- Activity 2
 
 ## Deliverables
-What's produced or completed at the end of this phase.
+Artifacts produced at the end of the phase.
 
-## Key Decisions
-- [Decision: {name}](../decisions/{decision}.md) — description
-- [Decision: {name}](../decisions/{decision}.md) — description
-
-## Common Mistakes
-- Mistake 1 → See [Gotcha: {name}](../gotchas/{gotcha}.md)
-- Mistake 2 — brief description
+## Budget Items
+Summarize the major budget lines relevant to this phase and link to budget files.
 
 ## Checklist
-See [{Phase} Checklist](../checklists/{phase}-checklist.md)
+Link to `checklists/{phase}-checklist.md`.
 
-## Next Phase
-What triggers the transition to the next phase. What must be true before moving on.
-```
-
-### Phase Index (`phases/_index.md`)
-
-The phase index is especially important because it captures the *sequence and dependencies* — not just a list.
-
-```markdown
-# Phases
-
-Overview of the process phases in order.
-
-## Sequence
-
-1. [Planning](planning.md) — Define scope, budget, and timeline
-2. [Design](design.md) — Create plans and specifications
-3. [Permitting](permitting.md) — Obtain required approvals
-4. [Construction](construction.md) — Build it
-5. [Inspection](inspection.md) — Verify compliance and quality
-6. [Completion](completion.md) — Final walkthrough and handoff
-
-## Dependencies
-
-- Phases 1–3 are strictly sequential
-- Phase 4 may overlap with late Phase 3 (permit amendments)
-- Phase 5 occurs at multiple points during Phase 4
+## Common Mistakes
+Link to gotchas.
 ```
 
 ### Decisions (`decisions/{decision}.md`)
 
-Decision points are where the process branches. These capture the criteria, tradeoffs, and recommendations that an experienced practitioner would share.
-
-```markdown
-# Decision: {Decision Name}
-
-## When This Decision Comes Up
-What triggers this decision point in the process.
-
-## The Options
-
-### Option A: {Name}
-**Pros:**
-- Pro 1
-- Pro 2
-
-**Cons:**
-- Con 1
-- Con 2
-
-**Best when:** {Circumstances where this is the right choice}
-
-### Option B: {Name}
-**Pros / Cons / Best when:** ...
-
-### Option C: {Name} (if applicable)
-...
-
-## Recommendation
-What an experienced practitioner would usually recommend, and why.
-
-## Cost Impact
-How this decision affects budget.
-
-## Timeline Impact
-How this decision affects schedule.
-
-## Related
-- [Phase: {name}](../phases/{phase}.md) — where this decision occurs
-- [Gotcha: {name}](../gotchas/{gotcha}.md) — common mistake related to this decision
-```
+Decision templates unchanged — emphasize cost, schedule, and risk tradeoffs. Always link to phases and budget impact.
 
 ### Checklists (`checklists/{checklist}.md`)
 
-Actionable, completable items. These are the "don't forget" lists.
+Actionable items with verification steps and sign-off criteria.
 
-```markdown
-# Checklist: {Phase or Milestone Name}
+### Scheduling (`scheduling/{schedule}.md`)
 
-## Before Starting
-- [ ] Prerequisite 1
-- [ ] Prerequisite 2
+Guidance on sequencing, parallel work, seasonal constraints, and a few example Gantt templates. Include notes on lead times and supplier SLAs.
 
-## During This Phase
-- [ ] Action item 1
-- [ ] Action item 2
-- [ ] Action item 3
+### Budget (`budget/{budget-template}.md`)
 
-## Before Moving to Next Phase
-- [ ] Verification step 1
-- [ ] Sign-off or approval
-- [ ] Documentation complete
-```
+Breakdowns and templates for estimating and tracking costs. Include example spreadsheets or CSV snippets for ingestion.
 
-### Resources (`resources/{resource}.md`)
+### Roles (`roles/{role}.md`)
 
-Tools, vendors, materials, and reference information.
+Define stakeholder roles, scope, how to hire/contract them, typical costs, and what good looks like.
 
-```markdown
-# Resources: {Category}
+### Regulations (`regulations/{topic}.md`)
 
-## Tools
-| Tool | Purpose | Notes |
-|------|---------|-------|
-| Tool 1 | What it's for | Cost, availability |
-| Tool 2 | What it's for | Alternatives |
+Permits, codes, licenses. Include jurisdiction notes and links to authoritative sources. Mark sensitive legal content as guidance, not legal advice.
 
-## Professionals
-| Role | When Needed | How to Find | Typical Cost |
-|------|-------------|-------------|--------------|
-| Architect | Phase 2 | AIA directory | $X–$Y |
+### Templates (`templates/{template}.md`)
 
-## Materials / References
-- [Resource 1](url) — description
-- [Resource 2](url) — description
+Contracts, purchase orders, RFIs, permit application checklists. Prefer short, editable templates.
 
-## Tips for Choosing
-Advice on selecting vendors, tools, or materials.
-```
+### Resources, Examples, Gotchas, FAQ
 
-### Examples (`examples/{example}.md`)
-
-Real-world case studies that illustrate the process in action.
-
-```markdown
-# Example: {Case Study Title}
-
-## Context
-Who did this, when, and what they were trying to accomplish.
-
-## What They Did
-How they went through the process — what went well, what didn't.
-
-## Key Decisions
-What choices they made and why.
-
-## Lessons Learned
-- Lesson 1
-- Lesson 2
-
-## What They'd Do Differently
-Hindsight insights.
-
-## Timeline & Cost
-Actual vs. planned timeline and budget.
-```
-
-### Gotchas (`gotchas/{gotcha}.md`)
-
-The hard-won wisdom that separates experience from ignorance. These are the highest-value content in a process pack.
-
-```markdown
-# Gotcha: {Short Description}
-
-## The Mistake
-What people commonly do wrong.
-
-## Why It Happens
-Why this mistake is so common — what makes it non-obvious.
-
-## The Consequence
-What goes wrong when you make this mistake.
-
-## How to Avoid It
-What to do instead.
-
-## How to Recover
-If you've already made the mistake, how to fix it (or can you?).
-
-## Phase
-This typically occurs during [Phase: {name}](../phases/{phase}.md).
-```
+Keep these as before but follow the small-file guideline. Cross-link heavily.
 
 ---
 
-## How an Agent Consumes a Process Pack
+## Agent Consumption Patterns
 
-### Query Routing
-
-| User Question | Where to Look |
-|---------------|---------------|
-| "What are the steps to...?" | `phases/_index.md` → relevant phase |
-| "Should I choose X or Y?" | `decisions/` |
-| "What do I need before...?" | `checklists/` |
-| "Who should I hire for...?" | `resources/` |
-| "What usually goes wrong with...?" | `gotchas/` |
-| "Has anyone done this before?" | `examples/` |
-| "How long does X take?" | `phases/` (duration section) or `overview.md` |
-
-### Navigation Flow
-
-1. **Start with overview.md** — understand the big picture
-2. **Check phases/_index.md** — see the full sequence and where the user is
-3. **Load the relevant phase** — get details on current activities
-4. **Follow cross-references** — decisions, gotchas, and checklists linked from the phase
-5. **Pull resources as needed** — tools, vendors, materials
+- Start with `overview.md` (Tier 1) to route the user's question.
+- Use `_index.md` files to identify candidate files.
+- Prefer `fundamentals/` and `glossary/` for conceptual questions.
+- Use `phases/` for step-by-step guidance and `checklists/` for action items.
+- Use `decisions/` for tradeoff reasoning and `budget/` and `scheduling/` for planning tasks.
+- Load `templates/` and full `budget/` spreadsheets on demand (Tier 3).
 
 ---
 
-## Process vs. Product vs. Person
+## Sourcing Guidance
 
-| Aspect | Process Pack | Product Pack | Person Pack |
-|--------|-------------|-------------|-------------|
-| **Organized by** | Sequential phases | Knowledge type (concepts, workflows) | Content type (verbatim, summaries) |
-| **Primary dimension** | Time / sequence | Topic / feature | Life domain / theme |
-| **Key content** | Decisions, gotchas | Troubleshooting, concepts | Stories, beliefs |
-| **Navigation** | Phase → activities → decisions | Feature → concept → workflow | Theme → story → people |
-| **Updates** | Process evolves slowly | Product updates frequently | Content grows over time |
+Prioritize practitioner interviews for decisions and gotchas. Use authoritative sources for regulations. Capture real timelines and budgets from case studies in `examples/`.
 
 ---
 
-## Content Sourcing
-
-| Source | Quality | Best For |
-|--------|---------|----------|
-| Practitioner interviews | Highest — captures real decisions and gotchas | Decisions, gotchas, examples |
-| How-to books and guides | Good — structured, comprehensive | Phases, checklists |
-| Forum discussions | Medium — real problems, noisy | Gotchas, FAQ |
-| Professional association docs | Good — authoritative | Resources, checklists |
-| Personal experience | Highest — authentic, specific | Examples, gotchas |
-| Regulatory / government docs | Authoritative — dry | Checklists, resources (permits, codes) |
-
----
-
-## Lessons Learned
-
-### Phases Need Crisp Boundaries
-A phase should have a clear entry condition ("you've completed X") and exit condition ("you now have Y"). Without these, the process feels like one continuous blob rather than manageable stages.
-
-### Decisions Are the Highest-Value Content
-Anyone can list the steps. What makes a process pack valuable is capturing *why* an experienced person would choose option A over option B. These decisions are where cost, quality, and timeline are won or lost.
-
-### Gotchas Are Hard to Source
-People who've been through a process often forget what was hard about it — survivorship bias. The best gotchas come from asking "what surprised you?" rather than "what advice would you give?"
-
-### Checklists Should Be Actionable, Not Aspirational
-Each item should be something you can actually check off. "Understand the zoning requirements" is vague. "Download zoning map from county website and verify your parcel's classification" is actionable.
-
----
-
-*Schema version: 1.0*
-*Last updated: 2026-02-18*
+*Schema version: 1.1*
+*Last updated: 2026-02-19*
