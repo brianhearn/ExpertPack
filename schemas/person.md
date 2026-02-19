@@ -107,7 +107,7 @@ An AI retelling a person's story needs their actual words — the humor, the pac
 
 ### Organizing Verbatim and Summary Content
 
-Verbatim and summary directories should mirror each other — if `verbatim/stories/nina-street.md` exists, there should be a corresponding `summaries/stories/nina-street.md`. Subdirectories within verbatim/ and summaries/ are organized by content type.
+Verbatim and summary directories should mirror each other — if `verbatim/stories/{story-slug}.md` exists, there should be a corresponding `summaries/stories/{story-slug}.md`. Subdirectories within verbatim/ and summaries/ are organized by content type.
 
 Content Type Taxonomy
 

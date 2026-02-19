@@ -44,6 +44,13 @@ author: "Who created this pack"
 created: "YYYY-MM-DD"
 updated: "YYYY-MM-DD"
 
+# Context strategy (recommended for packs with 15+ files)
+# See "Context Strategy" section for full documentation
+context:
+  always: []      # Tier 1: loaded every session
+  searchable: []  # Tier 2: indexed for RAG retrieval (default for unlisted files)
+  on_demand: []   # Tier 3: loaded only on explicit request
+
 # Type-specific fields are defined in each type schema
 ```
 
@@ -166,17 +173,72 @@ JSON indexes answer the question "where should I look?" Markdown files answer "w
 
 ---
 
-## Layered Loading
+## Context Strategy
 
-Not every query needs the full pack. Content should support three loading levels:
+Not every query needs the full pack. A 50-file pack loaded entirely into context burns tokens and dilutes relevance. ExpertPack uses a three-tier context strategy that balances depth with efficiency.
 
-| Level | What to Load | When |
-|-------|-------------|------|
-| **Minimal** | `manifest.yaml` + `overview.md` | Pack awareness, routing queries to the right pack |
-| **Topical** | Specific files from the relevant directory | Answering a focused question |
-| **Full** | Entire pack | Deep sessions, complex work, comprehensive context |
+### The Three Tiers
 
-This matters for token efficiency. A 50-file pack at full load burns context. Topical loading keeps costs down while maintaining depth. Design your pack so that each file is independently useful — an agent loading a single workflow file should get a complete, actionable answer without needing to load five other files first.
+| Tier | Name | Purpose | When Loaded |
+|------|------|---------|-------------|
+| **1** | **Always** | Core identity and voice — the minimum an agent needs to *be* this pack | Every conversation, automatically |
+| **2** | **Searchable** | Knowledge content indexed for retrieval — loaded when relevant to the current topic | On topic match via RAG or agent navigation |
+| **3** | **On-demand** | High-token or specialized content — loaded only when explicitly needed | Direct request, retelling, fine-tuning, deep dives |
+
+### Tier Semantics
+
+**Always (Tier 1)** — Files the agent must load at the start of every session. These establish identity: who/what the pack represents, how the agent should sound, and the essential facts needed to avoid obvious errors. Keep this tier small — ideally under 5KB total. If an always-loaded file exceeds 3KB, consider whether parts of it belong in Tier 2.
+
+**Searchable (Tier 2)** — The bulk of the pack's knowledge. These files are indexed by RAG or listed in `_index.md` files for agent navigation. They load when the conversation touches a relevant topic. Most content files — summaries, concepts, workflows, mind taxonomy, relationships — live here. Design these files to be independently useful: an agent loading a single file should get a complete, actionable answer without needing to load five other files first.
+
+**On-demand (Tier 3)** — Content that's valuable but expensive or situational. Full verbatim transcripts (high token cost), training data (machine consumption only), raw exports, or archival material. An agent should only load these when the task specifically requires them — retelling a story in someone's exact words, generating fine-tuning data, or doing deep research.
+
+### Declaring Tiers in the Manifest
+
+Each pack declares its context strategy in `manifest.yaml` using a `context` block. Files and directories are assigned to tiers by path:
+
+```yaml
+# Example: Context strategy for a person pack
+context:
+  always:
+    - overview.md
+    - facts/personal.md
+    - presentation/speech_patterns.md
+  searchable:
+    - summaries/
+    - relationships/
+    - mind/
+    - facts/
+  on_demand:
+    - verbatim/
+    - training/
+```
+
+**Rules:**
+- Paths are relative to the pack root
+- Directory paths (trailing `/`) include all files in that directory and subdirectories
+- A file can only belong to one tier — if a file matches multiple tiers, the most specific path wins (file path beats directory path)
+- `manifest.yaml` and `overview.md` are implicitly Tier 1 even if not listed
+- Files not matched by any tier default to **Searchable** (Tier 2)
+
+### Defaults
+
+If a pack omits the `context` block entirely, the following defaults apply:
+
+| Tier | Default Contents |
+|------|-----------------|
+| **Always** | `manifest.yaml`, `overview.md` |
+| **Searchable** | Everything else |
+| **On-demand** | Nothing (all content is searchable) |
+
+This is a safe default — no content is hidden from search, and identity files load automatically. Packs should declare explicit tiers once they grow beyond ~15 files, when token efficiency starts to matter.
+
+### Design Guidance
+
+- **Keep Tier 1 lean.** Every token in Tier 1 is spent on every conversation. A bloated always-load tier wastes budget on turns where the information isn't needed.
+- **Summaries belong in Tier 2, verbatim in Tier 3.** This is the core efficiency pattern: search against distilled summaries, load full text only when voice fidelity matters.
+- **`_index.md` files are Tier 2 by default.** They help agents discover what's available without loading every file.
+- **Review tiers as the pack grows.** What starts as a 10-file pack with everything searchable may need tier refinement at 50 files.
 
 ---
 
@@ -266,16 +328,22 @@ Git is the content versioning system — every commit is a version of the pack's
 
 These patterns describe how an AI agent should work with any ExpertPack:
 
-### Discovery
-1. Read `manifest.yaml` — understand what the pack covers and its type
-2. Read `overview.md` — get product/person/process context
-3. This gives enough awareness to route queries to the right section
+### Discovery (Tier 1 — Always)
+1. Read `manifest.yaml` — understand what the pack covers, its type, and its context strategy
+2. Read `overview.md` and any other Tier 1 files — establish identity and voice
+3. This gives enough awareness to route queries and respond in character
 
-### Retrieval
+### Retrieval (Tier 2 — Searchable)
 For a specific question, the agent either:
 - **Navigates:** Reads `_index.md` for the relevant section, picks the right file
-- **Searches:** Uses RAG/vector search to find relevant chunks across all files
+- **Searches:** Uses RAG/vector search to find relevant chunks across all Tier 2 files
 - **Both:** RAG finds candidates, agent reads the full file for complete context
+
+### Deep Loading (Tier 3 — On-demand)
+When the task requires full source material:
+- Retelling a story in the person's exact words → load verbatim
+- Generating training data → load training files
+- Comprehensive audit or migration → load everything
 
 ### Update
 When adding or changing content:
@@ -300,11 +368,11 @@ These principles apply to every ExpertPack, regardless of type:
 | Naming | kebab-case for files, directories, and slugs |
 | Cross-references | Relative markdown links between related files |
 | Directory indexes | `_index.md` in every content directory |
-| Layered loading | Minimal → topical → full |
+| Context strategy | Three tiers: always → searchable → on-demand, declared in manifest |
 | Conflict resolution | Never overwrite — flag and ask the human |
 | Version control | Git-native, semantic versioning |
 
 ---
 
-*Schema version: 1.1*
-*Last updated: 2026-02-18*
+*Schema version: 1.2*
+*Last updated: 2026-02-19*

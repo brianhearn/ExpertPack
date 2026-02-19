@@ -8,12 +8,16 @@ Structured knowledge packages that turn AI agents into domain experts — for pr
 
 ExpertPack is an open framework for building knowledge packs that AI agents consume to become instant domain experts. Point an agent at the schema, feed it your raw materials — documents, websites, conversations, data exports — and it organizes everything into a structured pack that any AI system can use.
 
-Unlike generic RAG (stuffing docs into a vector store), ExpertPacks are structured around how experts actually think — concepts, workflows, decision trees, edge cases, and the tribal knowledge that never makes it into documentation.
+Unlike generic RAG (stuffing docs into a vector store and hoping for the best), ExpertPacks are structured around how experts actually think — concepts, workflows, decision trees, edge cases, and the tribal knowledge that never makes it into documentation.
+
+**The token problem:** Dumping all your content into one big context pool bloats every conversation with irrelevant material, burns tokens on content the agent doesn't need for this turn, and dilutes retrieval quality. ExpertPack solves this with a [three-tier context strategy](schemas/core.md#context-strategy) — core identity loads every session, knowledge loads on topic match, and heavy content loads only on demand. Your agent gets the right information at the right time, not everything all the time.
 
 Every ExpertPack is:
 - **Markdown-first** — human-readable, AI-consumable, git-versionable
 - **AI-built** — agents create packs from conversations, websites, documents, and data exports
+- **Token-efficient** — three-tier context strategy loads only what's needed per conversation
 - **Structured for retrieval** — small files, section headers, cross-references optimized for RAG
+- **Composable** — combine person, product, and process packs into unified deployments
 - **Type-aware** — person, product, and process packs each have their own schema
 - **Agent-agnostic** — works with any AI system that can read Markdown files
 
@@ -40,6 +44,13 @@ Capture complex multi-phase processes — phases, decisions, checklists, gotchas
 
 **Example:** *Custom Home Build* — a veteran builder captures every phase, decision point, and gotcha from 30 years of building homes, so first-time homebuilders get expert guidance without a consultant.
 
+### 🔗 Composites
+Combine multiple packs into a single deployment. A CEO agent needs to sound like the founder (person pack), know the product (product pack), and follow the sales methodology (process pack). Composites wire them together with role assignments, context tier overrides, and cross-pack conflict resolution.
+
+**Use cases:** Founder AI assistant, multi-product support bot, company knowledge base, personal legacy AI
+
+**Example:** *AcmeCEO* — combines a person pack (founder's voice and stories), a product pack (AcmeHQ platform), and a process pack (enterprise sales methodology) into a single agent that sounds like the CEO and knows everything about the business.
+
 ---
 
 ## Quick Start
@@ -58,6 +69,7 @@ ExpertPacks are designed to be built by AI agents, not manually. You provide the
    - Person → [schemas/person.md](schemas/person.md)
    - Product → [schemas/product.md](schemas/product.md)
    - Process → [schemas/process.md](schemas/process.md)
+   - Composite → [schemas/composite.md](schemas/composite.md)
    - All types → [schemas/core.md](schemas/core.md)
 
 2. **Feed it knowledge.** The agent structures everything — you just supply the raw material. Multiple sources work:
@@ -111,7 +123,8 @@ ExpertPack/
 │   ├── core.md              ← Shared principles for all pack types
 │   ├── person.md            ← Person-pack schema
 │   ├── product.md           ← Product-pack schema
-│   └── process.md           ← Process-pack schema
+│   ├── process.md           ← Process-pack schema
+│   └── composite.md         ← Composite schema (multi-pack deployments)
 │
 └── packs/                   ← Pack instances
     ├── your-person-pack/    ← e.g., a founder's knowledge & stories
@@ -126,6 +139,8 @@ ExpertPack/
 - **JSON is navigation** — indexes help agents find content, they're not content themselves
 - **One source of truth** — each fact lives in exactly one place
 - **Small focused files** — 1–3KB per file for precise RAG retrieval
+- **Tiered context loading** — always/searchable/on-demand tiers minimize token cost per conversation
+- **Composable** — combine packs with role assignments, context overrides, and conflict resolution
 - **Never overwrite** — flag contradictions, let the human resolve
 
 See [schemas/core.md](schemas/core.md) for the full set of principles.
