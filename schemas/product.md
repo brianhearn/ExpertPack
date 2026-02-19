@@ -188,7 +188,7 @@ Description of this area or operation.
 | {Field} | JSON body | {Request/response field description} |
 
 ## Common Tasks
-- [Create a Territory](../workflows/create-territory.md)
+- [Create a Project](../workflows/create-project.md)
 
 ## Tips
 - Helpful hints for using this interface
@@ -320,8 +320,8 @@ Technical parameters, tolerances, compliance statements, or API contracts.
 
 ### What It Solves
 
-When new information arrives ("capacity planning now supports shift-based scheduling"), the agent needs to:
-1. Know that `capacity-planning` is a documented entity
+When new information arrives (e.g., "user roles now support custom permissions"), the agent needs to:
+1. Know that `user-roles` is a documented entity
 2. Find all files that discuss it — concept, workflows, FAQ mentions
 3. Update all relevant files, not just one
 
@@ -329,18 +329,20 @@ Without a cross-reference, the agent would have to search every file — slow, e
 
 ### Structure
 
+**Example** `entities.json` entry:
+
 ```json
 {
   "entities": [
     {
-      "id": "capacity-planning",
-      "name": "Capacity Planning",
+      "id": "user-roles",
+      "name": "User Roles",
       "type": "core-feature",
-      "description": "Modeling workloads and rep capacity to balance territories",
-      "related": ["scheduling", "workload-partitioning"],
+      "description": "Permission levels that control what users can see and do",
+      "related": ["teams", "access-control"],
       "files": {
-        "concept": "concepts/capacity-planning.md",
-        "workflows": ["workflows/capacity-planning.md"],
+        "concept": "concepts/user-roles.md",
+        "workflows": ["workflows/assign-role.md"],
         "mentions": ["overview.md", "faq/general.md"]
       }
     }

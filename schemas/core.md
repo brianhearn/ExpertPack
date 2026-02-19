@@ -69,14 +69,16 @@ Index files serve two purposes:
 1. **Agent navigation** — an agent can read the index to discover what's available without loading every file
 2. **Broad query matching** — RAG can match an index file against general queries like "what workflows are documented?"
 
+**Example** `_index.md` for a product pack's concepts directory:
+
 ```markdown
 # Concepts
 
 Overview of documented concepts in this pack.
 
-- [Territories](territories.md) — How territory design works
-- [Capacity Planning](capacity-planning.md) — Modeling workloads and rep capacity
-- [Routing](routing.md) — Multi-stop route optimization
+- [User Roles](user-roles.md) — How roles and permissions work
+- [Pricing Tiers](pricing-tiers.md) — Plan levels and feature gates
+- [Notifications](notifications.md) — Alert types and delivery channels
 ```
 
 ### _access.json Files
@@ -102,7 +104,7 @@ Type-specific schemas may define additional access semantics — see [person.md]
 
 ### File Size: 1–3KB Per File
 
-Keep individual content files small and focused. A file about "Capacity Planning" should not also contain pricing information. One topic per file.
+Keep individual content files small and focused. A file about "User Roles" should not also contain pricing information. One topic per file.
 
 **Why this matters:** RAG chunkers split files into ~400-token windows. Large files produce poor search results — a 20KB file about "everything the product does" will match almost any query with mediocre relevance. Small, focused files produce high-relevance matches.
 
@@ -112,8 +114,10 @@ There are reasonable exceptions: reference documents (like this schema), index f
 
 Every content file should use `##` section headers at natural topic breaks. Without headers, RAG chunkers produce arbitrary slices that split mid-thought. With headers, chunks align to semantic boundaries.
 
+**Example** content file with proper section headers:
+
 ```markdown
-# Capacity Planning
+# User Roles
 
 ## What It Is
 Clear explanation of the concept.
@@ -140,11 +144,13 @@ Each `##` section should be about one sub-topic and produce a coherent chunk on 
 
 ### Markdown Links
 
-Files reference each other with relative Markdown links. This creates a navigable knowledge graph:
+Files reference each other with relative Markdown links. This creates a navigable knowledge graph.
+
+**Example** cross-references between a workflow and a concept:
 
 ```markdown
-See [Territory Concepts](../concepts/territories.md) for background.
-Related workflow: [Create Territory](../workflows/create-territory.md)
+See [User Roles](../concepts/user-roles.md) for background on permissions.
+Related workflow: [Invite a Team Member](../workflows/invite-team-member.md)
 ```
 
 Links should be meaningful — don't link for the sake of linking, but do connect related content so an agent (or human) can follow the thread.
