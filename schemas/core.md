@@ -147,6 +147,45 @@ Each `##` section should be about one sub-topic and produce a coherent chunk on 
 
 ---
 
+## Source Provenance
+
+Every content file should track where its information came from. This is especially important for packs built from multiple sources (documentation, videos, interviews, support tickets) where an agent may later need to verify, update, or trace content back to its origin.
+
+### Frontmatter Convention
+
+Add a `sources` block at the top of any content file derived from a specific external source:
+
+```markdown
+---
+sources:
+  - type: video
+    title: "Product Overview Walkthrough"
+    ref: "03:12-04:05"
+  - type: documentation
+    url: "https://docs.example.com/feature-x"
+    date: "2026-01-15"
+---
+```
+
+### Source Types
+
+| Type | Fields | Use Case |
+|------|--------|----------|
+| `video` | `title`, `ref` (timestamp range), `file` (optional filename) | Video tutorials, recorded walkthroughs, demos |
+| `documentation` | `url`, `date` (access/publish date) | Help sites, API docs, manuals |
+| `interview` | `with` (person), `date`, `ref` (optional timestamp) | Expert walkthroughs, SME interviews |
+| `support` | `ticket` (ID or URL), `date` | Support tickets, forum threads |
+| `conversation` | `date`, `channel` (optional) | Chat-based knowledge capture |
+
+**Rules:**
+- Provenance is recommended for all content, required for content derived from video or interview sources
+- Multiple sources per file are allowed (a workflow might combine documentation + video + interview)
+- The `ref` field for video sources uses `MM:SS-MM:SS` or `HH:MM:SS-HH:MM:SS` format
+- Provenance frontmatter is metadata, not content — it does not count against the 1–3KB file size guideline
+- When a source is updated (new product version, revised documentation), provenance helps identify which pack files need review
+
+---
+
 ## Cross-Referencing
 
 ### Markdown Links
@@ -403,5 +442,5 @@ These principles apply to every ExpertPack, regardless of type:
 
 ---
 
-*Schema version: 1.2*
-*Last updated: 2026-02-19*
+*Schema version: 1.3*
+*Last updated: 2026-02-20*
