@@ -164,45 +164,132 @@ How to know it worked. What they should observe when done.
 
 ### Interface File (interfaces/{interface}.md)
 
-Documentation for an interface — UI screen, physical panel, API endpoint, or other interaction surface.
+Documentation for an interface — UI screen, physical panel, API endpoint, or other interaction surface. For visual interfaces (UI screens, physical panels), use the **spatial-first format** below to organize elements by their physical screen region. For APIs, use a request/response contract format instead.
+
+**Design principles for interface documentation:**
+
+1. **Spatial-first layout.** Organize elements by their physical screen region, not by feature category. An agent guiding a user needs to say "in the top-left toolbar, the third icon..." — that requires spatial context.
+2. **Element-level granularity.** Every clickable, editable, or stateful element gets its own entry. No hand-waving.
+3. **Behavioral context.** Each element documents not just *what it is* but *what it does*, *when it's available*, and *what state it produces*.
+4. **Markdown is the source of truth.** Screenshots are input during ingestion, not output. The markdown must be rich enough to fully describe every element's identity, location, and behavior without needing the image. Packs contain no binary assets.
+
+**Naming convention:** kebab-case filenames. State variants can be separate files (`{screen-name}--{state}.md`) or documented as sections within the parent file, depending on complexity.
+
+#### Visual Interface Template (UI screens, physical panels)
+
+```markdown
+---
+sources:
+  - type: screenshot-ingestion
+    screen: "{screen-name}"
+    captured: "YYYY-MM-DD"
+    product_version: "{version}"
+    captured_by: "{who}"
+  - type: expert-walkthrough
+    contributor: "{name}"
+    date: "YYYY-MM-DD"
+---
+
+# {Screen/View Name}
+
+{One-paragraph purpose statement: what this screen is for, when users see it, how they get here.}
+
+---
+
+## Region: {Region Name}
+
+*Location: {spatial descriptor — e.g., "top bar, full width" | "left panel, below header" | "center overlay"}*
+
+### {Sub-section or Tool Group}
+
+{Brief description of this group's purpose.}
+
+**Elements:**
+
+| # | Element | Type | Location | Description | States/Behavior |
+|---|---------|------|----------|-------------|-----------------|
+| 1 | {Label/Name} | {type} | {position within region} | {What it does} | {When available, state changes, dynamic behavior} |
+| 2 | ... | ... | ... | ... | ... |
+
+### {Next Sub-section}
+...
+
+---
+
+## Region: {Next Region}
+...
+
+---
+
+## Interactions & Mode Switches
+
+{Document mutual exclusivities, mode switches, state transitions between regions.}
+
+## Dynamic Behavior
+
+{Document elements that appear/disappear based on context, content, or state.}
+
+## Related
+
+- [{Workflow}](../workflows/{workflow}.md)
+- [{Concept}](../concepts/{concept}.md)
+- [{Other Interface}]({other-interface}.md)
+
+## Open Questions
+
+{Unresolved items needing expert clarification. Remove this section when all questions are resolved.}
+```
+
+See [Reference Tables: Interfaces](#reference-tables-interfaces) below for the standardized region taxonomy, element type vocabulary, and spatial descriptors to use in the `Type`, `Location`, and `Region` fields.
+
+#### API / Endpoint Interface Template
 
 ```markdown
 # {Interface Name}
 
 ## Purpose
-What this interface is for, when users interact with it.
+What this interface is for, when clients interact with it.
 
-## How to Access
-Navigation path(s), physical location, or endpoint URL to reach this interface.
+## Endpoint
+`{METHOD} {path}` — base URL, authentication requirements.
 
-## Variants
-Notes about platform-specific or model-specific differences (desktop vs mobile, firmware revision, API version).
+## Request Contract
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| {field} | {type} | {yes/no} | {description} |
 
-## Layout / Contract
-For UI / physical interfaces: describe sections and elements. For APIs: describe request/response contract.
-
-### {Section or Operation}
-Description of this area or operation.
-
-**Elements / Fields / Controls:**
-| Name | Type | Purpose |
-|------|------|---------|
-| {Label} | Button | {What it does} |
-| {Label} | Text field | {What data, validation rules} |
-| {Field} | JSON body | {Request/response field description} |
+## Response Contract
+| Field | Type | Description |
+|-------|------|-------------|
+| {field} | {type} | {description} |
 
 ## Common Tasks
-- [Create a Project](../workflows/create-project.md)
+- [Related Workflow](../workflows/{workflow}.md)
 
-## Tips
-- Helpful hints for using this interface
+## Error Codes
+| Code | Meaning | Resolution |
+|------|---------|------------|
+| {code} | {why} | {fix} |
 ```
 
-**Element detail guidelines:**
+**Element detail guidelines (all interface types):**
 - **Buttons / Controls:** What it does, prerequisites, what happens after
 - **Fields / Parameters:** What data, required/optional, validation, examples
 - **States:** Normal, loading, error states and how to detect them
 - **Variants:** Platform or model differences to be aware of
+
+#### Interface Quality Checklist
+
+Before marking an interface document as complete:
+
+- [ ] Every visible interactive element is documented
+- [ ] Every element has a behavioral description (not just identification)
+- [ ] Spatial attribution is clear enough for an agent to guide a user to any element
+- [ ] Dynamic/conditional behavior is documented
+- [ ] Mode switches and mutual exclusivities are noted
+- [ ] Provenance frontmatter is present
+- [ ] Cross-references to workflows and concepts are added
+- [ ] Open Questions section is empty or removed (all resolved)
 
 ### Error File (troubleshooting/errors/{error}.md)
 
@@ -286,6 +373,67 @@ Business information for sales scenarios. See individual templates:
 - **deployment.md** — Architecture, requirements, data residency, or installation/unboxing and site requirements for hardware
 - **security.md** — Certifications, data protection, authentication
 - **capabilities.md** — What it can do, limitations, roadmap
+
+---
+
+## Reference Tables: Interfaces
+
+Standardized vocabularies for interface documentation. Use these in the `Region`, `Type`, and `Location` fields of interface element tables. Consistent terminology across all interface files enables reliable agent navigation and cross-referencing.
+
+### Region Taxonomy
+
+Standardized region names for spatial attribution across all interface documents:
+
+| Region ID | Name | Typical Location |
+|-----------|------|-----------------|
+| `header` | Header Bar | Top of screen, full width |
+| `toolbar` | Toolbar | Below header, or within a panel |
+| `panel-left` | Left Panel | Left side, collapsible |
+| `panel-right` | Right Panel | Right side, collapsible |
+| `panel-bottom` | Bottom Panel | Bottom of screen, collapsible |
+| `canvas` | Canvas / Main Area | Center, behind panels |
+| `overlay` | Overlay / Dialog | Centered modal or popup |
+| `statusbar` | Status Bar | Bottom of screen, full width |
+| `callout` | Callout / Tooltip | Floating, anchored to element |
+| `context-menu` | Context Menu | Floating, anchored to click |
+
+For sub-regions within panels, use hierarchical naming: `panel-left > shapes`, `panel-right > stats`.
+
+### Element Type Vocabulary
+
+Standardized types for the `Type` column in element tables:
+
+| Type | Description |
+|------|-------------|
+| `icon-button` | Clickable icon (no visible text label) |
+| `text-button` | Clickable button with text label |
+| `link` | Text hyperlink |
+| `icon-link` | Icon that behaves as a link |
+| `dropdown` | Select/combo box |
+| `text-field` | Text input |
+| `search-field` | Text input with search behavior |
+| `checkbox` | Toggle checkbox |
+| `radio` | Radio button |
+| `toggle` | Binary toggle (on/off) |
+| `slider` | Range slider |
+| `color-swatch` | Color picker/display |
+| `label` | Static text label |
+| `indicator` | Visual state indicator (highlight, underline, color change) |
+| `drag-handle` | Draggable reorder control |
+| `tab` | Tab switcher |
+| `list-item` | Row in a list (often with its own action icons) |
+| `table` | Data grid/table |
+| `panel-control` | Panel expand/collapse/resize control |
+
+### Spatial Descriptors
+
+Use consistent language for the `Location` column within a region:
+
+**Horizontal:** `left`, `center`, `right`, `1st`, `2nd`, `3rd` (for icon rows)
+**Vertical:** `top`, `middle`, `bottom`, `below {element}`, `above {element}`
+**Relative:** `next to {element}`, `inside {group}`, `per-row` (for list items)
+
+For ordered icon/button rows, use ordinal position: "1st icon", "2nd icon", etc. — combined with the element name for clarity.
 
 ---
 
@@ -570,10 +718,11 @@ dependencies: []
 
 1. **Crawl** — Scrape product documentation (help sites, docs)
 2. **Ingest video/media** — Process video tutorials and demos (see Video Source Ingestion below)
-3. **Structure** — Reorganize all extracted content into pack format (concepts, workflows, commercial, FAQ)
-4. **Add headers** — Ensure every file chunks well for RAG
-5. **Cross-reference** — Link related concepts and workflows
-6. **Build entities.json** — Map entities to their files
+3. **Ingest screenshots** — Process product screenshots into interface docs (see Screenshot-to-Interface Ingestion below)
+4. **Structure** — Reorganize all extracted content into pack format (concepts, workflows, commercial, FAQ)
+5. **Add headers** — Ensure every file chunks well for RAG
+6. **Cross-reference** — Link related concepts and workflows
+7. **Build entities.json** — Map entities to their files
 7. **Identify gaps** — Screens, troubleshooting, and tribal knowledge are usually missing
 
 This gets you ~70% of V1. The remaining 30% — edge cases, tribal knowledge, undocumented behavior — requires guided walkthroughs with product experts.
@@ -632,6 +781,58 @@ When building a pack from multiple videos (e.g., a training series):
 - Cross-reference between source indexes when videos cover overlapping topics (note which video has the more authoritative/current treatment)
 - Deduplicate: if two videos show the same workflow, extract from the better source and note the alternative in provenance
 
+### Screenshot-to-Interface Ingestion
+
+Product screenshots are high-value inputs for building interface documentation. A single screenshot can yield a complete, element-level inventory of a UI screen — but only if the ingestion process is systematic. Screenshots are **input**, not output: the pack stores only markdown (see the no-binary principle in the Interface File template above).
+
+#### The Screenshot Ingestion Pipeline
+
+**Phase 1: Capture (Human)**
+1. Navigate to the screen/state in the product
+2. Take a full-viewport screenshot (PNG, consistent resolution, realistic sample data)
+3. Send or share the screenshot with the builder agent
+4. Provide verbal/written context about elements the vision model can't infer (hidden states, conditional behavior, admin-only features)
+
+**Phase 2: Analyze (AI Vision)**
+1. Load the screenshot
+2. Identify all visible regions using the [Region Taxonomy](#region-taxonomy)
+3. Inventory every interactive element (buttons, fields, links, icons)
+4. Assign spatial descriptors from the [Spatial Descriptors](#spatial-descriptors) vocabulary
+5. Classify element types from the [Element Type Vocabulary](#element-type-vocabulary)
+6. Note unknown/ambiguous elements for expert clarification in an `Open Questions` section
+
+**Phase 3: Enrich (Human Expert)**
+1. Review AI-generated inventory for accuracy
+2. Correct misidentified elements
+3. Add behavioral descriptions (what each element does, when it's available)
+4. Add state/dynamic behavior notes
+5. Add contextual information the AI couldn't infer
+6. Resolve Open Questions
+
+**Phase 4: Connect (AI + Human)**
+1. Link interface elements to related workflows and concepts
+2. Add provenance frontmatter (source screenshot reference, capture date)
+3. Update `_index.md` and `entities.json`
+4. Identify workflow gaps (interface elements with no corresponding workflow doc)
+
+#### What to Capture
+
+| State | When to Capture |
+|-------|----------------|
+| Default state | Screen as it appears on first load/access |
+| Each dialog/overlay | Capture when opened |
+| Mode states | When a mode changes available tools (e.g., edit mode vs. view mode) |
+| Expanded/collapsed variants | When panels have significantly different content when toggled |
+| Dynamic toolbar states | When toolbar options change based on context |
+| Error states | When error dialogs or validation messages are visible |
+
+#### Multiple Screenshots for One Interface
+
+When documenting a screen that has multiple states (e.g., a dialog with tabs, a panel with expand/collapse):
+- Use one interface file with sections for each state, OR separate files (`{screen}--{state}.md`) for highly complex variants
+- Record each screenshot as a separate source in provenance frontmatter
+- Cross-reference between state sections/files
+
 ---
 
 ## Creating a New Product Pack
@@ -668,8 +869,10 @@ Agent-first step-by-step
    - Add cross-links between related concept and workflow files.
 
 6. Extract interfaces and specifications
-   - From screenshots, UI docs, API contracts, device manuals, and video frame captures, create interfaces/{interface}.md and specifications/{spec}.md as appropriate. Include navigation paths, field-level details, and variant notes.
-   - Video-derived interface files are often richer than documentation because they show real UI state — prioritize video sources for interface content when available.
+   - From screenshots, UI docs, API contracts, device manuals, and video frame captures, create interfaces/{interface}.md and specifications/{spec}.md as appropriate.
+   - For screenshots, follow the Screenshot-to-Interface Ingestion pipeline: Capture → Analyze (AI vision) → Enrich (expert review) → Connect (cross-references). Use the spatial-first interface template with region taxonomy, element type vocabulary, and spatial descriptors.
+   - Video-derived interface files are often richer than documentation because they show real UI state — prioritize video and screenshot sources for interface content when available.
+   - Run the Interface Quality Checklist before marking any interface doc as complete.
 
 7. Build entities.json as the knowledge graph emerges
    - As concepts, workflows, or interfaces are added, create entity entries with id, name, type, description, related entities, and file references.
@@ -716,5 +919,5 @@ Notes and principles
 
 ---
 
-*Schema version: 1.2*
-*Last updated: 2026-02-20*
+*Schema version: 1.3*
+*Last updated: 2026-02-25*
