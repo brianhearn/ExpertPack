@@ -45,7 +45,8 @@ packs/{person-slug}/
 │   ├── personal.md        ← Birth, family structure, locations, bio
 │   ├── family_tree.md     ← Full genealogy in narrative format
 │   ├── career.md          ← Work history timeline
-│   └── education.md       ← Schools, degrees, self-taught subjects
+│   ├── education.md       ← Schools, degrees, self-taught subjects
+│   └── timeline.md        ← Unified life timeline (events as the backbone)
 │
 ├── relationships/         ← The people graph
 │   ├── _access.json
@@ -61,11 +62,14 @@ packs/{person-slug}/
 │   ├── relational.md      ← Relational & Social Orientation
 │   ├── preferences.md     ← Preferences, Tastes & Aesthetic Orientation
 │   ├── skills.md          ← Skills, Competencies & Action Patterns
-│   └── tensions.md        ← Tensions, Contradictions & Edge Cases
+│   ├── tensions.md        ← Tensions, Contradictions & Edge Cases
+│   ├── reasoning.md       ← How beliefs cash out in conversation (optional)
+│   └── influences.md      ← Key thinkers, books, communities (optional)
 │
 ├── presentation/          ← How the avatar should sound and look
 │   ├── _access.json
 │   ├── speech_patterns.md ← Verbal style, humor, storytelling mode
+│   ├── modes.md           ← Role-based voice variants (Dad, Mentor, Professional, etc.)
 │   ├── voice/             ← Voice profile for TTS/synthesis
 │   └── appearance/        ← Visual appearance for avatar rendering
 │
@@ -81,7 +85,11 @@ packs/{person-slug}/
     ├── access.json        ← Access tier definitions
     ├── verification.json  ← Codeword verification rules
     ├── interaction.md     ← Interaction guidelines
-    └── sessions.json      ← Capture session log
+    ├── sessions.json      ← Capture session log
+    ├── privacy.md         ← Sharing rules by access tier
+    ├── consent.md         ← Third-party consent registry
+    ├── conflicts.md       ← Open contradictions awaiting resolution
+    └── resolutions.md     ← Resolved contradictions (append-only)
 ```
 
 Not every directory is required from day one. Start with `facts/`, `verbatim/`, and `relationships/`, then expand as content is collected.
@@ -127,6 +135,77 @@ Verbatim and summary directories are organized by content type. The following ta
 
 **Mirror rule:** Verbatim and summary directories should always mirror each other. If `verbatim/reflections/` exists, `summaries/reflections/` should too.
 
+### Story Cards (Summary Frontmatter)
+
+Every summary file should include standardized YAML frontmatter — the **story card**. This makes summaries filterable and retrievable by date, people, themes, emotions, and more, without requiring the agent to parse freeform text.
+
+**Required frontmatter for summary files:**
+
+```yaml
+---
+story_id: "childhood-fishing-trip"          # Matches the file slug
+title: "The Fishing Trip That Changed Everything"
+date_range: "1985-summer"                   # Flexible: YYYY, YYYY-MM, YYYY-MM-DD, "1985-summer", "late-1990s"
+location:
+  - "Lake Talquin, FL"
+people:                                     # IDs matching relationships/people.md entries
+  - "dad"
+  - "uncle-mike"
+themes:
+  - "father-son"
+  - "nature"
+  - "independence"
+emotions:
+  - "pride"
+  - "fear"
+  - "belonging"
+stakes: "First time trusted to handle the boat alone"
+turning_point: "When dad let go of the wheel"
+source: "voice-dictation"                   # voice-dictation | interview | written | email | conversation
+verification: "self-confirmed"              # self-confirmed | third-party | documentary | inferred | unknown
+memory_quality: "vivid"                     # vivid | partial | hearsay | uncertain
+sensitivity: "public"                       # Matches access tier: public | friends | family | self
+canonical_verbatim: "verbatim/stories/childhood-fishing-trip.md"
+---
+```
+
+**Field notes:**
+- `story_id` must match the filename slug for cross-referencing
+- `date_range` is deliberately flexible — memories rarely come with exact dates
+- `people` uses stable IDs from the relationships registry (see [Relationships](#relationships) below)
+- `verification` and `memory_quality` prevent the avatar from projecting false confidence about uncertain memories. A `memory_quality: uncertain` story should be prefaced with "I think..." or "If I remember right..."
+- `stakes` and `turning_point` are optional but high-value for story retrieval — they capture *why* a story matters, not just what happened
+- `source` tracks how the content was captured, which affects how much editorial cleanup is appropriate
+
+**Applying to other content types:** The story card pattern extends to reflections, opinions, and other content types. Not all fields apply everywhere — `turning_point` doesn't make sense for an opinion piece. Use the fields that fit; the `story_id`, `title`, `date_range`, `source`, `verification`, and `memory_quality` fields are recommended for all summary files.
+
+---
+
+## Provenance and Memory Quality
+
+Person packs deal with human memory, which is inherently unreliable. The schema must account for this — an avatar that states uncertain memories with full confidence is worse than one that hedges appropriately.
+
+### Verification Levels
+
+| Level | Meaning | Agent behavior |
+|-------|---------|---------------|
+| `self-confirmed` | The person explicitly confirmed this fact/memory | State normally |
+| `third-party` | Confirmed by another person (family member, colleague) | State normally, may cite source |
+| `documentary` | Verified by document (diploma, pay stub, photo with date) | State with high confidence |
+| `inferred` | Deduced by the agent from context across multiple sources | Qualify: "Based on what I've gathered..." |
+| `unknown` | No verification attempted or possible | Qualify: "I believe..." or flag as uncertain |
+
+### Memory Quality
+
+| Level | Meaning | Agent behavior |
+|-------|---------|---------------|
+| `vivid` | Rich in sensory detail, emotionally anchored, consistently retold | Retell with confidence and detail |
+| `partial` | Key elements clear but gaps in timeline, names, or sequence | Fill in what's known, acknowledge gaps |
+| `hearsay` | Told *about* the person by others, not experienced directly | Attribute: "My [mom/friend] told me..." |
+| `uncertain` | The person themselves expressed doubt about accuracy | Preface: "I think..." or "If I remember right..." |
+
+These fields are **required** in story card frontmatter for all summary files. They are **recommended** as frontmatter in facts/ files when the source of a biographical fact isn't documentary (e.g., birth dates from memory vs. birth certificates).
+
 ---
 
 ## Story Intake Workflow
@@ -139,7 +218,7 @@ When the person dictates a new story or memory:
 4. **Cross-reference** — Search existing content for related people, places, events
 5. **Update relationships** — Check `relationships/people.md` for new or updated people; add entries
 6. **Update index** — Add entry to `summaries/stories/_index.json`
-7. **Contradiction check** — Flag any conflicts with existing data for the person to resolve (see [core.md](core.md) conflict resolution rules)
+7. **Contradiction check** — Flag any conflicts with existing data for the person to resolve. Log open contradictions in `meta/conflicts.md` (see [Conflicts & Resolutions](#conflicts--resolutions) below and [core.md](core.md) conflict resolution rules)
 8. **Update changelog** — Append an entry to `meta/changelog.md` with what was captured, the source, and file names (see [core.md](core.md) content changelog)
 9. **Commit** — Git commit and push to preserve versioning
 
@@ -163,11 +242,68 @@ Work history as a timeline with highlights, key roles, and transitions.
 ### facts/education.md
 Schools, degrees, certifications, and self-taught subjects.
 
+### facts/timeline.md
+
+The unified life timeline — events as the backbone of the person's story. While `career.md`, `education.md`, and `personal.md` organize facts by category, the timeline organizes them chronologically and connects events to stories, reflections, and relationships.
+
+```markdown
+# Life Timeline
+
+## Early Childhood (1970–1978)
+
+### 1970 — Born
+- **Type:** birth
+- **Place:** Tallahassee, FL
+- **People:** [mom](#), [dad](#)
+- **Related:** [Birth Story](../summaries/stories/birth-story.md)
+
+### 1975 — Started school
+- **Type:** education
+- **Place:** Lincoln Elementary
+- **Related:** [First Day of School](../summaries/stories/first-day.md)
+
+## Adolescence (1978–1988)
+...
+
+## College & Early Career (1988–1995)
+...
+```
+
+**Structure guidelines:**
+- Organize by life period with `##` headers (flexible — decades, life stages, or whatever fits)
+- Each event gets a `###` header with year/date and short title
+- Include: type, place, people involved, and links to related stories/reflections
+- Event types: `birth`, `move`, `education`, `job`, `marriage`, `divorce`, `death`, `crisis`, `conversion`, `achievement`, `travel`, `health`, `military`, `legal`, `creative`, `other`
+- Keep entries brief — the timeline is a spine, not a narrative. Details live in the linked files
+- When the timeline grows beyond ~100 events, consider splitting into separate files by life period
+
 ### relationships/people.md
-Every person mentioned across the pack: family, friends, mentors, colleagues. Each entry should include:
-- Relationship to the person
-- Key facts (how they met, shared experiences)
-- Cross-references to stories or content where they appear
+
+Every person mentioned across the pack: family, friends, mentors, colleagues. Each entry uses a standardized template with stable IDs for cross-referencing from story cards, timeline events, and other content.
+
+**Entry template:**
+
+```markdown
+## Mike Hearn {#uncle-mike}
+
+- **ID:** `uncle-mike`
+- **Relationship:** Uncle (father's brother)
+- **Time period:** Lifelong (born 1948)
+- **How they met/connect:** Dad's older brother, constant presence at family gatherings
+- **Key facts:** Vietnam veteran, taught me to fish, lived in Panama City
+- **Consent:** not-asked
+- **Appears in:**
+  - [Fishing Trip](../summaries/stories/childhood-fishing-trip.md)
+  - [Panama City Summers](../summaries/stories/panama-city-summers.md)
+```
+
+**Entry guidelines:**
+- **ID** must be stable and kebab-case — used in story card `people` arrays and timeline entries for cross-referencing
+- **Time period** captures when the relationship was active: `lifelong`, `1995–2003`, `childhood`, `ongoing`. This prevents the agent from flattening a life into one static social graph
+- **Consent** tracks whether this person has been asked about inclusion: `consented`, `not-asked`, `declined`, `deceased`, `public-figure`. See [Privacy & Consent](#privacy--consent) for rules
+- **Appears in** links to every file where this person is mentioned — keep this list current when new content references them
+
+**Scaling guidance:** When `people.md` exceeds ~50 entries, split into category files: `relationships/family.md`, `relationships/professional.md`, `relationships/personal.md`. Maintain the same entry template and ID scheme across all files. Update `relationships/_index.md` to list all files.
 
 ---
 
@@ -206,14 +342,162 @@ What the person can do and how they tend to act in the world. Professional exper
 9. tensions.md — Tensions, Contradictions & Edge Cases
 Where the model breaks — the places where other categories don't fully cohere. Context-dependent behavior switches, acknowledged blind spots, unresolved internal conflicts, things they believe but don't practice (or vice versa), and the messy human reality that neat categories miss. This is some of the most valuable content for authenticity.
 
+### Additional Mind Files (Optional)
+
+10. reasoning.md — Reasoning Patterns & Decision Rules
+How the person's beliefs cash out in actual conversation and decision-making. Not *what* they believe (that's the other 9 categories) but *how they reason* when challenged, asked, or deciding. Patterns like: "When asked about X, I reason from Y principle," "I tend to steelman before responding," "I distinguish between confident claims and speculative ones." This file bridges the gap between a list of positions and a living reasoning style. Include examples of real reasoning chains from verbatim content.
+
+11. influences.md — Key Thinkers, Books & Communities
+The intellectual and social inputs that shaped the person's mind. Authors, books, podcasts, thinkers, mentors, faith communities, professional networks, formative experiences. Each influence entry should note: what they contributed to the person's thinking, when the influence was strongest, and links to relevant verbatim reflections or opinions where the influence is visible.
+
+**Steelman positions** — Rather than a separate file, capture "strongest arguments against my position and my best response" inline in the relevant mind/ files (ontology, values, epistemology, etc.) under a `## Strongest Counterarguments` section. This keeps counterarguments findable in context rather than siloed.
+
 ### Political Views
 Political views are cross-cutting: they live primarily in `mind/values.md` with cross-references to `mind/epistemology.md` and `mind/ontology.md` when those domains inform political positions.
 
 ---
 
-## Story Intake Workflow
+## Avatar Modes
 
-(unchanged — verbatim steps preserved from earlier schema)
+The same person speaks differently as a dad, a CEO, a mentor, and a friend. `presentation/modes.md` captures these role-based voice variants so the avatar can adjust its register without creating multiple packs.
+
+**Template for `presentation/modes.md`:**
+
+```markdown
+# Avatar Modes
+
+## Default
+The baseline voice — how the person sounds in most casual interactions.
+
+## Dad Mode
+- **Tone:** Warm, patient, occasionally goofy
+- **Topics to emphasize:** Family stories, life lessons, encouragement
+- **Topics to avoid:** Work stress, politics (unless asked)
+- **Example phrasing:** "Let me tell you something I learned the hard way..."
+
+## Professional Mode
+- **Tone:** Direct, precise, confident
+- **Topics to emphasize:** Technical expertise, industry knowledge, business strategy
+- **Topics to avoid:** Personal beliefs (unless directly relevant), family details
+- **Example phrasing:** "The way I'd approach this architecturally..."
+
+## Mentor Mode
+- **Tone:** Socratic, challenging but supportive
+- **Topics to emphasize:** Reasoning process, lessons from mistakes, frameworks for thinking
+- **Topics to avoid:** Giving direct answers when the person should figure it out
+- **Example phrasing:** "What assumptions are you making there?"
+
+## {Custom Mode}
+...
+```
+
+**Guidelines:**
+- Each mode defines: tone, topics to emphasize, topics to avoid, and example phrasings
+- Modes are hints, not hard constraints — the avatar should blend naturally between modes based on context
+- The agent selects modes based on conversational context (who's asking, what topic, what relationship tier)
+- Start with 2-3 modes and expand as patterns emerge from story collection
+- Modes complement `speech_patterns.md` — patterns define *how* the person talks; modes define *which version* of them shows up
+
+---
+
+## Privacy & Consent
+
+Person packs contain information about real people — both the subject and the people in their stories. The schema provides two files to manage what can be shared and who has consented to inclusion.
+
+### meta/privacy.md
+
+Defines what content is shareable at each access tier. This is the human-readable policy that the agent enforces.
+
+```markdown
+# Privacy Policy
+
+## Public (anyone)
+- Overview, career highlights, published writing
+- Stories marked sensitivity: public
+- General preferences and interests
+
+## Friends (known contacts)
+- Most stories and reflections
+- Relationship details (non-sensitive)
+- Mind taxonomy content
+
+## Family (immediate family)
+- All stories including sensitive ones
+- Family tree details
+- Health and personal struggles
+
+## Self (owner only)
+- Financial details
+- Medical records
+- Unresolved conflicts
+- Content marked sensitivity: self
+```
+
+### meta/consent.md
+
+Tracks whether third parties mentioned in the pack have been asked about their inclusion. This is especially important for packs that will be shared beyond the `self` tier.
+
+```markdown
+# Third-Party Consent Registry
+
+| Person ID | Name | Status | Date Asked | Notes |
+|-----------|------|--------|------------|-------|
+| uncle-mike | Mike Hearn | not-asked | — | Appears in 3 stories |
+| jane-doe | Jane Doe | consented | 2026-03-01 | Verbal consent, comfortable with public stories |
+| john-smith | John Smith | declined | 2026-02-15 | Remove from public-tier content |
+```
+
+**Consent statuses:** `consented`, `not-asked`, `declined`, `deceased`, `public-figure`
+
+**Agent rules:**
+- When generating content at `public` or `friends` tier, check consent status for all people referenced
+- People with `declined` status: redact or anonymize in content at or above their objection tier
+- People with `not-asked` status: flag for the pack owner to follow up before sharing content publicly
+- `deceased` and `public-figure` statuses carry lower consent requirements but the pack owner should still be thoughtful
+
+---
+
+## Conflicts & Resolutions
+
+Human memory is messy. Facts conflict, stories evolve, timelines shift. Core schema says "never overwrite — flag and ask the human." Person packs formalize *where* those conflicts live so they're tracked and resolvable over time.
+
+### meta/conflicts.md
+
+Open contradictions awaiting the pack owner's adjudication. The agent adds entries here whenever it detects conflicting information during intake.
+
+```markdown
+# Open Conflicts
+
+## CF-001: Panama City trip — 1983 or 1985?
+- **Detected:** 2026-03-01
+- **Source A:** verbatim/stories/panama-city-summers.md says "summer of '83"
+- **Source B:** facts/timeline.md places the family's first Panama City visit in 1985
+- **Notes:** Mom's version (hearsay) says 1985. Uncle Mike's photo album has a 1983 date.
+- **Status:** Awaiting owner review
+
+## CF-002: First job — delivery driver or stock clerk?
+...
+```
+
+### meta/resolutions.md
+
+Append-only log of resolved contradictions. When the owner makes a call, move the entry from conflicts.md to here with the decision and rationale.
+
+```markdown
+# Resolved Conflicts
+
+## CF-001: Panama City trip — 1983 or 1985?
+- **Resolved:** 2026-03-05
+- **Decision:** 1983 — confirmed by photo album with dated prints
+- **Rationale:** Documentary evidence (photos with processing date) outweighs memory
+- **Files updated:** facts/timeline.md, summaries/stories/panama-city-summers.md
+```
+
+**Agent rules:**
+- Add to `conflicts.md` immediately when a contradiction is detected — don't wait for the next session
+- Never resolve a conflict autonomously — always ask the pack owner
+- When resolved, move the entry to `resolutions.md` (append), remove from `conflicts.md`, and update all affected files
+- Assign conflict IDs (CF-001, CF-002, ...) for easy reference in conversation
 
 ---
 
@@ -302,7 +586,9 @@ Agent-first step-by-step
    - Guide the person to provide core facts for facts/personal.md: full name, birth date/place, major life locations, family roles, and contact details for immediate relatives.
    - Create facts/career.md as a timeline: ask for employers, roles, dates, notable projects, and transitions. When unsure, suggest prompts: "Where did you work between YEAR and YEAR?" or "Tell me about the role that changed your career trajectory."
    - Create facts/education.md: schools, degrees, certifications, informal study. Use targeted prompts: "List the institutions and years, or say 'unknown' if you prefer not to provide dates."
+   - Begin facts/timeline.md with confirmed events — add entries as facts are collected. The timeline becomes the chronological spine that connects all other content.
    - As each fact is confirmed, commit and annotate sources in manifest.yaml sources:[]
+   - Set `verification` and `memory_quality` for facts based on source quality (documentary evidence vs. memory vs. hearsay).
 
 5. Drive story collection (verbatim first)
    - Prioritize capturing the person's exact words into verbatim/stories/, verbatim/reflections/, verbatim/opinions/ as appropriate. Use voice dictation or written prompts depending on the owner's preference.
@@ -311,36 +597,50 @@ Agent-first step-by-step
    - When the person references a person, place, or event, create or update cross-references (see step 7).
 
 6. Summarize continuously
-   - After each substantial verbatim entry, generate a summary file in summaries/ that captures themes, people mentioned, places, emotions, and a short TL;DR.
+   - After each substantial verbatim entry, generate a summary file in summaries/ with standardized story card frontmatter (see [Story Cards](#story-cards-summary-frontmatter)): story_id, title, date_range, people, themes, emotions, stakes, turning_point, source, verification, memory_quality, sensitivity.
    - Maintain a master index summaries/stories/_index.json and update it with metadata (title, date, tags, people referenced, file path).
    - Use summaries for downstream searches and fast context loading; keep verbatim as the source of truth.
+   - Update facts/timeline.md with any new events anchored by the story.
 
 7. Build and maintain the relationships graph
-   - As people appear in stories, create or update relationships/people.md with: name, relationship to the subject, key facts (how they met, roles), and cross-references to verbatim and summary files where they appear.
-   - When ambiguity or conflicting relationships appear, flag conflicts and ask the pack owner to resolve.
+   - As people appear in stories, create or update relationships/people.md using the standardized entry template: ID, name, relationship, time period, how they connect, key facts, consent status, and cross-references to files where they appear.
+   - Assign stable kebab-case IDs to each person — these IDs are used in story card `people` arrays and timeline entries for cross-referencing.
+   - Track consent status for each person (see [Privacy & Consent](#privacy--consent)). Flag `not-asked` entries for the pack owner to follow up before content is shared.
+   - When ambiguity or conflicting relationships appear, log the contradiction in `meta/conflicts.md` and ask the pack owner to resolve.
 
 8. Populate the mind taxonomy through guided interviews
    - Use the mind/ files as structured prompts. For each file (ontology.md, epistemology.md, values.md, identity.md, motivations.md, relational.md, preferences.md, skills.md, tensions.md) run a short interview designed to fill that category.
    - Example prompt for values.md: "What principles guide your major life choices? Describe two decisions where those values mattered." For epistemology.md: "How do you decide what to trust? Tell me about a time you changed your mind and why."
    - Store the person's answers as both verbatim (if spoken) and a distilled summary entry under mind/. If the owner prefers, allow iterative refinement: draft a summary, read it back, and ask for corrections.
+   - After the core 9 files have substance, build mind/reasoning.md by identifying patterns: "When asked about X, how do you reason?" Draw from verbatim reflections and opinions to capture reasoning chains, not just positions.
+   - Build mind/influences.md by asking: "Who shaped your thinking the most? What books changed you?" Cross-reference to verbatim content where influences are visible.
+   - For each mind file with strong positions, prompt for strongest counterarguments under a `## Strongest Counterarguments` section.
 
 9. Proactively identify gaps and suggest topics
    - Continuously run a gaps analysis: compare the schema's expected sections and common topic lists to the current content inventory.
    - Present the pack owner with concise gap prompts prioritized by value (e.g., missing childhood stories, unclear career transitions, absent values statements). Use checklists and suggested questions to close gaps.
 
-10. Build LEGACY.md when the owner is ready
+10. Build privacy, consent, and legacy files
+   - Early in pack development, create meta/privacy.md with sharing rules by access tier (what's public vs. friends vs. family vs. self).
+   - Create meta/consent.md and populate it as people are added to the relationships registry. Flag `not-asked` entries for follow-up before sharing content.
    - When the pack owner signals readiness, guide them through legacy conversations: posthumous wishes, memorial preferences, executors, access rules, and any codeword/verification choices.
    - Draft LEGACY.md from their answers and have them confirm. Store final version under the pack root.
 
-11. Verification, conflicts, and provenance
-   - Record the source for each piece of information in manifest.yaml and in individual file frontmatter or index files.
-   - When contradictions arise between verbatim entries or facts, flag them and request the owner's adjudication. Do not resolve factual conflicts without explicit confirmation.
+11. Build avatar modes
+   - After enough stories and mind content are captured, draft presentation/modes.md with 2-3 initial modes based on the person's most common roles (e.g., parent, professional, friend).
+   - Review with the pack owner: "Does this sound like you when you're talking to your kids vs. at work?" Iterate based on feedback.
 
-12. Iterative improvement and maintenance
-   - As new content arrives, repeat intake: save raw verbatim, generate summaries, update relationships, augment mind taxonomy, and re-run the gaps analysis.
+12. Verification, conflicts, and provenance
+   - Record the source for each piece of information in manifest.yaml and in individual file frontmatter or index files.
+   - When contradictions arise between verbatim entries or facts, log them in `meta/conflicts.md` with a conflict ID, the conflicting sources, and notes. Do not resolve factual conflicts without explicit confirmation.
+   - When the owner resolves a conflict, move the entry to `meta/resolutions.md` (append-only) with the decision, rationale, and date. Update all affected files.
+
+13. Iterative improvement and maintenance
+   - As new content arrives, repeat intake: save raw verbatim, generate summaries (with story card frontmatter), update relationships, augment mind taxonomy, update timeline, and re-run the gaps analysis.
+   - Periodically review meta/conflicts.md — prompt the owner to resolve outstanding items.
    - Periodically (monthly or on-demand) generate a status summary that lists newly added content, unresolved conflicts, and remaining high-priority gaps.
 
-13. Commit and document actions
+14. Commit and document actions
    - Commit changes with descriptive messages and update the pack-level README.md and manifest sources.
    - Maintain session logs in meta/sessions.json for auditability.
 
@@ -358,5 +658,5 @@ Notes and principles
 
 ---
 
-*Schema version: 1.2*
-*Last updated: 2026-02-18*
+*Schema version: 1.3*
+*Last updated: 2026-02-25*
