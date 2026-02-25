@@ -36,20 +36,22 @@ The target user is someone undertaking a process for the first (or second) time 
 packs/{process-slug}/
 ├── manifest.yaml          ← Pack identity and metadata (required)
 ├── overview.md            ← What this process is, who it's for (required)
+├── variants.md            ← Major process forks and alternative paths (recommended)
 │
 ├── fundamentals/          ← Core concepts & domain knowledge required before starting
 ├── glossary/              ← Terminology and short definitions (searchable)
 ├── phases/                ← Sequential stages of the process (backbone)
 ├── decisions/             ← Key decision points with criteria and tradeoffs
 ├── checklists/            ← Actionable, phase-aligned checklists
-├── scheduling/           ← Timelines, dependencies, lead times, seasonal constraints
+├── exceptions/            ← Failure modes, escalation paths, recovery procedures
+├── scheduling/            ← Timelines, dependencies, lead times, seasonal constraints
 ├── budget/                ← Cost breakdowns, financing, templates, cost drivers
 ├── roles/                 ← Stakeholders, responsibilities, how to work with them
 ├── regulations/           ← Permits, codes, licensing, compliance & region notes
 ├── templates/             ← Document templates, contracts, applications, forms
 ├── resources/             ← Tools, vendors, materials, buying guides
-├── examples/              ← Case studies and post-mortems
-├── gotchas/               ← Common mistakes, traps, and recovery patterns
+├── examples/              ← Case studies, post-mortems, and retrospectives
+├── gotchas/               ← Common mistakes, traps, and prevention patterns
 └── faq/                   ← Frequently asked questions by category
 ```
 
@@ -57,6 +59,7 @@ Notes:
 - Each directory should include `_index.md` describing contents and links to files.
 - Files should be named kebab-case and kept focused (one topic per file).
 - `fundamentals/` and `glossary/` help novices build mental models before they act.
+- `gotchas/` captures preventive knowledge ("don't forget X"); `exceptions/` captures reactive knowledge ("X happened, now what").
 
 ---
 
@@ -88,6 +91,7 @@ sections:
   - phases
   - decisions
   - checklists
+  - exceptions
   - scheduling
   - budget
   - roles
@@ -109,12 +113,14 @@ context:
     - phases/
     - decisions/
     - checklists/
+    - exceptions/
     - resources/
     - roles/
     - regulations/
     - examples/
     - gotchas/
     - faq/
+    - variants.md
   on_demand:
     - templates/
     - budget/
@@ -143,8 +149,25 @@ Primary audience and skill level.
 ## Typical Duration & Cost
 High-level ranges and major cost drivers.
 
-## The Big Picture
-Phase sequence and where the tricky bits are.
+## Phase Map
+The ordered sequence of all phases with dependencies and typical durations.
+This is the structural backbone — an agent reads this to understand the
+full process arc before diving into any specific phase.
+
+1. **[{Phase 1}](phases/{phase-1}.md)** — {one-line purpose} ({duration})
+2. **[{Phase 2}](phases/{phase-2}.md)** — {one-line purpose} ({duration})
+   - Depends on: Phase 1 completion
+3. **[{Phase 3}](phases/{phase-3}.md)** — {one-line purpose} ({duration})
+   - Depends on: Phase 2 deliverables
+   - Can run in parallel with: Phase 4
+4. **[{Phase 4}](phases/{phase-4}.md)** — {one-line purpose} ({duration})
+
+## Major Variants
+Brief summary of the major forks in this process. See [variants.md](variants.md)
+for full detail on how each variant changes the phase sequence.
+
+- **{Variant A}** — {how it differs, which phases change}
+- **{Variant B}** — {how it differs, which phases change}
 
 ## When to Get Professional Help
 Which parts typically require external experts.
@@ -176,7 +199,7 @@ Short, plain-English definitions for domain terms. Useful for RAG when users ask
 
 ### Phases (`phases/{phase}.md`)
 
-Phases remain the backbone but now explicitly reference scheduling and budget artifacts.
+Phases are the backbone of the process. Each phase file is a self-contained guide to that stage — what goes in, what happens, what comes out, and what can go wrong.
 
 ```markdown
 # Phase: {Phase Name}
@@ -184,8 +207,18 @@ Phases remain the backbone but now explicitly reference scheduling and budget ar
 ## Overview
 What this phase accomplishes and why it matters.
 
-## When This Happens
-Prerequisites and triggers.
+## Inputs / Prerequisites
+What must exist before this phase can start:
+- **Preceding phases:** [{Phase X}]({phase-x}.md) must be complete
+- **Artifacts needed:** {documents, approvals, materials, decisions}
+- **Conditions:** {seasonal, regulatory, financial readiness}
+
+## Completion Triggers
+How to know this phase is done — not just "activities finished" but
+observable criteria an agent can verify:
+- [ ] {Deliverable 1} produced and approved
+- [ ] {Inspection/review} passed
+- [ ] {Handoff} to {next phase/role} completed
 
 ## Duration & Lead Times
 Typical duration and items with long lead times (e.g., windows, custom cabinets).
@@ -194,17 +227,36 @@ Typical duration and items with long lead times (e.g., windows, custom cabinets)
 - Activity 1
 - Activity 2
 
+## Roles Involved
+Who participates in this phase and what they do:
+- **{Role}** — {responsibility in this phase}
+- **{Role}** — {responsibility in this phase}
+
 ## Deliverables
 Artifacts produced at the end of the phase.
 
+## Handoffs
+What gets passed to the next phase and to whom:
+- **To [{Next Phase}]({next-phase}.md):** {what artifacts/approvals transfer}
+- **To [{Role}](../roles/{role}.md):** {what they need to receive}
+
 ## Budget Items
 Summarize the major budget lines relevant to this phase and link to budget files.
+
+## Variants
+How this phase changes under different process variants (if applicable):
+- **{Variant A}:** {what's different — skipped steps, additional requirements, different roles}
+- **{Variant B}:** {what's different}
+See [variants.md](../variants.md) for the full variant overview.
 
 ## Checklist
 Link to `checklists/{phase}-checklist.md`.
 
 ## Common Mistakes
 Link to gotchas.
+
+## What Can Go Wrong
+Link to relevant `exceptions/` files for failure modes specific to this phase.
 ```
 
 ### Decisions (`decisions/{decision}.md`)
@@ -227,6 +279,31 @@ Breakdowns and templates for estimating and tracking costs. Include example spre
 
 Define stakeholder roles, scope, how to hire/contract them, typical costs, and what good looks like.
 
+```markdown
+# Role: {Role Name}
+
+## What They Do
+Core responsibilities and scope of this role in the process.
+
+## Authority Level
+What decisions this role can make:
+- **Decision-maker:** {what they decide unilaterally}
+- **Advisor:** {what they recommend but don't decide}
+- **Executor:** {what they carry out}
+- **Approver:** {what requires their sign-off}
+
+## When They're Involved
+Which phases this role participates in and how:
+- [Phase X](../phases/{phase-x}.md) — {their role in this phase}
+- [Phase Y](../phases/{phase-y}.md) — {their role in this phase}
+
+## How to Find / Hire
+Where to find this person, typical costs, red flags, what good looks like.
+
+## Working With Them
+Communication expectations, how often to check in, common friction points.
+```
+
 ### Regulations (`regulations/{topic}.md`)
 
 Permits, codes, licenses. Include jurisdiction notes and links to authoritative sources. Mark sensitive legal content as guidance, not legal advice.
@@ -235,7 +312,111 @@ Permits, codes, licenses. Include jurisdiction notes and links to authoritative 
 
 Contracts, purchase orders, RFIs, permit application checklists. Prefer short, editable templates.
 
-### Resources, Examples, Gotchas, FAQ
+### Exceptions (`exceptions/{exception}.md`)
+
+Failure modes, escalation paths, and recovery procedures. While `gotchas/` captures preventive knowledge ("don't forget X"), exceptions capture reactive knowledge ("X happened, now what"). Every non-trivial process has failure modes — permits get denied, vendors go bankrupt, inspections fail, funding falls through.
+
+```markdown
+# Exception: {Failure Description}
+
+## What Happened
+The failure mode — what went wrong and how you'd recognize it.
+
+## Which Phase(s)
+Where in the process this can occur:
+- [Phase X](../phases/{phase-x}.md) — {how it manifests in this phase}
+
+## Impact
+What this failure does to the overall process:
+- **Timeline:** {delays, blocked phases}
+- **Budget:** {additional costs, sunk costs}
+- **Quality:** {compromises required}
+
+## Escalation Path
+Who needs to know and in what order:
+1. {First contact — role, what to tell them}
+2. {Second contact — if first can't resolve}
+
+## Recovery Procedure
+Step-by-step recovery:
+1. {Immediate action — stop the bleeding}
+2. {Assessment — understand scope of damage}
+3. {Resolution — fix or work around}
+4. {Verification — confirm recovery is complete}
+
+## Fallback / Alternative
+If recovery isn't possible, what's the alternative path?
+
+## Prevention
+How to reduce the likelihood of this failure in the future.
+Link to relevant `gotchas/` entries.
+```
+
+**Guidelines:**
+- One file per failure mode — keep them focused and independently retrievable
+- Link exceptions to the phases where they can occur
+- Include real examples when available (from `examples/` case studies)
+- Distinguish between recoverable failures (fix and continue) and process-ending failures (must restart or abandon)
+
+### Variants (`variants.md`)
+
+Most real-world processes have major forks — building with a general contractor vs. owner-building, incorporating as an LLC vs. S-Corp, renovating a kitchen vs. a full gut job. `variants.md` documents these top-level forks and how they change the phase sequence.
+
+```markdown
+# Process Variants
+
+## Default Path
+Brief description of the "standard" path the phase sequence assumes.
+
+## Variant: {Variant Name}
+
+### When to Choose This
+Under what circumstances this variant applies.
+
+### How It Differs
+Which phases change, which are skipped, which are added:
+- **{Phase X}:** {modified — what's different}
+- **{Phase Y}:** {skipped in this variant}
+- **{New Phase}:** {added — only in this variant}
+
+### Implications
+- **Timeline:** {faster/slower, by how much}
+- **Budget:** {cheaper/more expensive, why}
+- **Risk:** {higher/lower, what changes}
+- **Professional requirements:** {different roles needed}
+
+## Variant: {Next Variant}
+...
+```
+
+**Guidelines:**
+- Phase files reference `variants.md` and include a `## Variants` section noting how they change per variant
+- Variants are not separate packs — they're documented forks within one pack
+- If a variant changes more than ~60% of the phases, consider whether it should be a separate process pack instead
+
+### Examples and Retrospectives (`examples/`)
+
+Case studies, post-mortems, and retrospective learnings. Include a `## Lessons Learned` section in every example to feed continuous improvement.
+
+```markdown
+# Example: {Case Study Title}
+
+## Context
+Who did this, when, and under what constraints.
+
+## What Happened
+Narrative of how the process played out — decisions made, surprises encountered.
+
+## Outcome
+Results — timeline, budget, quality compared to plan.
+
+## Lessons Learned
+What worked well, what didn't, and what the person would do differently.
+Link to relevant `gotchas/` or `exceptions/` entries that were created
+or validated by this experience.
+```
+
+### Resources, Gotchas, FAQ
 
 Keep these as before but follow the small-file guideline. Cross-link heavily.
 
@@ -243,12 +424,16 @@ Keep these as before but follow the small-file guideline. Cross-link heavily.
 
 ## Agent Consumption Patterns
 
-- Start with `overview.md` (Tier 1) to route the user's question.
+- Start with `overview.md` (Tier 1) to route the user's question and understand the phase map.
 - Use `_index.md` files to identify candidate files.
 - Prefer `fundamentals/` and `glossary/` for conceptual questions.
 - Use `phases/` for step-by-step guidance and `checklists/` for action items.
+- Check `phases/{phase}.md` **Inputs / Prerequisites** to determine readiness before advising someone to start a phase.
 - Use `decisions/` for tradeoff reasoning and `budget/` and `scheduling/` for planning tasks.
+- When the user's situation involves a variant (e.g., "I'm owner-building"), load `variants.md` first, then load phase files with awareness of variant-specific differences.
+- When something goes wrong, check `exceptions/` for failure-specific recovery procedures — don't confuse with `gotchas/` (which is preventive, not reactive).
 - Load `templates/` and full `budget/` spreadsheets on demand (Tier 3).
+- Reference `examples/` for real-world context and lessons learned.
 
 ---
 
@@ -258,5 +443,5 @@ Prioritize practitioner interviews for decisions and gotchas. Use authoritative 
 
 ---
 
-*Schema version: 1.1*
-*Last updated: 2026-02-19*
+*Schema version: 1.2*
+*Last updated: 2026-02-25*
