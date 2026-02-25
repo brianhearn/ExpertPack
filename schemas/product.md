@@ -47,6 +47,20 @@ packs/{product-slug}/
 ├── faq/                   ← Common questions by category
 │   └── {category}.md
 │
+├── facts/                 ← Product history (optional)
+│   ├── timeline.md        ← Chronological product event history
+│   └── releases.md        ← Significant releases with context and impact
+│
+├── decisions/             ← Architecture/product decision records (optional)
+│   ├── _index.md          ← Directory of all decisions
+│   └── {YYYY-MM-DD}-{slug}.md  ← One decision per file, dated
+│
+├── customers/             ← Customer reality layer (optional)
+│   ├── _index.md
+│   ├── segments.md        ← Who uses the product and how
+│   ├── feedback.md        ← Pain points, objections, churn reasons, feature requests
+│   └── success-stories.md ← Wins, case studies, reference customers
+│
 ├── sources/               ← Ingestion artifacts and source indexes (optional)
 │   ├── _index.md          ← Directory of all source materials
 │   └── {source}.md        ← One index per source (video, doc set, interview)
@@ -56,7 +70,9 @@ packs/{product-slug}/
     ├── capabilities.md
     ├── pricing.md
     ├── deployment.md
-    └── security.md
+    ├── security.md
+    ├── limitations.md     ← Known weaknesses, poor-fit scenarios, constraints
+    └── landscape.md       ← Market positioning, key competitors, differentiation
 ```
 
 **Required:** `manifest.yaml`, `overview.md`
@@ -67,15 +83,18 @@ packs/{product-slug}/
 
 ## Why These Categories?
 
-These aren't arbitrary. They map to how support interactions actually flow:
+These aren't arbitrary. They map to how product interactions actually flow:
 
 1. **Customer asks a question** → Check `faq/` for a quick answer
 2. **Customer needs to do something** → Load the relevant `workflows/` file
 3. **Customer doesn't understand something** → Load the relevant `concepts/` file
 4. **Something went wrong** → Navigate `troubleshooting/` decision trees
-5. **Prospect evaluating the product** → Load `commercial/` + `overview.md`
+5. **Prospect evaluating the product** → Load `commercial/` + `overview.md` + `customers/`
+6. **"Why did we do X?"** → Load the relevant `decisions/` record
+7. **"When did X happen?"** → Check `facts/timeline.md`
+8. **"What do real users think?"** → Load `customers/feedback.md` + `customers/success-stories.md`
 
-An agent answering a "how do I..." question should pull from `workflows/`. An agent answering a "what is..." question should pull from `concepts/`. This separation makes retrieval more precise.
+An agent answering a "how do I..." question should pull from `workflows/`. An agent answering a "what is..." question should pull from `concepts/`. An agent answering a "why did we..." question should pull from `decisions/`. This separation makes retrieval more precise.
 
 ---
 
@@ -123,6 +142,34 @@ Concrete example to illustrate.
 ## Related
 - [Other Concept](other-concept.md)
 - [Relevant Workflow](../workflows/relevant-workflow.md)
+```
+
+#### Recommended: concepts/mental-model.md
+
+Every product pack should include a `mental-model.md` as the root concept — the "what this product fundamentally IS" that all other concepts hang off of. This gives agents a conceptual understanding beyond technical architecture.
+
+```markdown
+# {Product Name} — Mental Model
+
+## Core Abstraction
+What the product fundamentally is, in one paragraph. The central metaphor or framing
+that makes everything else make sense.
+
+## How Value Flows
+The path from user input to user outcome. What goes in, what happens, what comes out.
+Not implementation detail — the conceptual pipeline.
+
+## Key Abstractions
+The 3-5 concepts a user must understand to use the product effectively.
+Each links to its full concept file.
+
+- [{Abstraction 1}]({concept-1}.md) — one-line role
+- [{Abstraction 2}]({concept-2}.md) — one-line role
+- [{Abstraction 3}]({concept-3}.md) — one-line role
+
+## System Boundaries
+What the product does and does NOT do. Where it ends and other tools begin.
+Integrations, handoff points, and explicit non-goals.
 ```
 
 ### Workflow File (workflows/{workflow}.md)
@@ -372,7 +419,274 @@ Business information for sales scenarios. See individual templates:
 - **pricing.md** — Pricing model, tiers, what affects cost
 - **deployment.md** — Architecture, requirements, data residency, or installation/unboxing and site requirements for hardware
 - **security.md** — Certifications, data protection, authentication
-- **capabilities.md** — What it can do, limitations, roadmap
+- **capabilities.md** — What it can do, strengths, roadmap
+- **limitations.md** — Known weaknesses, constraints, poor-fit scenarios (see below)
+- **landscape.md** — Market positioning, competitors, differentiation (see below)
+
+#### commercial/limitations.md
+
+Every product has weaknesses. Documenting them explicitly prevents unrealistic or overly optimistic agent responses and helps route prospects to alternatives when the product isn't a good fit.
+
+```markdown
+# Limitations & Constraints
+
+## Known Limitations
+- {Limitation 1} — {context, workaround if any}
+- {Limitation 2} — {context, workaround if any}
+
+## Poor-Fit Scenarios
+Situations where this product is NOT the right choice:
+- {Scenario} — {why, what to recommend instead}
+
+## Scaling Constraints
+Performance or capacity boundaries the product hits at scale.
+
+## Competitive Disadvantages
+Areas where competitors genuinely do better. Be honest — agents that dodge
+weaknesses lose credibility.
+
+## Technical Debt (High-Level)
+Known areas of the product that are aging, fragile, or overdue for rework.
+Not implementation detail — just enough for an agent to set expectations.
+```
+
+#### commercial/landscape.md
+
+Market positioning and competitive context. One file rather than per-competitor profiles — keeps maintenance manageable and prevents rot.
+
+```markdown
+# Market Landscape
+
+## Positioning
+Where this product sits in the market. Target segment, price tier, key differentiators.
+
+## Key Competitors
+
+### {Competitor 1}
+- **Strengths:** {what they do well}
+- **Weaknesses:** {where they fall short}
+- **Target customers:** {who they serve best}
+- **How we differ:** {honest differentiation}
+
+### {Competitor 2}
+...
+
+## Differentiation Matrix
+
+| Capability | Us | {Competitor 1} | {Competitor 2} |
+|------------|-----|------|------|
+| {Capability 1} | ✅ Strong | ⚠️ Partial | ❌ No |
+| {Capability 2} | ⚠️ Partial | ✅ Strong | ✅ Strong |
+```
+
+**Maintenance note:** Competitive intelligence ages fast. Date the file and review quarterly. When a competitor entry hasn't been updated in 6+ months, flag it as potentially stale.
+
+---
+
+### Product Facts (facts/)
+
+Historical and versioning context for the product. Optional but high-value for agents answering "when" and "why" questions.
+
+#### facts/timeline.md
+
+The product's chronological spine — events that shaped it. Parallel to the person pack's life timeline, adapted for product event types.
+
+```markdown
+# Product Timeline
+
+## Early Development (2015–2016)
+
+### 2015-Q3 — Project started
+- **Type:** inception
+- **Notes:** Initial prototype built as internal tool
+- **Related:** [ADR-001: Build vs. buy decision](../decisions/2015-09-15-build-vs-buy.md)
+
+### 2016-03 — Public launch
+- **Type:** launch
+- **Notes:** V1.0 released at partner conference
+- **Related:** [V1.0 Release](releases.md#v10)
+
+## Growth Phase (2016–2019)
+...
+```
+
+**Event types:** `inception`, `launch`, `major-release`, `minor-release`, `pivot`, `outage`, `deprecation`, `architectural-rewrite`, `acquisition`, `partnership`, `pricing-change`, `security-incident`, `team-change`, `market-shift`, `milestone`
+
+**Guidelines:**
+- Organize by era with `##` headers (flexible — years, phases, or whatever fits the product's history)
+- Each event gets a `###` header with date and short title
+- Include: type, brief notes, and links to decisions/releases/related docs
+- Keep entries brief — the timeline is a spine, not a narrative
+- When the timeline exceeds ~50 events, split by era into separate files
+
+#### facts/releases.md
+
+Significant releases with context that changelogs don't capture — why the release mattered, expected impact, and any unintended consequences.
+
+```markdown
+# Significant Releases
+
+## V3.0 — "Routing Engine Rewrite" (2024-06)
+
+### What Changed
+- Complete rewrite of the routing engine from scratch
+- Bulk optimization now supports 500+ stops per route
+
+### Why It Mattered
+Customers were hitting the 50-stop limit and churning to competitors.
+The old engine was architecturally unable to scale beyond this.
+
+### Impact
+- 40% reduction in routing-related support tickets
+- Three enterprise deals closed that were blocked on routing capacity
+
+### Unintended Consequences
+- Legacy route files from V2 required manual migration
+- Some V2 workarounds broke because the new engine handles edge cases differently
+
+### Related
+- [ADR-012: Routing engine rewrite](../decisions/2024-01-15-routing-engine-rewrite.md)
+- [Timeline: V3.0 release](timeline.md#2024-06--v30-released)
+
+---
+
+## V2.5 — "Power BI Native Visual" (2023-01)
+...
+```
+
+**Guidelines:**
+- Focus on **significant** releases — not every patch. A release is significant if it changed user behavior, resolved a strategic gap, or had notable consequences.
+- When the file grows beyond ~20 releases, split by major version (`facts/releases-v1.md`, `facts/releases-v2.md`)
+- Link to timeline events and decision records
+
+---
+
+### Decision Records (decisions/)
+
+Product and architectural decision records — the "why" behind the "what." Based on the ADR (Architecture Decision Record) pattern, extended to cover product decisions, not just technical ones.
+
+Decision records prevent repeated debates and preserve institutional reasoning. When someone asks "why do we use X instead of Y?" or "why doesn't the product support Z?", the answer lives here.
+
+#### Decision Record Template (decisions/{YYYY-MM-DD}-{slug}.md)
+
+```markdown
+# ADR-{NNN}: {Decision Title}
+
+- **Date:** YYYY-MM-DD
+- **Status:** accepted | superseded | deprecated | proposed
+- **Superseded by:** [ADR-{NNN}](YYYY-MM-DD-new-decision.md) (if applicable)
+
+## Context
+What is the issue that we're seeing that is motivating this decision or change?
+
+## Options Considered
+
+### Option A: {Name}
+- **Pros:** {advantages}
+- **Cons:** {disadvantages}
+
+### Option B: {Name}
+- **Pros:** {advantages}
+- **Cons:** {disadvantages}
+
+## Decision
+What is the change that we're proposing and/or doing?
+
+## Rationale
+Why this option over the others. The reasoning, not just the conclusion.
+
+## Consequences
+What becomes easier or more difficult to do because of this change?
+Include both positive and negative consequences.
+
+## Outcome (added retrospectively)
+What actually happened after implementing this decision?
+Added months/years later when the consequences are known.
+```
+
+**Guidelines:**
+- File naming: `YYYY-MM-DD-{slug}.md` — date of the decision, kebab-case description
+- Number decisions sequentially (ADR-001, ADR-002, ...) for easy reference in conversation
+- Status lifecycle: `proposed` → `accepted` → optionally `superseded` or `deprecated`
+- When a decision is superseded, add `superseded_by` link and update the old record's status — don't delete it
+- The **Outcome** section is added retrospectively — it's some of the most valuable content because it captures what actually happened vs. what was expected
+- Decision records are append-mostly: once accepted, the Context/Options/Decision/Rationale sections don't change. Only Status and Outcome get updated.
+
+---
+
+### Customer Reality Layer (customers/)
+
+Grounds the product pack in actual user experience rather than internal engineering assumptions. Without this, agent responses skew toward feature lists and technical architecture while missing the human side — who uses this, what they struggle with, what success looks like.
+
+#### customers/segments.md
+
+Who uses the product and how. Combines traditional "personas" with concrete use case documentation.
+
+```markdown
+# Customer Segments
+
+## {Segment Name} (e.g., "Sales Operations Leaders")
+
+### Who They Are
+Role, company size, industry vertical, technical sophistication.
+
+### What They Use the Product For
+Primary use cases, typical workflows, which features they rely on most.
+
+### How They Measure Success
+What "working" looks like for this segment. Metrics they care about.
+
+### Common Pain Points
+Recurring frustrations, unmet needs, things they wish were different.
+
+### Related
+- [Workflow: {Their key workflow}](../workflows/{workflow}.md)
+- [Success Story: {Company}](#success-stories)
+
+## {Next Segment}
+...
+```
+
+#### customers/feedback.md
+
+The unfiltered customer reality — pain points, objections, churn reasons, and feature requests. This is what the sales and support teams hear daily but rarely gets captured in product docs.
+
+```markdown
+# Customer Feedback
+
+## Common Objections (Pre-Sale)
+- **"{Objection}"** — {How to address it, what's true about it}
+- **"{Objection}"** — {How to address it, what's true about it}
+
+## Pain Points (Post-Sale)
+- **{Pain point}** — {Frequency, severity, known workarounds, related roadmap items}
+
+## Churn Reasons
+- **{Reason}** — {How often, what segment, any preventive measures}
+
+## Top Feature Requests
+- **{Request}** — {Who wants it, business case, current status}
+```
+
+**Agent behavior:** When a prospect raises an objection that appears in this file, the agent should address it honestly — acknowledge what's true, explain what's being done, and avoid dismissing legitimate concerns.
+
+#### customers/success-stories.md
+
+Wins, case studies, and reference customers. Concrete evidence that the product delivers value.
+
+```markdown
+# Success Stories
+
+## {Customer Name} — {One-line outcome}
+- **Segment:** {Which segment they belong to}
+- **Challenge:** {What they were trying to solve}
+- **Solution:** {How they used the product}
+- **Result:** {Quantified outcome if possible}
+- **Quote:** "{Customer quote}" — {Person, Title}
+
+## {Next Customer}
+...
+```
 
 ---
 
@@ -661,6 +975,9 @@ sections:
   - troubleshooting
   - faq
   - commercial
+  - facts
+  - decisions
+  - customers
 
 # What topics/features are covered
 scope:
@@ -691,6 +1008,21 @@ dependencies: []
 1. Load `overview.md` + `commercial/capabilities.md`
 2. Pull from `commercial/pricing.md`, `commercial/deployment.md`, or `commercial/security.md` as needed
 3. Reference `concepts/` for technical depth
+4. Check `customers/segments.md` — does this prospect match a known segment?
+5. Reference `customers/success-stories.md` for social proof
+6. Check `commercial/limitations.md` — be honest about fit; check `commercial/landscape.md` for competitive positioning
+
+### Strategic / "Why" Scenario
+1. Load `decisions/_index.md` — find the relevant decision record
+2. Load the specific decision file for context, options, rationale, and outcome
+3. Cross-reference `facts/timeline.md` for temporal context
+4. Reference `facts/releases.md` if the question relates to a specific version
+
+### Customer Objection Scenario
+1. Load `customers/feedback.md` — find the specific objection or pain point
+2. Cross-reference `commercial/limitations.md` — is the concern valid?
+3. Reference `customers/success-stories.md` — how do similar customers succeed despite this?
+4. Synthesize an honest response that acknowledges reality while providing context
 
 ### Update Scenario
 1. New product information arrives
@@ -698,6 +1030,8 @@ dependencies: []
 3. Find all files via entity cross-reference
 4. Update Markdown files (following conflict resolution rules from [core.md](core.md))
 5. Update `entities.json` if new entities or file references were created
+6. Update `facts/timeline.md` if the change is historically significant
+7. Update `facts/releases.md` if tied to a release
 
 ---
 
@@ -713,6 +1047,10 @@ dependencies: []
 | **Expert walkthroughs** | Edge cases, tribal knowledge | Highest — captures what docs miss | High — requires expert time |
 | **Support tickets / forums** | Real user problems, FAQ content | High — real pain points | Medium — requires curation |
 | **Technical specifications** | Specs, compliance, requirements | High — authoritative | Low — reformat |
+| **Decision records / ADRs** | Rationale behind past choices | Highest — prevents re-litigation | Low — capture at decision time |
+| **Customer interviews / NPS** | Segments, pain points, objections | High — real user perspective | Medium — requires synthesis |
+| **Release notes / changelogs** | Version history, what changed | Medium — factual but context-light | Low — restructure with context |
+| **Competitive analysis** | Market positioning, differentiation | Medium — ages fast | Medium — requires regular updates |
 
 ### The Crawl → Structure → Refine Pipeline
 
@@ -723,9 +1061,11 @@ dependencies: []
 5. **Add headers** — Ensure every file chunks well for RAG
 6. **Cross-reference** — Link related concepts and workflows
 7. **Build entities.json** — Map entities to their files
-7. **Identify gaps** — Screens, troubleshooting, and tribal knowledge are usually missing
+8. **Capture decisions** — Document key past decisions in `decisions/` while context is fresh
+9. **Build customer reality** — Populate `customers/` from support data, interviews, and sales feedback
+10. **Identify gaps** — Screens, troubleshooting, customer segments, and tribal knowledge are usually missing
 
-This gets you ~70% of V1. The remaining 30% — edge cases, tribal knowledge, undocumented behavior — requires guided walkthroughs with product experts.
+This gets you ~70% of V1. The remaining 30% — edge cases, tribal knowledge, undocumented behavior, and customer reality — requires guided walkthroughs with product experts and customer-facing teams.
 
 ### Video Source Ingestion
 
@@ -887,20 +1227,39 @@ Agent-first step-by-step
    - Ingest support tickets, forum threads, and incident reports. Extract recurring failure modes, errors, and diagnostic steps into troubleshooting/errors/ and diagnostics/ files.
    - Link these troubleshooting files to workflows and concepts where relevant.
 
-10. Compile FAQ and commercial content
+10. Capture decision records
+    - Interview the domain expert about key past decisions: "Why did you choose X over Y?" "What was the biggest architectural bet?" "What decision would you make differently?"
+    - Create `decisions/{YYYY-MM-DD}-{slug}.md` for each significant decision with context, options, rationale, and consequences.
+    - Add retrospective **Outcome** sections to decisions where the consequences are now known.
+    - Build `decisions/_index.md` with all records and their statuses.
+
+11. Build the customer reality layer
+    - From support tickets, sales conversations, and customer interviews, populate `customers/segments.md` with who uses the product and how.
+    - Capture honest feedback in `customers/feedback.md` — objections, pain points, churn reasons, and feature requests. Don't sanitize.
+    - Add concrete wins to `customers/success-stories.md` with quantified outcomes when available.
+    - Cross-reference segments with relevant workflows and concepts.
+
+12. Build product history
+    - Populate `facts/timeline.md` with the product's event history — launches, major releases, pivots, outages, architectural decisions.
+    - Document significant releases in `facts/releases.md` — what changed, why it mattered, impact, and unintended consequences.
+    - Link timeline events to decision records and releases.
+
+13. Compile FAQ and commercial content
     - Derive FAQ entries from common support questions and expert interviews. Organize by persona or category in faq/.
     - If the pack supports sales or go-to-market scenarios, populate commercial/ with capabilities.md, pricing.md, deployment.md, and security.md using a combination of documentation and conversations with product management.
+    - Add `commercial/limitations.md` — be honest about weaknesses, poor-fit scenarios, and competitive disadvantages. Agents that dodge weaknesses lose credibility.
+    - Add `commercial/landscape.md` — market positioning and key competitors. Date the file and note when competitor entries were last verified.
 
-11. Identify gaps and report them
-    - Run an automated gaps analysis: compare expected sections (interfaces, troubleshooting decision trees, workflows for critical tasks) to the current inventory.
+14. Identify gaps and report them
+    - Run an automated gaps analysis: compare expected sections (interfaces, troubleshooting decision trees, workflows for critical tasks, customer segments, decision records) to the current inventory.
     - Cross-reference `sources/` indexes against pack content — identify scenes/pages that were indexed but not yet extracted.
-    - Produce a prioritized gap report for the domain expert: what needs expert walkthroughs, missing screens, undocumented error states, or incomplete specs.
+    - Produce a prioritized gap report for the domain expert: what needs expert walkthroughs, missing screens, undocumented error states, customer segments without feedback, or incomplete specs.
 
-12. Maintain entities and cross-references
+15. Maintain entities and cross-references
     - Whenever files are added or updated, update entities.json and relevant _index.md files.
     - Use entities.json for targeted updates when new product info arrives (release notes, patch fixes).
 
-13. Commit, document provenance, and create status reports
+16. Commit, document provenance, and create status reports
     - Commit changes with descriptive messages, including source references.
     - Maintain a pack-level README with guidance for future updates and a changelog of significant content additions.
     - Periodically generate a status summary showing new content, resolved gaps, and outstanding high-priority items.
@@ -919,5 +1278,5 @@ Notes and principles
 
 ---
 
-*Schema version: 1.3*
+*Schema version: 1.4*
 *Last updated: 2026-02-25*
