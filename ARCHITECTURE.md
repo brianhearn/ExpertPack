@@ -85,6 +85,9 @@ ExpertPack/
 │   ├── product.md
 │   └── process.md
 │
+├── guides/                ← Practical how-to guides for pack builders
+│   └── population-methods.md  ← How to populate packs from various sources
+│
 └── packs/                 ← The instances
     ├── bob-gpt/           ← Person pack: BobGPT
     └── acme-hq/           ← Product pack: AcmeHQ

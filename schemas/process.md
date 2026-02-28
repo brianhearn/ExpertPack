@@ -437,11 +437,20 @@ Keep these as before but follow the small-file guideline. Cross-link heavily.
 
 ---
 
-## Sourcing Guidance
+## Pack Population
+
+For detailed guidance on all population methods, see the [Population Methods Guide](../guides/population-methods.md).
+
+For process packs, the recommended combining order is:
+1. Documentation ingestion → SOPs, runbooks, compliance docs
+2. Expert walkthrough → practitioners explain the reality vs. the docs
+3. Technical artifact analysis → scripts, automation, monitoring configs
+4. Feedback mining → incident reports, audit findings
+5. Observation & testing → walk through each phase
 
 Prioritize practitioner interviews for decisions and gotchas. Use authoritative sources for regulations. Capture real timelines and budgets from case studies in `examples/`.
 
 ---
 
-*Schema version: 1.2*
-*Last updated: 2026-02-25*
+*Schema version: 1.3*
+*Last updated: 2026-02-28*

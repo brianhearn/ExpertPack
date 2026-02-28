@@ -8,4 +8,4 @@
 
 ## Population
 
-- [ ] **Population methods guide** (`guides/population-methods.md`) — IN PROGRESS. Consolidate all ingestion/population methodology into one guide, remove duplication from schemas.
+- [x] **Population methods guide** (`guides/population-methods.md`) — DONE (2026-02-28). Consolidated all ingestion/population methodology into one guide, removed duplication from schemas (product.md 1.4→1.5, person.md 1.3→1.4, process.md 1.2→1.3).

@@ -1035,248 +1035,59 @@ dependencies: []
 
 ---
 
-## Pack Creation Process
+## Pack Population
 
-### Input Sources
+For detailed guidance on all population methods — documentation ingestion, visual ingestion, video ingestion, technical artifact analysis, expert walkthroughs, observation & testing, and feedback mining — see the [Population Methods Guide](../guides/population-methods.md).
 
-| Source | What It Provides | Quality | Effort |
-|--------|------------------|---------|--------|
-| **Product documentation** | Concepts, features, basic procedures | Medium — written for browsing | Low — restructure |
-| **Video tutorials / demos** | Real usage, step-by-step procedures | High — shows actual product | Medium — transcribe and extract |
-| **Product imagery** | Interface layouts, component locations | High — visual ground truth | Medium — requires analysis |
-| **Expert walkthroughs** | Edge cases, tribal knowledge | Highest — captures what docs miss | High — requires expert time |
-| **Support tickets / forums** | Real user problems, FAQ content | High — real pain points | Medium — requires curation |
-| **Technical specifications** | Specs, compliance, requirements | High — authoritative | Low — reformat |
-| **Decision records / ADRs** | Rationale behind past choices | Highest — prevents re-litigation | Low — capture at decision time |
-| **Customer interviews / NPS** | Segments, pain points, objections | High — real user perspective | Medium — requires synthesis |
-| **Release notes / changelogs** | Version history, what changed | Medium — factual but context-light | Low — restructure with context |
-| **Competitive analysis** | Market positioning, differentiation | Medium — ages fast | Medium — requires regular updates |
-
-### The Crawl → Structure → Refine Pipeline
-
-1. **Crawl** — Scrape product documentation (help sites, docs)
-2. **Ingest video/media** — Process video tutorials and demos (see Video Source Ingestion below)
-3. **Ingest screenshots** — Process product screenshots into interface docs (see Screenshot-to-Interface Ingestion below)
-4. **Structure** — Reorganize all extracted content into pack format (concepts, workflows, commercial, FAQ)
-5. **Add headers** — Ensure every file chunks well for RAG
-6. **Cross-reference** — Link related concepts and workflows
-7. **Build entities.json** — Map entities to their files
-8. **Capture decisions** — Document key past decisions in `decisions/` while context is fresh
-9. **Build customer reality** — Populate `customers/` from support data, interviews, and sales feedback
-10. **Identify gaps** — Screens, troubleshooting, customer segments, and tribal knowledge are usually missing
-
-This gets you ~70% of V1. The remaining 30% — edge cases, tribal knowledge, undocumented behavior, and customer reality — requires guided walkthroughs with product experts and customer-facing teams.
-
-### Video Source Ingestion
-
-Video tutorials, product demos, and recorded walkthroughs are high-value sources — they show the actual product in use, capture real workflows, and reveal UI details that documentation often omits. However, video requires a different ingestion strategy than text documentation.
-
-**Key principle: the pack is the chunking layer.** A consuming agent never needs to process video — it reads small, topic-scoped Markdown files. The chunking happens during pack *creation*, not consumption. You do not need to create smaller video files.
-
-#### The Video Ingestion Pipeline
-
-1. **Keep the master video intact.** Do not split it into smaller video files. The original recording stays as-is for reference and re-processing.
-
-2. **Build a scene index.** Watch or process the video and produce `sources/{video-slug}.md` — a timestamped inventory of what happens in the video. Each scene entry captures:
-   - Timestamp range (`MM:SS-MM:SS`)
-   - What's happening (action, screen shown, concept explained)
-   - Entities referenced (features, UI elements, settings)
-   - Target pack file (where this content will be extracted to)
-
-3. **Extract pack artifacts from timestamp ranges.** For each identified scene, create or update the appropriate pack file:
-   - **UI walkthrough scenes** → `workflows/{task}.md` with timestamped steps
-   - **Screen/panel tours** → `interfaces/{screen}.md` with layout details
-   - **Conceptual explanations** → `concepts/{concept}.md`
-   - **Error demonstrations** → `troubleshooting/errors/{error}.md`
-   - **Tips and gotchas** → `troubleshooting/common-mistakes/{mistake}.md`
-
-4. **Add provenance frontmatter** to every extracted file (see [core.md](core.md) Source Provenance):
-   ```markdown
-   ---
-   sources:
-     - type: video
-       title: "Territory Designer Overview"
-       ref: "03:12-04:05"
-   ---
-   ```
-
-5. **Update cross-references.** Add new entities to `entities.json`, update `_index.md` files, and link related content.
-
-6. **Track extraction status** in the source index file. Mark which scenes have been fully extracted, which are partial, and what gaps remain.
-
-#### Chunking Strategy for Video
-
-Even when using large-context models that can accept full video, UI walkthroughs benefit from focused processing:
-
-- **Process by interaction moments**, not arbitrary time windows. A "moment" is a cluster of related actions: navigating to a screen, filling fields, clicking submit, observing the result. These map naturally to workflow steps.
-- **Target 30–90 second segments** as a practical default. Short enough for accurate extraction, long enough to capture a complete interaction.
-- **Extract frames at key moments** when visual detail matters — screen layouts, error dialogs, configuration panels. Reference these in interface files if the agent's platform supports image context.
-- **Transcribe narration** for conceptual content. The speaker's explanation of *why* something works a certain way is often more valuable than the UI actions themselves — this becomes concept file content.
-
-#### Multiple Videos for One Product
-
-When building a pack from multiple videos (e.g., a training series):
-- Create one `sources/{video-slug}.md` per video
-- Use `sources/_index.md` to inventory all video sources with their coverage areas
-- Cross-reference between source indexes when videos cover overlapping topics (note which video has the more authoritative/current treatment)
-- Deduplicate: if two videos show the same workflow, extract from the better source and note the alternative in provenance
-
-### Screenshot-to-Interface Ingestion
-
-Product screenshots are high-value inputs for building interface documentation. A single screenshot can yield a complete, element-level inventory of a UI screen — but only if the ingestion process is systematic. Screenshots are **input**, not output: the pack stores only markdown (see the no-binary principle in the Interface File template above).
-
-#### The Screenshot Ingestion Pipeline
-
-**Phase 1: Capture (Human)**
-1. Navigate to the screen/state in the product
-2. Take a full-viewport screenshot (PNG, consistent resolution, realistic sample data)
-3. Send or share the screenshot with the builder agent
-4. Provide verbal/written context about elements the vision model can't infer (hidden states, conditional behavior, admin-only features)
-
-**Phase 2: Analyze (AI Vision)**
-1. Load the screenshot
-2. Identify all visible regions using the [Region Taxonomy](#region-taxonomy)
-3. Inventory every interactive element (buttons, fields, links, icons)
-4. Assign spatial descriptors from the [Spatial Descriptors](#spatial-descriptors) vocabulary
-5. Classify element types from the [Element Type Vocabulary](#element-type-vocabulary)
-6. Note unknown/ambiguous elements for expert clarification in an `Open Questions` section
-
-**Phase 3: Enrich (Human Expert)**
-1. Review AI-generated inventory for accuracy
-2. Correct misidentified elements
-3. Add behavioral descriptions (what each element does, when it's available)
-4. Add state/dynamic behavior notes
-5. Add contextual information the AI couldn't infer
-6. Resolve Open Questions
-
-**Phase 4: Connect (AI + Human)**
-1. Link interface elements to related workflows and concepts
-2. Add provenance frontmatter (source screenshot reference, capture date)
-3. Update `_index.md` and `entities.json`
-4. Identify workflow gaps (interface elements with no corresponding workflow doc)
-
-#### What to Capture
-
-| State | When to Capture |
-|-------|----------------|
-| Default state | Screen as it appears on first load/access |
-| Each dialog/overlay | Capture when opened |
-| Mode states | When a mode changes available tools (e.g., edit mode vs. view mode) |
-| Expanded/collapsed variants | When panels have significantly different content when toggled |
-| Dynamic toolbar states | When toolbar options change based on context |
-| Error states | When error dialogs or validation messages are visible |
-
-#### Multiple Screenshots for One Interface
-
-When documenting a screen that has multiple states (e.g., a dialog with tabs, a panel with expand/collapse):
-- Use one interface file with sections for each state, OR separate files (`{screen}--{state}.md`) for highly complex variants
-- Record each screenshot as a separate source in provenance frontmatter
-- Cross-reference between state sections/files
+The guide covers each method's pipeline, strengths, limitations, and applicability across pack types. It also provides a recommended ordering for combining methods when building a product pack.
 
 ---
 
 ## Creating a New Product Pack
 
-This section is a playbook for an AI agent creating and maintaining a product pack. Read the schema and use it as your filing map: determine where incoming documentation, expert input, and support data belong and file them accordingly.
+This section is a playbook for an AI agent creating and maintaining a product pack. Read the schema and use it as your filing map; read the [Population Methods Guide](../guides/population-methods.md) for how to execute each ingestion method.
 
 Agent-first step-by-step
 
-1. Read the schema and product blueprint
-   - Load this file and core.md to understand required sections, expected files, and recommended data structures (entities.json, _index.md files).
-   - Treat the schema as the authoritative navigation map for filing content.
+1. **Read the schema and product blueprint** — Load this file and core.md. Treat the schema as the authoritative filing map for content.
 
-2. Initialize the pack
-   - Create packs/{product-slug}/ and the minimal required files: manifest.yaml (type: product) and overview.md. Create directories: concepts/, workflows/, interfaces/, troubleshooting/, faq/, commercial/, and a placeholder entities.json.
-   - Commit the initial skeleton and record sources and creation notes in manifest.yaml.
+2. **Read the [Population Methods Guide](../guides/population-methods.md)** — Understand the available methods and the recommended combining order for product packs.
 
-3. Crawl and ingest existing documentation
-   - Harvest official docs, help sites, API specs, manuals, and public support articles. Prioritize canonical sources listed by the domain expert.
-   - For each source, extract sections and restructure them into concept or workflow files. Chunk large text into RAG-friendly sections by adding `##` headers without changing technical meaning.
-   - Record provenance (source URL, scrape date) for every ingested file in frontmatter or manifest sources.
-   - Create `sources/{doc-source}.md` for each documentation source with page inventory and extraction status.
+3. **Initialize the pack** — Create `packs/{product-slug}/` with required files: `manifest.yaml` (type: product), `overview.md`. Create directories: `concepts/`, `workflows/`, `interfaces/`, `troubleshooting/`, `faq/`, `commercial/`, and a placeholder `entities.json`.
 
-4. Ingest video and media sources
-   - For each video tutorial, demo, or recorded walkthrough, follow the Video Source Ingestion pipeline (see above).
-   - Build `sources/{video-slug}.md` with the scene index, timestamps, and entity mapping.
-   - Extract pack artifacts (workflows, interfaces, concepts, troubleshooting) from identified scenes.
-   - Add provenance frontmatter to all video-derived files per the convention in [core.md](core.md).
-   - Track extraction completeness in the source index — note gaps for follow-up.
+4. **Populate using available methods** — Apply population methods in priority order based on available sources. For product packs, the recommended order is:
+   1. Documentation ingestion → bootstrap concepts, workflows, specifications
+   2. Technical artifact analysis → add depth, discover undocumented behavior
+   3. Visual ingestion → build interface docs from screenshots or product images
+   4. Expert walkthroughs → fill gaps, validate findings, capture "why"
+   5. Observation & testing → quality gate, find remaining gaps
+   6. Feedback mining → populate troubleshooting and customer reality (ongoing)
 
-5. Build concepts/ and workflows/ from all ingested sources
-   - Convert conceptual explanations into concepts/{concept}.md with the template fields (What It Is, Why It Matters, How It Works, Example, Related).
-   - Convert step-by-step procedures into workflows/{workflow}.md with Goal, Prerequisites, Steps, Completion, and Common Issues.
-   - Merge content from multiple sources (docs + video + interviews) into single canonical files — use provenance frontmatter to track all contributing sources.
-   - Add cross-links between related concept and workflow files.
+   Not all methods will be available for every product. Use what you have access to.
 
-6. Extract interfaces and specifications
-   - From screenshots, UI docs, API contracts, device manuals, and video frame captures, create interfaces/{interface}.md and specifications/{spec}.md as appropriate.
-   - For screenshots, follow the Screenshot-to-Interface Ingestion pipeline: Capture → Analyze (AI vision) → Enrich (expert review) → Connect (cross-references). Use the spatial-first interface template with region taxonomy, element type vocabulary, and spatial descriptors.
-   - Video-derived interface files are often richer than documentation because they show real UI state — prioritize video and screenshot sources for interface content when available.
-   - Run the Interface Quality Checklist before marking any interface doc as complete.
+5. **Build entities.json as the knowledge graph emerges** — As concepts, workflows, or interfaces are added, create entity entries with id, name, type, description, related entities, and file references. Use entities.json for targeted updates when new information arrives.
 
-7. Build entities.json as the knowledge graph emerges
-   - As concepts, workflows, or interfaces are added, create entity entries with id, name, type, description, related entities, and file references.
-   - Use entities.json to speed updates: when new information arrives, consult entities.json to find all affected files.
+6. **Build the customer reality layer** — From support tickets, sales conversations, and customer interviews, populate `customers/` with segments, honest feedback (don't sanitize), and success stories with quantified outcomes.
 
-8. Gather tribal knowledge via expert interviews
-   - Schedule and run structured interviews with the domain expert (the pack owner or SME). Ask targeted questions to elicit edge cases, recent gotchas, and undocumented behaviors: "What do new users get wrong first?" "Describe a time something failed and how you fixed it."
-   - Record experts' verbatim answers and then distill them into concepts, workflows, or troubleshooting entries. Mark those entries as expert-sourced.
-   - Create `sources/{interview-slug}.md` with timestamp index of topics covered.
+7. **Build product history** — Populate `facts/timeline.md` with event history and `facts/releases.md` with significant releases including what changed, why, impact, and unintended consequences.
 
-9. Build troubleshooting/ from support data
-   - Ingest support tickets, forum threads, and incident reports. Extract recurring failure modes, errors, and diagnostic steps into troubleshooting/errors/ and diagnostics/ files.
-   - Link these troubleshooting files to workflows and concepts where relevant.
+8. **Capture decision records** — Interview the domain expert about key past decisions. Create `decisions/{YYYY-MM-DD}-{slug}.md` for each with context, options, rationale, and consequences. Add retrospective outcomes when known.
 
-10. Capture decision records
-    - Interview the domain expert about key past decisions: "Why did you choose X over Y?" "What was the biggest architectural bet?" "What decision would you make differently?"
-    - Create `decisions/{YYYY-MM-DD}-{slug}.md` for each significant decision with context, options, rationale, and consequences.
-    - Add retrospective **Outcome** sections to decisions where the consequences are now known.
-    - Build `decisions/_index.md` with all records and their statuses.
+9. **Compile FAQ and commercial content** — Derive FAQ from common questions. Populate `commercial/` including `limitations.md` (be honest about weaknesses) and `landscape.md` (market positioning, competitors — date entries).
 
-11. Build the customer reality layer
-    - From support tickets, sales conversations, and customer interviews, populate `customers/segments.md` with who uses the product and how.
-    - Capture honest feedback in `customers/feedback.md` — objections, pain points, churn reasons, and feature requests. Don't sanitize.
-    - Add concrete wins to `customers/success-stories.md` with quantified outcomes when available.
-    - Cross-reference segments with relevant workflows and concepts.
+10. **Identify gaps and report** — Run gaps analysis comparing expected sections to inventory. Cross-reference `sources/` indexes against pack content. Produce a prioritized gap report for the domain expert.
 
-12. Build product history
-    - Populate `facts/timeline.md` with the product's event history — launches, major releases, pivots, outages, architectural decisions.
-    - Document significant releases in `facts/releases.md` — what changed, why it mattered, impact, and unintended consequences.
-    - Link timeline events to decision records and releases.
+11. **Maintain cross-references** — Keep `entities.json` and `_index.md` files current whenever files are added or updated.
 
-13. Compile FAQ and commercial content
-    - Derive FAQ entries from common support questions and expert interviews. Organize by persona or category in faq/.
-    - If the pack supports sales or go-to-market scenarios, populate commercial/ with capabilities.md, pricing.md, deployment.md, and security.md using a combination of documentation and conversations with product management.
-    - Add `commercial/limitations.md` — be honest about weaknesses, poor-fit scenarios, and competitive disadvantages. Agents that dodge weaknesses lose credibility.
-    - Add `commercial/landscape.md` — market positioning and key competitors. Date the file and note when competitor entries were last verified.
-
-14. Identify gaps and report them
-    - Run an automated gaps analysis: compare expected sections (interfaces, troubleshooting decision trees, workflows for critical tasks, customer segments, decision records) to the current inventory.
-    - Cross-reference `sources/` indexes against pack content — identify scenes/pages that were indexed but not yet extracted.
-    - Produce a prioritized gap report for the domain expert: what needs expert walkthroughs, missing screens, undocumented error states, customer segments without feedback, or incomplete specs.
-
-15. Maintain entities and cross-references
-    - Whenever files are added or updated, update entities.json and relevant _index.md files.
-    - Use entities.json for targeted updates when new product info arrives (release notes, patch fixes).
-
-16. Commit, document provenance, and create status reports
-    - Commit changes with descriptive messages, including source references.
-    - Maintain a pack-level README with guidance for future updates and a changelog of significant content additions.
-    - Periodically generate a status summary showing new content, resolved gaps, and outstanding high-priority items.
-
-Practical prompting guidance
-
-- Use concise, task-focused prompts during expert interviews: one question per turn, with specific examples and requests for steps, error messages, or screenshots.
-- When extracting from docs, ask for clarifications from the domain expert for ambiguous behavior or undocumented edge cases.
-- Present the gap report as a short checklist the expert can act on.
+12. **Commit, document provenance, and report** — Commit with descriptive messages. Maintain a changelog. Periodically generate status summaries.
 
 Notes and principles
 
-- The schema is your filing guide — decide where content belongs; create new directories when a new content type is needed and document the change in the manifest.
-- Record provenance for every file and never overwrite expert-verified content without reconfirmation.
-- Prioritize building troubleshooting/ and interfaces/ early for support readiness; these are high-value for user-facing agents.
+- The schema is your filing guide — decide where content belongs; create new directories when needed.
+- Record provenance for every file (see [Population Methods Guide](../guides/population-methods.md#source-provenance)) and never overwrite expert-verified content without reconfirmation.
+- Prioritize building troubleshooting/ and interfaces/ early for support readiness.
 
 ---
 
-*Schema version: 1.4*
-*Last updated: 2026-02-25*
+*Schema version: 1.5*
+*Last updated: 2026-02-28*

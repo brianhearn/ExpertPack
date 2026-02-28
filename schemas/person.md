@@ -563,13 +563,26 @@ sources:
 
 ---
 
+## Pack Population
+
+For general guidance on population methods — documentation ingestion, video ingestion, conversational ingestion, expert walkthroughs, observation & testing, and more — see the [Population Methods Guide](../guides/population-methods.md).
+
+For person packs, the recommended combining order is:
+1. Documentation ingestion → published works, online presence
+2. Conversational ingestion → stories, beliefs, opinions (ongoing, primary method)
+3. Video ingestion → talks, interviews, appearances
+4. Expert walkthrough → the person validates and corrects
+5. Observation & testing → roleplay conversations to find gaps
+
+---
+
 ## Creating a New Person Pack
 
-This section is written as a playbook for an AI agent that will create and maintain the person pack. Treat the schema above as your filing guide: read it to learn the canonical structure, then decide where incoming content belongs based on the taxonomy.
+This section is a playbook for an AI agent creating and maintaining a person pack. Read the schema above as your filing guide; read the [Population Methods Guide](../guides/population-methods.md) for how to execute each ingestion method.
 
 Agent-first step-by-step
 
-1. Read the schema and directory blueprint
+1. **Read the schema, directory blueprint, and [Population Methods Guide](../guides/population-methods.md)**
    - Load this file and core.md to understand required files, directories, and content types.
    - Use the schema as the authoritative filing map: when content arrives, determine its target directory by content type (verbatim, summaries, facts, mind, relationships, presentation, training, meta).
 
@@ -644,19 +657,14 @@ Agent-first step-by-step
    - Commit changes with descriptive messages and update the pack-level README.md and manifest sources.
    - Maintain session logs in meta/sessions.json for auditability.
 
-Practical prompting guidance
-
-- Use short, specific prompts that request a single story or fact at a time.
-- Ask targeted follow-ups for sensory detail, dates, and significance: "What did you see/hear?" "How did that make you feel?" "Why does this memory matter to you?"
-- Preserve voice: when summarizing, mark the summary as AI-generated and keep the original verbatim as canonical.
-
 Notes and principles
 
 - Treat verbatim/ as the canonical source of the person's voice; summaries must never overwrite verbatim.
-- The schema is your filing guide — you decide where incoming content lives based on the taxonomy. If a new type is needed, create matching directories under verbatim/ and summaries/ and document them in the pack manifest.
-- Always record provenance and ask the pack owner to resolve contradictions.
+- The schema is your filing guide — decide where incoming content lives based on the taxonomy. If a new type is needed, create matching directories under verbatim/ and summaries/ and document them in the pack manifest.
+- Record provenance for every file (see [Population Methods Guide](../guides/population-methods.md#source-provenance)) and never overwrite expert-verified content without reconfirmation.
+- Use short, specific prompts that request a single story or fact at a time. Ask follow-ups for sensory detail, dates, and significance.
 
 ---
 
-*Schema version: 1.3*
-*Last updated: 2026-02-25*
+*Schema version: 1.4*
+*Last updated: 2026-02-28*
