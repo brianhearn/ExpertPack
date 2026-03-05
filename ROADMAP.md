@@ -21,10 +21,10 @@ Make ExpertPacks measurably better across all pack types (person, product, proce
 
 ### 1. Evaluation & Metrics
 Define how any pack measures quality. Without this, everything else is guessing.
-- [ ] **Eval framework schema** — standard format for Q&A eval sets, quality scoring
+- [x] **Eval framework schema** — standard format for Q&A eval sets, quality scoring
 - [ ] **Pack health metrics** — schema conformance, coverage, freshness, cross-ref integrity
 - [ ] **Runtime metrics** — tokens/query, latency, cost, retrieval precision
-- [ ] **Eval runner** — tool/script that executes eval sets and produces scorecards
+- [x] **Eval runner** — tool/script that executes eval sets and produces scorecards
 - [ ] **First pack baseline** — run eval against a real deployed pack to establish baseline numbers
 
 ### 2. Performance & Token Efficiency
@@ -60,8 +60,8 @@ Keep the framework current as LLMs advance.
 
 ### 6. Continuous Intelligence
 Stay current with developments that could improve the framework.
-- [ ] **X daily scan** — ✅ Already running (captures design learnings)
-- [ ] **Weekly web intelligence sweep** — search for RAG, knowledge-base, and expertise-capture advances
+- [x] **X daily scan** — Already running (captures design learnings)
+- [x] **Weekly web intelligence sweep** — Wednesdays 14:00 UTC, GPT-5 Mini, logs to logs/expertpack-intelligence.md
 - [ ] **Schema review triggers** — flag when new model capabilities make assumptions revisitable
 
 ---
@@ -72,7 +72,12 @@ Stay current with developments that could improve the framework.
 - Defined the six improvement vectors
 - Decision: start with eval framework (Vector 1) as foundation for everything else
 - Decision: framework-first, pack-type agnostic approach
-- Started drafting eval framework schema (`schemas/eval.md`)
+- Completed eval framework schema (`schemas/eval.md`) with eval dimensions concept
+- Built eval runner tool (`tools/eval-runner/run_eval.py`) — LLM-as-judge scoring
+- First eval set built (50 questions, 8 categories) for a deployed product pack
+- Set up weekly web intelligence sweep cron (Wednesdays 14:00 UTC)
+- **BLOCKED:** Baseline eval run waiting on help bot migration to new instance
+- **Decision:** Do NOT modify pack content until baseline is captured — need clean before/after
 
 ---
 
