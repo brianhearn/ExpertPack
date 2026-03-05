@@ -175,6 +175,22 @@ Notes
 
 ---
 
+## Evaluation
+
+Every ExpertPack can include an evaluation suite to measure and track quality over time. The eval framework is pack-type agnostic — the same metrics and methodology work for person, product, and process packs.
+
+See [schemas/eval.md](schemas/eval.md) for the full specification, including:
+- Standard eval set format (questions + expected answers + anti-hallucination checks)
+- Response quality metrics (correctness, groundedness, hallucination rate)
+- Retrieval quality metrics (hit rate, precision)
+- Efficiency metrics (tokens, latency, cost)
+- Pack health metrics (structural conformance)
+- Eval workflow for pack builders and framework developers
+
+The eval system answers the question: "Is this pack getting better or worse?"
+
+---
+
 ## Revision History
 
 | Date | Changed By | Notes |
@@ -182,6 +198,7 @@ Notes
 | 2026-02-13 | — | Initial ARCHITECTURE.md |
 | 2026-02-16 | — | Unified framework — three pack types, shared schemas |
 | 2026-02-18 | — | Person schema: mind taxonomy (9 categories); broadened examples |
+| 2026-03-05 | — | Added eval framework (schemas/eval.md); added ROADMAP.md for improvement project |
 
 ---
 
