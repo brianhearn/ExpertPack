@@ -25,7 +25,7 @@ Define how any pack measures quality. Without this, everything else is guessing.
 - [ ] **Pack health metrics** — schema conformance, coverage, freshness, cross-ref integrity
 - [ ] **Runtime metrics** — tokens/query, latency, cost, retrieval precision
 - [x] **Eval runner** — tool/script that executes eval sets and produces scorecards
-- [ ] **First pack baseline** — run eval against a real deployed pack to establish baseline numbers
+- [x] **First pack baseline** — run eval against a real deployed pack to establish baseline numbers
 
 ### 2. Performance & Token Efficiency
 Reduce latency and token consumption for pack-powered interactions.
@@ -41,7 +41,7 @@ Reduce hallucinations and improve answer completeness.
 - [ ] **Grounding citations** — require agents to cite specific pack files in answers
 - [ ] **Confidence tagging** — content-level confidence (expert-verified, crawled, inferred)
 - [ ] **Contradiction detection** — surface conflicting chunks at runtime instead of guessing
-- [ ] **Hallucination measurement** — automated detection via LLM-as-judge against pack content
+- [x] **Hallucination measurement** — automated detection via LLM-as-judge against pack content
 
 ### 4. Pack Creation & Training
 Make it easier to build and maintain packs.
@@ -68,16 +68,29 @@ Stay current with developments that could improve the framework.
 
 ## Status Log
 
-### 2026-03-05 — Project Kickoff
+### 2026-03-05 — Project Kickoff + Baseline Captured
 - Defined the six improvement vectors
 - Decision: start with eval framework (Vector 1) as foundation for everything else
 - Decision: framework-first, pack-type agnostic approach
 - Completed eval framework schema (`schemas/eval.md`) with eval dimensions concept
-- Built eval runner tool (`tools/eval-runner/run_eval.py`) — LLM-as-judge scoring
-- First eval set built (50 questions, 8 categories) for a deployed product pack
+- Built eval runner + scorer scripts (`ExpertPacks/ezt-designer/eval/run-eval.py`, `score-eval.py`)
+- First eval set built (50 questions, 8 categories) for EZT Designer product pack
 - Set up weekly web intelligence sweep cron (Wednesdays 14:00 UTC)
-- **BLOCKED:** Baseline eval run waiting on help bot migration to new instance
-- **Decision:** Do NOT modify pack content until baseline is captured — need clean before/after
+- **BASELINE CAPTURED:** 50/50 questions, 0 errors
+  - Correctness: 79% | Completeness: 3.8/5 | Hallucination: 10% (5/50) | Refusal: 0% (0/8)
+  - Tokens: avg 4,372 in / 840 out / 9,348 total per question | 467K total
+  - Model: GPT-5 Mini via OpenRouter | Avg latency: 21.8s
+  - Results: `ExpertPacks/ezt-designer/eval/baselines/2026-03-05-baseline.yaml`
+- **Key findings:**
+  - Concept (94%) and Comparison (94%) categories are strong
+  - Refusal accuracy is 0% — bot never declines out-of-scope questions
+  - 5 hallucinations: q028 (invented flag names), q037 (oversold), q041 (false export guarantee), q047 (AAD details), q048 (fabricated tech stack)
+  - Weak retrieval for q009, q014, q019 — right content exists but wasn't found
+- **Improvement plan (in order):**
+  1. Agent training (SOUL.md refusal + grounding rules) → re-eval
+  2. Pack structure (split oversized files) → re-eval
+  3. Content gaps (missing docs, disambiguation layer) → re-eval
+  - Each step = one dimension change for clean attribution
 
 ---
 
