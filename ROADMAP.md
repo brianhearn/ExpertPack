@@ -52,6 +52,10 @@ Make it easier to build and maintain packs.
 
 ### 5. Schema Evolution
 Keep the framework current as LLMs advance.
+- [ ] **Summary layers** — thin retrieval-optimized summaries over verbatim content; RAG hits summary first, pulls detail on demand. Each summary links back to source-of-truth file. (Source: OpenAI compaction analysis, 2026-03-05)
+- [ ] **Context-tier compaction** — ruthlessly compress Tier 1 to identity+voice+navigation only (<5KB); push everything else to Tier 2/3. Audit current packs for tier discipline.
+- [ ] **Structured fact tables** — replace narrative repetition with key/value facts, decision tables, canonicalized terms/glossaries for deduplication and retrieval precision
+- [ ] **Entity cross-reference indexes** — use entities.json as canonical registry with aliases for term normalization (evaluate whether current RAG actually benefits)
 - [ ] **File size flexibility** — revisit 1-3KB for large-context models; maybe a "dense mode"
 - [ ] **Chunking strategy review** — evaluate semantic chunking vs header-based
 - [ ] **Agentic RAG patterns** — multi-step retrieval, query refinement
