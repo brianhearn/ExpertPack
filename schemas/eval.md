@@ -173,9 +173,50 @@ Categories are pack-type flexible. Use what applies:
 
 ---
 
+## Eval Dimensions
+
+Three independent variables affect pack-powered response quality. When running evaluations, vary one dimension at a time and hold the others constant — otherwise you can't attribute changes in metrics.
+
+### The Three Dimensions
+
+| Dimension | What It Is | Examples |
+|-----------|-----------|---------|
+| **Structure** | The pack's schema, file organization, chunking, cross-references, context tiers, and content quality | Splitting oversized files, adding summary layers, improving cross-references, adding missing content |
+| **Model** | The backend LLM processing queries against the pack | Gemini Flash, Claude Sonnet, GPT-5 Mini — same pack, different reasoning capabilities |
+| **Agent Training** | System prompts, agent instructions, and guidance docs that tell the agent *how* to use the pack | Feature frequency guidance, disambiguation rules, response patterns, persona instructions |
+
+### Why This Matters
+
+- A stronger **model** can mask structural problems in the pack (brute-forcing answers from poorly organized content)
+- Better **agent training** can compensate for pack gaps (guidance docs that say "default to X when the user says Y")
+- Better **structure** improves results across all models and training configurations
+
+The highest-leverage improvements are **structural** — they compound across every model and every agent configuration. Agent training is second (transferable across models). Model upgrades are third (expensive and vendor-dependent).
+
+### Declaring Dimensions in Eval Runs
+
+Every eval run must declare what changed relative to the baseline:
+
+```yaml
+dimensions:
+  structure:
+    version: "2.0.0"           # Pack version from manifest
+    changes: "Split 7 oversized files, added summary layers"
+  model:
+    name: "gemini-2.0-flash"
+    provider: "openrouter"
+  agent_training:
+    version: "1.0"             # Version or hash of system prompt / guidance docs
+    changes: "Added territory planning guidance doc"
+```
+
+When comparing runs, only draws conclusions about the dimension that changed. If structure AND model changed between runs, the comparison is informational but not attributable.
+
+---
+
 ## Eval Run Results
 
-Each eval run produces a results file capturing scores, model used, and per-question details.
+Each eval run produces a results file capturing scores, dimensions, and per-question details.
 
 ### Format
 
@@ -183,11 +224,21 @@ Each eval run produces a results file capturing scores, model used, and per-ques
 # eval/results/{YYYY-MM-DD}-{label}.yaml
 run_date: "YYYY-MM-DD"
 label: "{descriptive label, e.g., baseline-gemini-flash}"
-model: "{model used}"
-pack_version: "{manifest version at time of run}"
 eval_set_version: "1.0"
 questions_total: 50
 questions_evaluated: 50
+
+# What was tested (see Eval Dimensions above)
+dimensions:
+  structure:
+    version: "2.0.0"
+    changes: ""
+  model:
+    name: "gemini-2.0-flash"
+    provider: "openrouter"
+  agent_training:
+    version: "1.0"
+    changes: ""
 
 # Aggregate scores
 scores:
