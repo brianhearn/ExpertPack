@@ -40,6 +40,10 @@ packs/{person-slug}/
 │   ├── opinions/          ← Opinion summaries with positions
 │   └── {custom}/          ← Mirrors verbatim/ structure
 │
+├── propositions/          ← Atomic factual statements for precise retrieval (recommended) ← See core.md Retrieval Optimization
+│   ├── _index.md          ← Directory of all proposition files
+│   └── {section}.md       ← Extracted facts from facts/, mind/, relationships/ files
+│
 ├── facts/                 ← Biographical data (Markdown — canonical)
 │   ├── _access.json
 │   ├── personal.md        ← Birth, family structure, locations, bio
@@ -134,6 +138,8 @@ Verbatim and summary directories are organized by content type. The following ta
 **Extending the taxonomy:** Packs may add content types not listed here. A pastor might add `sermons/`, a musician `lyrics/`, a traveler `journals/`. Create the subdirectory in both `verbatim/` and `summaries/` and add it to the pack's `_index.md`.
 
 **Mirror rule:** Verbatim and summary directories should always mirror each other. If `verbatim/reflections/` exists, `summaries/reflections/` should too.
+
+Person packs also benefit from propositions — see [Retrieval Optimization](core.md#retrieval-optimization). Extract propositions from `facts/`, `mind/`, and `relationships/` files. Person pack summaries follow the verbatim→summary mirroring pattern described above; propositions follow the standard core pattern.
 
 ### Story Cards (Summary Frontmatter)
 
@@ -615,6 +621,8 @@ Agent-first step-by-step
    - Use summaries for downstream searches and fast context loading; keep verbatim as the source of truth.
    - Update facts/timeline.md with any new events anchored by the story.
 
+6b. Generate propositions — After populating facts/, mind/, and relationships/ content, extract atomic propositions per [core.md Retrieval Optimization](core.md#retrieval-optimization) guidelines. Store in propositions/ grouped by source file. Regenerate when source content changes significantly.
+
 7. Build and maintain the relationships graph
    - As people appear in stories, create or update relationships/people.md using the standardized entry template: ID, name, relationship, time period, how they connect, key facts, consent status, and cross-references to files where they appear.
    - Assign stable kebab-case IDs to each person — these IDs are used in story card `people` arrays and timeline entries for cross-referencing.
@@ -666,5 +674,5 @@ Notes and principles
 
 ---
 
-*Schema version: 1.4*
-*Last updated: 2026-02-28*
+*Schema version: 1.5*
+*Last updated: 2026-03-06*

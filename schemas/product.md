@@ -61,11 +61,11 @@ packs/{product-slug}/
 │   ├── feedback.md        ← Pain points, objections, churn reasons, feature requests
 │   └── success-stories.md ← Wins, case studies, reference customers
 │
-├── summaries/             ← Section-level summaries for broad retrieval (recommended)
+├── summaries/             ← Section-level summaries for broad retrieval (recommended) ← See core.md Retrieval Optimization
 │   ├── _index.md          ← Directory of all summaries
 │   └── {section}.md       ← One summary per content section (~1-2KB each)
 │
-├── propositions/          ← Atomic factual statements for precise retrieval (recommended)
+├── propositions/          ← Atomic factual statements for precise retrieval (recommended) ← See core.md Retrieval Optimization
 │   ├── _index.md          ← Directory of all proposition files
 │   └── {section}.md       ← Extracted facts grouped by source file
 │
@@ -759,68 +759,9 @@ For ordered icon/button rows, use ordinal position: "1st icon", "2nd icon", etc.
 
 ---
 
-## Summaries Directory (summaries/)
+## Retrieval Layers (summaries/ and propositions/)
 
-Recommended directory containing section-level summaries that enable hierarchical retrieval. Summaries give RAG a coarse-grained layer: broad questions match summaries first, then the agent drills into detail files. This follows the RAPTOR pattern — recursive summarization into a retrieval tree.
-
-**Why summaries matter:** Without summaries, every query competes against hundreds of fine-grained content files. A question like "what can EasyTerritory do?" matches dozens of files with mediocre relevance. A summary file matches with high relevance and provides a complete broad answer. Fine-grained files then handle follow-ups like "how does the TSP optimizer work?"
-
-**Structure:** One summary file per content section. Each summary is 1-3KB of dense, fact-packed bullet points covering the key topics in that section, with cross-references to the detailed files.
-
-```markdown
-# {Section Name} — Summary
-
-Dense bullet-point summary of all topics covered in this section.
-
-## Key Topics
-- **{Topic 1}** — {one-line summary}. See [{detail file}](../section/detail.md)
-- **{Topic 2}** — {one-line summary}. See [{detail file}](../section/detail.md)
-...
-```
-
-**Generation rules:**
-- Summaries are DERIVED from content files — they are not canonical content
-- Read all files in the section before writing the summary
-- Include cross-references to source files so agents can drill down
-- Regenerate summaries when source content changes significantly
-- Keep each summary under 3KB — dense facts, not prose paragraphs
-
-**Context tier:** Searchable (Tier 2). Summaries are indexed for RAG retrieval alongside content files.
-
----
-
-## Propositions Directory (propositions/)
-
-Recommended directory containing atomic factual statements extracted from content files. Propositions enable high-precision retrieval: when a user asks a specific factual question, the RAG system can match an exact proposition rather than a paragraph that happens to contain the answer.
-
-**Why propositions matter:** Prose paragraphs contain multiple facts mixed with explanations, examples, and transitions. RAG retrieval against prose returns the whole paragraph, only part of which is relevant. Propositions isolate individual facts into standalone retrieval units — each one matches precisely or not at all.
-
-**Structure:** One proposition file per content section. Each file contains atomic facts grouped by source file, formatted as bullet lists.
-
-```markdown
-# {Section Name} — Propositions
-
-### {source-filename.md}
-- {Self-contained factual statement}
-- {Self-contained factual statement}
-- {Self-contained factual statement}
-
-### {another-source-file.md}
-- {Self-contained factual statement}
-...
-```
-
-**Extraction rules:**
-- Each proposition must be self-contained — readable without any surrounding context
-- Each proposition captures exactly ONE fact (not compound statements)
-- Propositions are DERIVED from content files — content files remain canonical
-- Do NOT invent facts — extract only what the source file states
-- Target 5-20 propositions per source file, depending on information density
-- Regenerate propositions when source content changes
-
-**Context tier:** Searchable (Tier 2). Propositions are indexed for RAG retrieval alongside content files and summaries.
-
-**Quality control:** Hallucinated propositions are dangerous — they inject false facts into the retrieval layer. When generating propositions, verify each statement against the source file. When in doubt, omit rather than fabricate.
+For summaries and propositions directories, see [Retrieval Optimization](core.md#retrieval-optimization). Product packs follow the standard pattern.
 
 ---
 
@@ -1148,11 +1089,7 @@ Agent-first step-by-step
 
 9. **Compile FAQ and commercial content** — Derive FAQ from common questions. Populate `commercial/` including `limitations.md` (be honest about weaknesses) and `landscape.md` (market positioning, competitors — date entries).
 
-10. **Generate retrieval layers** — After populating content sections:
-    - Generate `summaries/` — one summary per content section (1-3KB each, dense bullet points, cross-referenced to detail files). Read all files in each section before writing the summary.
-    - Generate `propositions/` — extract atomic factual statements from every content file (5-20 per file). Each proposition must be self-contained and faithful to the source.
-    - Add both directories to the manifest's `searchable` context tier.
-    - These layers significantly improve RAG retrieval precision and reduce hallucination.
+10. **Generate retrieval layers** — After populating content sections, generate `summaries/` and `propositions/` per the [Retrieval Optimization](core.md#retrieval-optimization) guidelines in core.md. Add both directories to the manifest's `searchable` context tier. These layers significantly improve RAG retrieval precision and reduce hallucination.
 
 11. **Identify gaps and report** — Run gaps analysis comparing expected sections to inventory. Cross-reference `sources/` indexes against pack content. Produce a prioritized gap report for the domain expert.
 
@@ -1168,5 +1105,5 @@ Notes and principles
 
 ---
 
-*Schema version: 1.6*
+*Schema version: 1.7*
 *Last updated: 2026-03-06*

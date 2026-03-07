@@ -147,6 +147,120 @@ Each `##` section should be about one sub-topic and produce a coherent chunk on 
 
 ---
 
+## Retrieval Optimization
+
+RAG retrieval quality depends on more than just file size. These patterns apply to every pack type and work together as a system — each layer compensates for what the others can't do alone.
+
+### Summaries Directory (summaries/)
+
+Recommended directory containing section-level summaries that enable hierarchical retrieval. Summaries give RAG a coarse-grained layer: broad questions match summaries first, then the agent drills into detail files. This follows the RAPTOR pattern — recursive summarization into a retrieval tree.
+
+**Why summaries matter:** Without summaries, every query competes against hundreds of fine-grained content files. A question like "what can this product do?" matches dozens of files with mediocre relevance. A summary file matches with high relevance and provides a complete broad answer. Fine-grained files then handle follow-ups like "how does the optimizer work exactly?"
+
+**Structure:** One summary file per content section. Each summary is 1–3KB of dense, fact-packed bullet points covering the key topics in that section, with cross-references to the detailed files.
+
+```markdown
+# {Section Name} — Summary
+
+Dense bullet-point summary of all topics covered in this section.
+
+## Key Topics
+- **{Topic 1}** — {one-line summary}. See [{detail file}](../section/detail.md)
+- **{Topic 2}** — {one-line summary}. See [{detail file}](../section/detail.md)
+...
+```
+
+**Generation rules:**
+- Summaries are DERIVED from content files — they are not canonical content
+- Read all files in the section before writing the summary
+- Include cross-references to source files so agents can drill down
+- Regenerate summaries when source content changes significantly
+- Keep each summary under 3KB — dense facts, not prose paragraphs
+
+**Context tier:** Searchable (Tier 2). Summaries are indexed for RAG retrieval alongside content files.
+
+**Person pack note:** Person packs use a special verbatim→summary mirroring pattern where each verbatim content file has a corresponding summary file with story card frontmatter. See [person.md](person.md) for the full two-tier content system.
+
+---
+
+### Propositions Directory (propositions/)
+
+Recommended directory containing atomic factual statements extracted from content files. Propositions enable high-precision retrieval: when a user asks a specific factual question, the RAG system can match an exact proposition rather than a paragraph that happens to contain the answer.
+
+**Why propositions matter:** Prose paragraphs contain multiple facts mixed with explanations, examples, and transitions. RAG retrieval against prose returns the whole paragraph, only part of which is relevant. Propositions isolate individual facts into standalone retrieval units — each one matches precisely or not at all.
+
+**Structure:** One proposition file per content section. Each file contains atomic facts grouped by source file, formatted as bullet lists.
+
+```markdown
+# {Section Name} — Propositions
+
+### {source-filename.md}
+- {Self-contained factual statement}
+- {Self-contained factual statement}
+- {Self-contained factual statement}
+
+### {another-source-file.md}
+- {Self-contained factual statement}
+...
+```
+
+**Extraction rules:**
+- Each proposition must be self-contained — readable without any surrounding context
+- Each proposition captures exactly ONE fact (not compound statements)
+- Propositions are DERIVED from content files — content files remain canonical
+- Do NOT invent facts — extract only what the source file states
+- Target 5–20 propositions per source file, depending on information density
+- Regenerate propositions when source content changes
+
+**Context tier:** Searchable (Tier 2). Propositions are indexed for RAG retrieval alongside content files and summaries.
+
+**Quality control:** Hallucinated propositions are dangerous — they inject false facts into the retrieval layer. When generating propositions, verify each statement against the source file. When in doubt, omit rather than fabricate.
+
+---
+
+### File Splitting Rules
+
+When a content file grows beyond the 1–3KB target, splitting it improves retrieval precision — but splitting alone is not enough.
+
+**When to split:** When a content file exceeds ~10KB, split it into focused sub-files within a subdirectory. Each sub-file should cover one sub-topic and be independently useful without needing to load sibling files for context.
+
+**IMPORTANT — Naive splitting loses context.** When you split a large file, you break the cross-topic connections that existed when everything was in one place. An agent that retrieves only one sub-file after splitting loses the surrounding context it previously had. Splitting without compensating for this degradation makes quality worse, not better.
+
+**The fix — three layers together:**
+1. **Split the file** into focused sub-files (precision)
+2. **Generate a summary** for the section that covers all sub-files (broad context recovery)
+3. **Extract propositions** from each sub-file (precise fact retrieval)
+
+The three-layer approach (split files + summaries + propositions) consistently outperforms any single change alone. Don't split without also generating the retrieval layers.
+
+---
+
+### Optimization Anti-Patterns
+
+Based on eval experiments, avoid these common mistakes:
+
+**Do NOT compact or compress prose to save tokens.** Denser text is harder for models to parse correctly. Examples, explanations, and context that feel redundant to a human often serve as reasoning scaffolding for a model. The content quality was never the bottleneck — retrieval precision was.
+
+**Do NOT split files without adding retrieval layers.** Splitting alone degrades quality. An agent that retrieves one fragment of what used to be a unified file loses the context that made that file useful. Always pair splitting with summaries and propositions.
+
+**Do NOT sacrifice content readability for token efficiency.** Readable, well-structured prose with `##` headers and concrete examples outperforms tightly compressed bullet lists. Token count at retrieval time matters less than match quality and reasoning support.
+
+---
+
+### Eval-Driven Improvement
+
+Retrieval quality is measurable — don't optimize blind.
+
+**Build an eval set.** After building a pack, write 10–20 test questions covering the pack's key topics. Include questions that should be answered, questions that should be refused (out-of-scope), and questions requiring synthesis across multiple files.
+
+**Track metrics.** For each eval question measure: correctness (did the agent answer accurately?), completeness (did it cover the full answer?), hallucination rate (did it invent facts not in the pack?), and refusal accuracy (did it correctly decline out-of-scope questions?).
+
+**Use results to guide optimization.** A low completeness score on broad questions suggests missing summaries. High hallucination rate on specific facts suggests missing or poorly structured propositions. Incorrect answers on specific topics point to content gaps or ambiguous source files.
+
+**Model capability matters.** The same pack can produce substantially different quality on different models. Run evals on your target model, not just the best available model. Optimizations that help a weaker model may be unnecessary for a stronger one — and vice versa.
+
+---
+
 ## Source Provenance
 
 Every content file should track where its information came from. This is especially important for packs built from multiple sources (documentation, videos, interviews, support tickets) where an agent may later need to verify, update, or trace content back to its origin.
@@ -407,7 +521,7 @@ For a specific question, the agent either:
 - **Searches:** Uses RAG/vector search to find relevant chunks across all Tier 2 files
 - **Both:** RAG finds candidates, agent reads the full file for complete context
 
-**Hierarchical retrieval:** Packs with `summaries/` and `propositions/` directories support multi-granular retrieval. Broad questions match section summaries first; factual questions match atomic propositions; detail questions match content files. This layered approach improves both precision and token efficiency. See type-specific schemas for implementation details.
+**Hierarchical retrieval:** Packs with `summaries/` and `propositions/` directories support multi-granular retrieval. Broad questions match section summaries first; factual questions match atomic propositions; detail questions match content files. This layered approach improves both precision and token efficiency. See the [Retrieval Optimization](#retrieval-optimization) section above for implementation details and anti-patterns.
 
 ### Deep Loading (Tier 3 — On-demand)
 When the task requires full source material:
@@ -439,10 +553,11 @@ These principles apply to every ExpertPack, regardless of type:
 | Cross-references | Relative markdown links between related files |
 | Directory indexes | `_index.md` in every content directory |
 | Context strategy | Three tiers: always → searchable → on-demand, declared in manifest |
+| Retrieval optimization | Summaries (broad), propositions (precise), and file splitting — use all three together; see [Retrieval Optimization](#retrieval-optimization) |
 | Conflict resolution | Never overwrite — flag and ask the human |
 | Version control | Git-native, semantic versioning |
 
 ---
 
-*Schema version: 1.4*
+*Schema version: 1.5*
 *Last updated: 2026-03-06*

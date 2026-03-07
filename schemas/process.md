@@ -52,7 +52,13 @@ packs/{process-slug}/
 ├── resources/             ← Tools, vendors, materials, buying guides
 ├── examples/              ← Case studies, post-mortems, and retrospectives
 ├── gotchas/               ← Common mistakes, traps, and prevention patterns
-└── faq/                   ← Frequently asked questions by category
+├── faq/                   ← Frequently asked questions by category
+├── summaries/             ← Section-level summaries for broad retrieval (recommended) ← See core.md Retrieval Optimization
+│   ├── _index.md          ← Directory of all summaries
+│   └── {section}.md       ← One summary per phase and fundamentals section
+└── propositions/          ← Atomic factual statements for precise retrieval (recommended) ← See core.md Retrieval Optimization
+    ├── _index.md          ← Directory of all proposition files
+    └── {section}.md       ← Extracted facts from phases/, decisions/, gotchas/, regulations/
 ```
 
 Notes:
@@ -422,6 +428,12 @@ Keep these as before but follow the small-file guideline. Cross-link heavily.
 
 ---
 
+## Retrieval Layers (summaries/ and propositions/)
+
+Process packs benefit from summaries and propositions — see [Retrieval Optimization](core.md#retrieval-optimization). Generate one summary per phase and per fundamentals section. Extract propositions from `phases/`, `decisions/`, `gotchas/`, and `regulations/` files.
+
+---
+
 ## Agent Consumption Patterns
 
 - Start with `overview.md` (Tier 1) to route the user's question and understand the phase map.
@@ -447,10 +459,11 @@ For process packs, the recommended combining order is:
 3. Technical artifact analysis → scripts, automation, monitoring configs
 4. Feedback mining → incident reports, audit findings
 5. Observation & testing → walk through each phase
+6. Generate retrieval layers → after content is populated, generate `summaries/` and `propositions/` per [core.md Retrieval Optimization](core.md#retrieval-optimization) guidelines. Add both to the manifest's `searchable` context tier.
 
 Prioritize practitioner interviews for decisions and gotchas. Use authoritative sources for regulations. Capture real timelines and budgets from case studies in `examples/`.
 
 ---
 
-*Schema version: 1.3*
-*Last updated: 2026-02-28*
+*Schema version: 1.4*
+*Last updated: 2026-03-06*
