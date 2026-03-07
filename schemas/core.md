@@ -183,6 +183,68 @@ Dense bullet-point summary of all topics covered in this section.
 
 ---
 
+### Lead Summaries
+
+Recommended pattern: add a 1–3 sentence blockquote at the very top of high-traffic content files that directly answers the most likely query. Lead summaries ensure that even if RAG retrieves only the first chunk of a file, the agent gets the core answer immediately.
+
+**Format:**
+
+```markdown
+# {Title}
+
+> **Lead summary:** {Direct answer to the most common question this file addresses. Include key anti-hallucination facts and common gotchas. 1-3 sentences max.}
+
+## What It Is
+...
+```
+
+**Why this matters:** RAG chunkers typically split files from the top. If the first 400 tokens are a table of contents or general introduction, the most relevant chunk may rank lower than a chunk from a less-relevant file that happens to lead with the answer. Lead summaries front-load the critical facts into the highest-ranked chunk position.
+
+**What to include in a lead summary:**
+- The direct answer to the most common query about this topic
+- Critical "NOT" facts (anti-hallucination) — things the system does NOT do
+- Key prerequisites or gotchas that users commonly miss
+- Vocabulary bridges — mention the common user language for technical terms
+
+**When to add lead summaries:** Focus on files that appear in eval failures or that address high-traffic support topics. Not every file needs one — start with the ~15 most-retrieved files and expand based on eval results.
+
+**Context tier:** Lead summaries are part of the content file itself — they inherit the file's tier (typically Tier 2, Searchable).
+
+---
+
+### Glossary (glossary.md)
+
+Recommended file at the pack root that maps common user language to precise technical terms. A glossary bridges the vocabulary gap between how users describe problems and how the pack documents solutions.
+
+**Why a glossary matters:** Users say "stuck ZIP codes" when the pack documents "locked territories." Users say "records missing" when the pack documents "silent truncation" or "upload record limit." Without a vocabulary bridge, RAG retrieval fails because the query terms don't match the content terms. A glossary file gives RAG an explicit mapping to match against.
+
+**Structure:**
+
+```markdown
+# {Pack Name} — Glossary
+
+Quick-reference definitions for {product/domain} terminology. Maps common user language to precise technical terms.
+
+## {Category}
+
+| Term | Definition | Common User Language |
+|------|-----------|---------------------|
+| **{Technical Term}** | {Precise definition} | "{how users say it}", "{alternate phrasing}" |
+| **{Technical Term}** | {Precise definition} | "{how users say it}", "{alternate phrasing}" |
+```
+
+**Guidelines:**
+- Group terms by category (e.g., "Territory Terms", "Data Terms", "Workflow Terms")
+- Include the `Common User Language` column — this is what makes glossaries effective for RAG
+- Keep definitions concise (1-2 sentences) with the key distinguishing fact
+- Include anti-patterns in definitions where relevant (e.g., "NOT drag-and-drop")
+- Update the glossary when eval failures reveal vocabulary gaps between user queries and pack content
+- Add the glossary to the manifest's `always` context tier so it loads every session
+
+**Context tier:** Always (Tier 1). The glossary is small, high-value, and helps with every query.
+
+---
+
 ### Propositions Directory (propositions/)
 
 Recommended directory containing atomic factual statements extracted from content files. Propositions enable high-precision retrieval: when a user asks a specific factual question, the RAG system can match an exact proposition rather than a paragraph that happens to contain the answer.
@@ -553,11 +615,11 @@ These principles apply to every ExpertPack, regardless of type:
 | Cross-references | Relative markdown links between related files |
 | Directory indexes | `_index.md` in every content directory |
 | Context strategy | Three tiers: always → searchable → on-demand, declared in manifest |
-| Retrieval optimization | Summaries (broad), propositions (precise), and file splitting — use all three together; see [Retrieval Optimization](#retrieval-optimization) |
+| Retrieval optimization | Summaries (broad), propositions (precise), file splitting, lead summaries (front-loaded answers), and glossary (vocabulary bridging) — use together; see [Retrieval Optimization](#retrieval-optimization) |
 | Conflict resolution | Never overwrite — flag and ask the human |
 | Version control | Git-native, semantic versioning |
 
 ---
 
-*Schema version: 1.5*
-*Last updated: 2026-03-06*
+*Schema version: 1.6*
+*Last updated: 2026-03-07*

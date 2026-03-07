@@ -18,6 +18,7 @@ A product pack gives an AI agent the same depth of knowledge as a veteran produc
 packs/{product-slug}/
 ├── manifest.yaml          ← Pack identity and metadata (required)
 ├── overview.md            ← Product summary — load first, always (required)
+├── glossary.md            ← Term definitions + vocabulary bridging (recommended) ← See core.md Retrieval Optimization
 ├── entities.json          ← Entity cross-reference index (recommended)
 │
 ├── concepts/              ← The mental model
@@ -1089,7 +1090,10 @@ Agent-first step-by-step
 
 9. **Compile FAQ and commercial content** — Derive FAQ from common questions. Populate `commercial/` including `limitations.md` (be honest about weaknesses) and `landscape.md` (market positioning, competitors — date entries).
 
-10. **Generate retrieval layers** — After populating content sections, generate `summaries/` and `propositions/` per the [Retrieval Optimization](core.md#retrieval-optimization) guidelines in core.md. Add both directories to the manifest's `searchable` context tier. These layers significantly improve RAG retrieval precision and reduce hallucination.
+10. **Generate retrieval layers** — After populating content sections, generate `summaries/` and `propositions/` per the [Retrieval Optimization](core.md#retrieval-optimization) guidelines in core.md. Add both directories to the manifest's `searchable` context tier. Also:
+    - **Add lead summaries** to the ~15 highest-traffic content files (blockquote at top with direct answer + anti-hallucination facts + gotchas). Focus on files that address common support questions.
+    - **Create `glossary.md`** at pack root mapping technical terms to common user language. Add to manifest's `always` context tier. Include a "Common User Language" column so RAG can match user vocabulary to pack terminology.
+    These layers significantly improve RAG retrieval precision and reduce hallucination.
 
 11. **Identify gaps and report** — Run gaps analysis comparing expected sections to inventory. Cross-reference `sources/` indexes against pack content. Produce a prioritized gap report for the domain expert.
 
@@ -1105,5 +1109,5 @@ Notes and principles
 
 ---
 
-*Schema version: 1.7*
-*Last updated: 2026-03-06*
+*Schema version: 1.8*
+*Last updated: 2026-03-07*
