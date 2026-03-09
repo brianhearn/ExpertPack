@@ -116,20 +116,104 @@ A completed ExpertPack is a folder of Markdown files — ready to plug into any 
 ```
 ExpertPack/
 ├── ARCHITECTURE.md          ← Framework design philosophy
+├── ROADMAP.md               ← Improvement project tracker
 ├── README.md                ← This file
 ├── LICENSE                  ← Apache 2.0
 │
 ├── schemas/                 ← Pack blueprints
-│   ├── core.md              ← Shared principles for all pack types
-│   ├── person.md            ← Person-pack schema
-│   ├── product.md           ← Product-pack schema
-│   ├── process.md           ← Process-pack schema
-│   └── composite.md         ← Composite schema (multi-pack deployments)
+│   ├── core.md              ← Shared principles for all pack types (v1.6)
+│   ├── person.md            ← Person-pack schema (v1.5)
+│   ├── product.md           ← Product-pack schema (v1.8)
+│   ├── process.md           ← Process-pack schema (v1.4)
+│   ├── composite.md         ← Composite schema (multi-pack deployments)
+│   └── eval.md              ← Evaluation framework for measuring pack quality
+│
+├── guides/                  ← Practical how-to guides
+│   └── population-methods.md ← How to populate packs from various sources
+│
+├── tools/                   ← Tooling for pack development
+│   └── eval-runner/         ← Eval runner script for automated quality scoring
 │
 └── packs/                   ← Pack instances
     ├── your-person-pack/    ← e.g., a founder's knowledge & stories
     └── your-product-pack/   ← e.g., a product's docs & workflows
 ```
+
+---
+
+## Retrieval Optimization
+
+ExpertPacks go beyond basic RAG with a multi-layer retrieval system designed to maximize precision and minimize wasted tokens. These layers work together — each compensates for what the others can't do alone.
+
+### Summaries (`summaries/`)
+Section-level summaries that enable hierarchical retrieval. Broad questions ("what can this product do?") match summaries first with high relevance. The agent drills into detail files for follow-ups. Follows the RAPTOR pattern — recursive summarization into a retrieval tree.
+
+### Propositions (`propositions/`)
+Atomic factual statements extracted from content files. When a user asks a specific factual question, the RAG system matches an exact proposition rather than a paragraph that happens to contain the answer. High-precision retrieval for factual queries.
+
+### Lead Summaries
+A 1–3 sentence blockquote at the top of high-traffic content files that directly answers the most likely query. Ensures the first RAG chunk contains the core answer, not a table of contents or preamble.
+
+### Glossary (`glossary.md`)
+Maps common user language to precise technical terms. Users say "stuck ZIP codes" when the pack documents "locked territories." The glossary bridges this vocabulary gap so RAG retrieval finds the right content regardless of how users phrase their questions.
+
+### File Splitting + Three-Layer Approach
+When content files grow beyond 1–3KB, split them — but never split without also generating summaries and propositions. Naive splitting loses cross-topic context. The three-layer approach (split files + summaries + propositions) consistently outperforms any single optimization.
+
+See [schemas/core.md](schemas/core.md) for the full retrieval optimization spec.
+
+---
+
+## Schema Versioning
+
+Every pack type schema carries a semantic version (`MAJOR.MINOR`). Major bumps indicate breaking structural changes; minor bumps are additive and backwards-compatible.
+
+Every pack's `manifest.yaml` declares which schema version it targets:
+
+```yaml
+schema_version: "1.6"  # Version of the type-specific schema this pack conforms to
+```
+
+Current schema versions:
+- Core: **1.6** — retrieval optimization (summaries, propositions, lead summaries, glossary)
+- Person: **1.5** — story cards, timeline, provenance, privacy modes, reasoning, conflicts
+- Product: **1.8** — timeline, decisions, customers, limitations, landscape, mental model, lead summaries, glossary
+- Process: **1.4** — exceptions, variants, enhanced phases/roles/overview
+- Composite: **1.0** — multi-pack deployments with role assignments and conflict resolution
+- Eval: **1.0** — evaluation framework for measuring and tracking pack quality
+
+---
+
+## Source Provenance
+
+Every content file can track where its information came from using frontmatter:
+
+```markdown
+---
+sources:
+  - type: video
+    title: "Product Overview Walkthrough"
+    ref: "03:12-04:05"
+  - type: documentation
+    url: "https://docs.example.com/feature-x"
+    date: "2026-01-15"
+---
+```
+
+Supported source types: `video`, `documentation`, `interview`, `support`, `conversation`. Provenance is especially important for packs built from multiple sources where content may need later verification or updating.
+
+---
+
+## Evaluation
+
+Every ExpertPack can include an eval suite to measure and track quality. The eval framework ([schemas/eval.md](schemas/eval.md)) defines:
+
+- **Response quality** — correctness, completeness, hallucination rate, refusal accuracy
+- **Retrieval quality** — hit rate, precision
+- **Efficiency** — tokens per query, latency, cost
+- **Pack health** — structural conformance to schema
+
+Build an eval set (10–20 test questions), run it with the [eval runner](tools/eval-runner/), and use results to guide optimization. Eval-driven improvement beats guessing.
 
 ---
 
@@ -140,7 +224,11 @@ ExpertPack/
 - **One source of truth** — each fact lives in exactly one place
 - **Small focused files** — 1–3KB per file for precise RAG retrieval
 - **Tiered context loading** — always/searchable/on-demand tiers minimize token cost per conversation
+- **Retrieval-optimized** — summaries, propositions, lead summaries, and glossary for multi-layer retrieval
+- **Source-tracked** — provenance frontmatter traces content back to its origin
 - **Composable** — combine packs with role assignments, context overrides, and conflict resolution
+- **Eval-driven** — measurable quality with automated scoring and baselines
+- **Schema-versioned** — type schemas carry semantic versions; packs declare their target version
 - **Never overwrite** — flag contradictions, let the human resolve
 
 See [schemas/core.md](schemas/core.md) for the full set of principles.
@@ -149,7 +237,7 @@ See [schemas/core.md](schemas/core.md) for the full set of principles.
 
 ## Status
 
-🚧 **Active development** — schemas defined, framework stabilizing.
+🚧 **Active development** — schemas maturing, retrieval optimization and eval framework in place, tooling expanding.
 
 ## License
 

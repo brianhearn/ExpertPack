@@ -40,8 +40,12 @@ These apply to every ExpertPack. See [schemas/core.md](schemas/core.md) for the 
 | **One Source of Truth** | Each fact lives in exactly one place |
 | **Small Files** | 1–3KB per content file, one topic per file |
 | **RAG-Optimized** | `##` section headers at natural topic breaks for quality chunking |
-| **Layered Loading** | Minimal → topical → full context loading |
+| **Retrieval-Optimized** | Multi-layer retrieval: summaries, propositions, lead summaries, glossary |
+| **Layered Loading** | Three-tier context: always → searchable → on-demand |
+| **Source-Tracked** | Provenance frontmatter traces content back to its origin |
 | **Cross-Referenced** | Relative markdown links between related files |
+| **Schema-Versioned** | Type schemas carry semantic versions; packs declare their target |
+| **Eval-Driven** | Measurable quality with standardized eval sets and automated scoring |
 | **Git-Native** | Version controlled, diffable, collaborative |
 | **Never Overwrite** | Contradictions are flagged for human resolution |
 
@@ -51,23 +55,28 @@ These apply to every ExpertPack. See [schemas/core.md](schemas/core.md) for the 
 
 The schema system has two layers:
 
-### Core Schema ([schemas/core.md](schemas/core.md))
+### Core Schema ([schemas/core.md](schemas/core.md)) — v1.6
 Shared principles and conventions that apply to every ExpertPack:
 - The MD-canonical principle
 - Required files (`manifest.yaml`, `overview.md`)
 - Directory conventions (`_index.md`, `_access.json`)
 - File structure rules (size, naming, headers)
 - Cross-referencing patterns
-- Layered loading strategy
+- Layered loading strategy (three-tier context: always → searchable → on-demand)
+- Retrieval optimization layers (summaries, propositions, lead summaries, glossary)
+- Source provenance tracking
+- Schema versioning system
 - Conflict resolution
 - Agent consumption patterns
 
 ### Type-Specific Schemas
 Each pack type has its own schema that extends core with domain-specific structure:
 
-- **[schemas/person.md](schemas/person.md)** — Mind taxonomy (9 universal categories), verbatim content, summaries, biographical facts, relationships, legacy/memorial mode, presentation (voice, appearance)
-- **[schemas/product.md](schemas/product.md)** — Concepts, workflows, troubleshooting (errors, diagnostics, common mistakes), screens, FAQ, commercial info, entity cross-references
-- **[schemas/process.md](schemas/process.md)** — Phases, decisions, checklists, resources, examples, gotchas
+- **[schemas/person.md](schemas/person.md)** (v1.5) — Mind taxonomy (9 universal categories), verbatim content with story card frontmatter, two-tier content system (verbatim → summary mirroring), biographical facts, timeline, relationships, legacy/memorial mode, privacy modes, presentation (voice, appearance), reasoning and conflict handling
+- **[schemas/product.md](schemas/product.md)** (v1.8) — Concepts, workflows, troubleshooting (errors, diagnostics, common mistakes), screens/interface specs, FAQ, commercial info, entity cross-references, timeline, decisions, customers, limitations, competitive landscape, mental model, lead summaries, glossary
+- **[schemas/process.md](schemas/process.md)** (v1.4) — Phases with enhanced structure, decisions, checklists, roles, resources, examples, gotchas, exceptions, variants
+- **[schemas/composite.md](schemas/composite.md)** (v1.0) — Multi-pack deployments with role assignments, context tier overrides, cross-pack conflict resolution
+- **[schemas/eval.md](schemas/eval.md)** (v1.0) — Evaluation framework for measuring pack quality (response quality, retrieval quality, efficiency, pack health)
 
 A pack declares its type in `manifest.yaml`, which determines which type-specific schema applies.
 
@@ -80,13 +89,18 @@ A pack is an instantiation of a schema — a concrete knowledge base about a spe
 ```
 ExpertPack/
 ├── schemas/               ← The blueprints
-│   ├── core.md
-│   ├── person.md
-│   ├── product.md
-│   └── process.md
+│   ├── core.md            ← Shared principles (v1.6)
+│   ├── person.md          ← Person-pack schema (v1.5)
+│   ├── product.md         ← Product-pack schema (v1.8)
+│   ├── process.md         ← Process-pack schema (v1.4)
+│   ├── composite.md       ← Composite schema (v1.0)
+│   └── eval.md            ← Eval framework (v1.0)
 │
 ├── guides/                ← Practical how-to guides for pack builders
 │   └── population-methods.md  ← How to populate packs from various sources
+│
+├── tools/                 ← Tooling for pack development
+│   └── eval-runner/       ← Automated eval execution and scoring
 │
 └── packs/                 ← The instances
     ├── bob-gpt/           ← Person pack: BobGPT
@@ -102,6 +116,22 @@ Creating a new pack means:
 
 ---
 
+## Retrieval Optimization
+
+Basic RAG — embed documents, retrieve top-k chunks — works, but it leaves precision and token efficiency on the table. ExpertPacks use a multi-layer retrieval system where each layer handles a different query granularity. See [schemas/core.md](schemas/core.md) for the full specification.
+
+| Layer | What It Does | Best For |
+|-------|-------------|----------|
+| **Summaries** (`summaries/`) | Section-level summaries following the RAPTOR pattern | Broad questions ("what can this product do?") |
+| **Propositions** (`propositions/`) | Atomic factual statements extracted from content | Specific factual questions ("what's the upload limit?") |
+| **Lead Summaries** | 1–3 sentence blockquote at the top of content files | Ensuring first-chunk relevance for high-traffic topics |
+| **Glossary** (`glossary.md`) | Maps user language to technical terms | Bridging vocabulary gaps in retrieval |
+| **Content Files** | Focused 1–3KB files with `##` headers | Detailed topic coverage |
+
+**The three-layer rule:** When splitting oversized files, always generate summaries and propositions alongside the split files. Naive splitting loses cross-topic context and makes retrieval worse, not better. The three layers together (split files + summaries + propositions) consistently outperform any single optimization.
+
+---
+
 ## How Agents Consume Packs
 
 ### Discovery
@@ -110,17 +140,18 @@ Creating a new pack means:
 3. This is the **minimal** loading level — enough for pack awareness
 
 ### Retrieval
-For a specific question:
-- **Navigate:** Read `_index.md` for the relevant directory → pick the right file
-- **Search:** Use RAG/vector search across all `.md` files for semantic matching
-- **Both:** RAG finds candidates, agent reads full files for complete context
+For a specific question, agents use hierarchical retrieval across the optimization layers:
+- **Broad queries** → match section summaries first, drill into content files for detail
+- **Factual queries** → match atomic propositions for precise answers
+- **Topic queries** → navigate via `_index.md` or RAG search across content files
+- **Vocabulary mismatches** → glossary bridges user language to pack terminology
 
 ### Update
 When adding or changing content:
 1. Identify the canonical file
 2. Check for contradictions
 3. Edit the Markdown file
-4. Update any affected JSON indexes
+4. Update any affected JSON indexes, summaries, and propositions
 5. Commit with a descriptive message
 
 ---
@@ -199,6 +230,7 @@ The eval system answers the question: "Is this pack getting better or worse?"
 | 2026-02-16 | — | Unified framework — three pack types, shared schemas |
 | 2026-02-18 | — | Person schema: mind taxonomy (9 categories); broadened examples |
 | 2026-03-05 | — | Added eval framework (schemas/eval.md); added ROADMAP.md for improvement project |
+| 2026-03-09 | — | Updated to reflect schema state: retrieval optimization layers, schema versioning, provenance, eval, updated type-specific schema descriptions |
 
 ---
 
