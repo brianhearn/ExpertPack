@@ -399,28 +399,59 @@ For any fact that changes faster than the pack's expected update cycle, store:
 | **Fast-moving** | 🟡 | Changes every few months | Semi-annual review | Product rankings, model specs, new entrants |
 | **Volatile** | 🔴 | Changes weeks-to-months | Quarterly review | Pricing, incentive amounts, availability, stock-like values |
 
-### Inline Annotation
+### Inline Refresh Metadata
 
-When a time-variant value appears in content, annotate it inline so both agents and humans know it may be stale:
+The critical rule: **refresh instructions must travel with the data, not live in a separate file.** When a consuming agent encounters a volatile fact, it needs the refresh method right there — not a pointer to a freshness guide it may not load.
+
+Every time-variant data point in a content file should carry its own refresh metadata using a YAML-style annotation block:
 
 ```markdown
-| Approx installed price | ~$10,500-14,000 (as of 2026-Q1) |
+The Tesla Powerwall 3 is priced at approximately $10,500-14,000 installed.
 
-> ⏳ **Time-variant:** Battery pricing changes frequently. For current pricing,
-> check [EnergySage](https://www.energysage.com/solar/battery-storage/) or
-> request quotes from local installers.
+<!-- refresh
+  decay: volatile
+  as_of: 2026-Q1
+  source: https://www.energysage.com/solar/battery-storage/
+  method: "Search 'Tesla Powerwall 3 installed cost [current year]' or request local installer quotes"
+-->
 ```
 
-The `⏳` marker and `(as of YYYY-QN)` date make staleness detectable by both humans scanning the file and agents evaluating answer confidence.
+**For tables with multiple volatile values**, place the refresh block after the table covering all volatile cells:
+
+```markdown
+| Feature | Tesla Powerwall 3 | Enphase IQ 5P |
+|---------|-------------------|---------------|
+| Capacity | 13.5 kWh | 5.0 kWh |
+| Approx price | ~$10,500-14,000 | ~$6,000-8,000 |
+
+<!-- refresh
+  decay: fast-moving
+  as_of: 2026-Q1
+  fields: [capacity, price, power_output]
+  source: https://www.energysage.com/solar/battery-storage/
+  method: "Check manufacturer product pages and EnergySage for current specs and pricing"
+-->
+```
+
+**Refresh block fields:**
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `decay` | Yes | `volatile`, `fast-moving`, `slow-moving`, or `permanent` |
+| `as_of` | Yes | When this data was last verified (YYYY-QN or YYYY-MM-DD) |
+| `source` | Yes | URL or description of where to get the current value |
+| `method` | Recommended | Human/agent-readable instructions for refreshing (search query, steps, or API call) |
+| `fields` | Optional | Which specific data points in the preceding content this covers (for tables with mixed permanence) |
+
+**Why HTML comments?** They're invisible in rendered markdown but parseable by agents and tooling. They don't clutter the reading experience but are always present when the content is loaded into context.
 
 ### Freshness Guide (freshness.md)
 
-Recommended file at the pack root that catalogs all time-variant data points, grouped by source file. Each entry includes:
+A **supplementary** index at the pack root that provides a bird's-eye view of all time-variant data across the pack. This is NOT the primary refresh metadata — that lives inline with the data (above). The freshness guide is for:
 
-- Which file and data point
-- Time variance category (🔴/🟡/🟢/⚪)
-- How to obtain the current value (URL, search, API)
-- Reference value with date (the last-known value)
+- Pack maintainers reviewing overall freshness at a glance
+- Automated tooling scanning for overdue refresh cycles
+- Onboarding new contributors to the pack's maintenance needs
 
 ```markdown
 # Freshness Guide — {Pack Name}
@@ -429,24 +460,25 @@ Last full review: YYYY-MM-DD
 
 ## {source-file.md}
 
-| Data Point | Category | How to Refresh | Reference Value (YYYY-MM) |
-|-----------|----------|----------------|--------------------------|
-| Panel pricing per watt | 🔴 | Check [EnergySage marketplace](https://...) | $2.25-3.75/W range |
-| Top 10 rankings | 🟡 | Check [Clean Energy Reviews](https://...) | Aiko #1 at 25.0% |
-| NEC code section numbers | 🟢 | NFPA 70 (new edition every 3 yrs) | Current: NEC 2023, 690.12 |
-| String sizing formula | ⚪ | N/A — physics | Permanent |
+| Data Point | Decay | Review Cycle | Last Verified |
+|-----------|-------|-------------|---------------|
+| Panel pricing per watt | 🔴 Volatile | Quarterly | 2026-Q1 |
+| Top 10 rankings | 🟡 Fast-moving | Semi-annual | 2026-03 |
+| NEC code section numbers | 🟢 Slow-moving | Annual | 2026-03 |
+| String sizing formula | ⚪ Permanent | Never | N/A |
 ```
 
-**Context tier:** Tier 2 (Searchable). The freshness guide is useful for maintenance agents and humans reviewing pack currency.
+**Context tier:** Tier 2 (Searchable).
 
-**Maintenance:** Update reference values and the "Last full review" date whenever the pack is refreshed. The freshness guide is the first file a maintenance agent should read when performing a pack update.
+**Relationship to inline metadata:** The freshness guide is derived from the inline refresh blocks. If they disagree, the inline block is the source of truth (it's closer to the data). When refreshing the pack, update the inline blocks first, then regenerate or update the freshness guide.
 
 ### Design Guidance
 
+- **Refresh metadata travels with the data.** This is the non-negotiable rule. A volatile fact without an inline refresh block is a bug — it will become wrong and nobody will know how to fix it.
 - **Don't avoid time-variant facts** — packs that omit pricing, product names, and current specs to avoid staleness end up too abstract to be useful. Include them, but annotate them.
 - **Include enough permanent context** that the pack remains valuable even when volatile data is stale. A good pack with stale pricing is still useful; a pack that's mostly stale pricing is not.
-- **The freshness guide doubles as an update runbook.** When it's time to refresh the pack, the guide tells you exactly what to check and where to check it.
-- **Agents consuming the pack** should check the freshness guide before presenting volatile data points as current facts. If data is potentially stale, the agent should say so and offer to look up the current value.
+- **Prefer durable knowledge.** When choosing what to cover in depth, bias toward process, technique, decision frameworks, and concepts — knowledge that doesn't expire. Include volatile specs as supporting context, not as the pack's core value.
+- **Agents consuming the pack** should parse refresh blocks before presenting volatile data as current. If `as_of` is more than one review cycle old, the agent should caveat the answer and offer to look up the current value using the provided `source` and `method`.
 
 ---
 
@@ -710,5 +742,5 @@ These principles apply to every ExpertPack, regardless of type:
 
 ---
 
-*Schema version: 1.8*
+*Schema version: 1.9*
 *Last updated: 2026-03-10*
