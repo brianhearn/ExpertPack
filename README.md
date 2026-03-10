@@ -111,6 +111,36 @@ A completed ExpertPack is a folder of Markdown files — ready to plug into any 
 
 ---
 
+## Agent Packs — Export Your AI Agent as an ExpertPack
+
+**New in v1.6/1.7:** AI agents can now export themselves as ExpertPacks using the `agent` subtype of the person schema. An agent pack captures everything an AI agent has learned and become — identity, personality, operational knowledge, tool expertise, behavioral patterns, and relationships — in a format that can bootstrap a new instance to near-equivalent capability.
+
+### What Agent Packs Enable
+
+- **Backup & restore** — your agent dies; a new one boots from its EP and is immediately competent
+- **Migration** — move an agent from one platform to another, bringing its knowledge along
+- **Collaboration** — share an agent's domain expertise with another agent via composite
+- **Marketplace** — distribute a well-trained agent configuration as a portable pack
+
+### Auto-Discovery Export
+
+The included `expertpack-export` skill can scan a running agent's workspace, auto-discover knowledge domains, and generate a complete composite EP:
+
+```
+Agent workspace (438KB raw state)
+    ↓ scan → discover → classify
+Proposed composite:
+    - 1 agent pack (identity, tools, safety, routines)
+    - 1 person pack (user knowledge)
+    - N product/process packs (domain expertise)
+    ↓ distill → compress → validate
+Composite EP (31KB structured knowledge, 7% of raw)
+```
+
+See [schemas/person.md — Agent Extension](schemas/person.md#agent-extension-subtype-agent) for the full spec, and `skills/expertpack-export/` for the automation tooling.
+
+---
+
 ## Repository Structure
 
 ```
@@ -121,12 +151,15 @@ ExpertPack/
 ├── LICENSE                  ← Apache 2.0
 │
 ├── schemas/                 ← Pack blueprints
-│   ├── core.md              ← Shared principles for all pack types (v1.6)
-│   ├── person.md            ← Person-pack schema (v1.5)
+│   ├── core.md              ← Shared principles for all pack types (v1.7)
+│   ├── person.md            ← Person-pack schema (v1.6) — includes agent subtype
 │   ├── product.md           ← Product-pack schema (v1.8)
 │   ├── process.md           ← Process-pack schema (v1.4)
-│   ├── composite.md         ← Composite schema (multi-pack deployments)
+│   ├── composite.md         ← Composite schema (v1.1) — auto-discovery & export
 │   └── eval.md              ← Evaluation framework for measuring pack quality
+│
+├── skills/                  ← Agent skills
+│   └── expertpack-export/   ← Auto-discover & export an agent instance to EP
 │
 ├── guides/                  ← Practical how-to guides
 │   └── population-methods.md ← How to populate packs from various sources
@@ -175,11 +208,11 @@ schema_version: "1.6"  # Version of the type-specific schema this pack conforms 
 ```
 
 Current schema versions:
-- Core: **1.6** — retrieval optimization (summaries, propositions, lead summaries, glossary)
-- Person: **1.5** — story cards, timeline, provenance, privacy modes, reasoning, conflicts
+- Core: **1.7** — subtypes, retrieval optimization (summaries, propositions, lead summaries, glossary)
+- Person: **1.6** — agent subtype, story cards, timeline, provenance, privacy modes, reasoning, conflicts
 - Product: **1.8** — timeline, decisions, customers, limitations, landscape, mental model, lead summaries, glossary
 - Process: **1.4** — exceptions, variants, enhanced phases/roles/overview
-- Composite: **1.0** — multi-pack deployments with role assignments and conflict resolution
+- Composite: **1.1** — auto-discovery & export, multi-pack deployments with role assignments and conflict resolution
 - Eval: **1.0** — evaluation framework for measuring and tracking pack quality
 
 ---
