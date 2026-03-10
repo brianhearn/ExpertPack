@@ -27,6 +27,14 @@ A comprehensive knowledge base for residential solar and battery storage — the
 
 Start with the concept files to build your mental model, then use the specification files for product comparisons when making purchasing decisions. The workflow files walk you through system design step-by-step. Troubleshooting files help when things don't go as planned.
 
+<!-- refresh
+  decay: fast-moving
+  as_of: 2026-Q1
+  fields: [product_names_in_key_topics, market_year_references]
+  source: see individual specification and concept files for per-field refresh instructions
+  method: "Overview references specific products and market year. When refreshing the pack, update overview text to match current specification files."
+-->
+
 ## Important Disclaimer
 
 This pack is for educational purposes. Solar installations involve high-voltage electrical work and must comply with local building codes and the National Electrical Code. Always consult with a licensed electrician or certified solar installer for your specific situation. Codes, products, and incentives change — verify current information before purchasing or installing.

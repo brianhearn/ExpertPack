@@ -12,6 +12,14 @@ Each solar panel gets its own small inverter that converts DC to AC right at the
 
 **Key brands:** Enphase (dominant market leader — IQ8 and IQ8+ series), AP Systems
 
+<!-- refresh
+  decay: fast-moving
+  as_of: 2026-Q1
+  fields: [enphase_model_series, market_leadership]
+  source: https://enphase.com/homeowners/microinverters
+  method: "Check Enphase product page for current model series. IQ8 may be superseded by IQ9 or later. Check Solar Power World for market share shifts."
+-->
+
 **Pros:**
 - Panel-level independence — shading on one panel doesn't affect others
 - No single point of failure — if one microinverter fails, all other panels keep producing
@@ -35,6 +43,14 @@ All panels wire together in series (a "string"), and one central inverter handle
 **How it works:** Panels produce DC → DC flows through series-connected string → central inverter converts to AC. All panels in a string share the same current.
 
 **Key brands:** SMA (Sunny Boy), Fronius (Primo/Symo), SolarEdge (when used without optimizers, rare)
+
+<!-- refresh
+  decay: fast-moving
+  as_of: 2026-Q1
+  fields: [string_inverter_brand_models]
+  source: manufacturer product pages (sma.de, fronius.com, solaredge.com)
+  method: "Check manufacturer sites for current model lines. Model names change but the architecture concepts above are permanent."
+-->
 
 **Pros:**
 - Lowest cost per watt
@@ -71,7 +87,15 @@ Hybrid approach: each panel gets a DC-DC power optimizer, but a central string i
 - SolarEdge optimizers are proprietary — locked into their ecosystem
 - Still has single-point-of-failure at the central inverter
 - More components than pure string, but fewer than microinverters
-- SolarEdge has faced reliability concerns in recent years (higher warranty claim rates reported in the field)
+- SolarEdge has faced reliability concerns in recent years (higher warranty claim rates reported in the field, as of 2025-2026)
+
+<!-- refresh
+  decay: fast-moving
+  as_of: 2026-Q1
+  fields: [solaredge_reliability_status]
+  source: r/solar, Solar Power World, SolarEdge investor relations
+  method: "SolarEdge reliability concerns may improve or worsen. Check r/solar for installer sentiment and SolarEdge announcements for product revisions."
+-->
 - Optimizer failure diagnosis can be confusing — monitoring shows which panel underperforms but physical access is still on-roof
 
 **Best for:** Moderate shading situations, wanting panel-level monitoring without full microinverter cost, mid-range budgets.

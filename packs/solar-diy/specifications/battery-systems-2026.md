@@ -32,8 +32,24 @@ sources:
 | **Gateway required** | Gateway 3 or Backup Switch | IQ System Controller 3/3G | aGate (built-in ATS) |
 | **Built-in solar inverter** | ✅ Yes (20 kW DC, 6 MPPTs) | ❌ No | ❌ No |
 | **Generator integration** | Via Gateway | Via System Controller | Native via aGate |
-| **Approx installed price** | $10,500-14,000 | $6,000-8,000 per unit | $12,000-16,000 |
+| **Approx installed price** | ~$10,500-14,000 | ~$6,000-8,000 per unit | ~$12,000-16,000 |
 | **Price per usable kWh** | ~$780-1,040 | ~$1,200-1,600 | ~$800-1,070 |
+
+<!-- refresh
+  decay: fast-moving
+  as_of: 2026-Q1
+  fields: [capacity, continuous_output, peak_surge, warranty_terms, scalability, gateway_models]
+  source: Tesla (tesla.com/powerwall), Enphase (enphase.com/homeowners/battery), FranklinWH (franklinwh.com)
+  method: "Check manufacturer product pages for current specs. New models or spec revisions are announced at trade shows (RE+, Intersolar) and covered by Solar Power World, PV Magazine."
+-->
+
+<!-- refresh
+  decay: volatile
+  as_of: 2026-Q1
+  fields: [installed_price, price_per_kwh]
+  source: https://www.energysage.com/solar/battery-storage/
+  method: "Battery pricing changes quarterly. Request installer quotes for current installed prices. EnergySage publishes average battery costs. Search 'home battery cost [current year]'."
+-->
 
 ## Decision Framework
 
@@ -48,6 +64,14 @@ sources:
 
 ### Best for: Budget-conscious essentials backup
 **→ Single Enphase IQ 5P** — At $6,000-8,000 installed, it's the lowest entry point. 5 kWh covers fridge, lights, Wi-Fi, and sump pump for a night. Add units later as budget allows.
+
+<!-- refresh
+  decay: volatile
+  as_of: 2026-Q1
+  fields: [price_references_in_decision_text]
+  source: https://www.energysage.com/solar/battery-storage/
+  method: "Price references embedded in decision text. Refresh alongside the comparison table prices above."
+-->
 
 ### Best for: Modularity and gradual expansion
 **→ Enphase IQ Battery 5P** — 5 kWh building blocks let you start small and scale. Each unit has embedded microinverters providing redundancy — if one fails, others continue operating.
@@ -68,3 +92,11 @@ sources:
 - **AC-coupled vs DC-coupled** — DC-coupled (Powerwall 3) is more efficient for new installs. AC-coupled (Enphase, Franklin) is better for retrofitting to existing solar
 - **Gateway/controller costs** — Budget for the required gateway or controller, not just the battery. Tesla Gateway 3, Enphase IQ System Controller, or Franklin aGate each add $1,000-3,000
 - **Warranty fine print** — Enphase's 15-year warranty sounds best, but note the 60% end-of-warranty capacity vs Tesla's 70% at 10 years. Both use unlimited cycles for standard use modes
+
+<!-- refresh
+  decay: volatile
+  as_of: 2026-Q1
+  fields: [gateway_controller_price_range]
+  source: installer quotes, manufacturer price lists
+  method: "Gateway/controller pricing in gotchas section. Refresh alongside main comparison table."
+-->

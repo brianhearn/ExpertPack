@@ -4,7 +4,31 @@
 
 Average installed cost is $2.50-3.50 per watt before incentives. A typical 8 kW system costs $20,000-28,000 before the federal tax credit. The 30% federal Investment Tax Credit (ITC) under the Inflation Reduction Act reduces this by ~$6,000-8,400, bringing net cost to $14,000-20,000. State and local incentives may reduce it further.
 
+<!-- refresh
+  decay: volatile
+  as_of: 2026-Q1
+  fields: [cost_per_watt, system_cost_example, net_cost_after_itc]
+  source: https://www.energysage.com/solar/
+  method: "Search 'average solar installation cost [current year]' or check EnergySage marketplace data. SEIA publishes quarterly Solar Market Insight reports with national average pricing."
+-->
+
+<!-- refresh
+  decay: slow-moving
+  as_of: 2026-Q1
+  fields: [federal_itc_percentage]
+  source: https://www.irs.gov (search 'residential clean energy credit') or https://www.seia.org/initiatives/solar-investment-tax-credit-itc
+  method: "The ITC is 30% through 2032 under the Inflation Reduction Act, then steps down (26% in 2033, 22% in 2034). Verify if legislation has changed."
+-->
+
 Battery storage adds $6,000-16,000 per unit depending on the system (see [Battery Systems](../specifications/battery-systems-2026.md)).
+
+<!-- refresh
+  decay: volatile
+  as_of: 2026-Q1
+  fields: [battery_price_range]
+  source: https://www.energysage.com/solar/battery-storage/
+  method: "Cross-reference with battery-systems-2026.md pricing. Refresh together."
+-->
 
 ## How long does it take solar panels to pay for themselves?
 
@@ -59,6 +83,14 @@ You send excess solar power to the grid during the day and draw grid power at ni
 
 Check your state's current net metering policy before making financial projections.
 
+<!-- refresh
+  decay: fast-moving
+  as_of: 2026-Q1
+  fields: [net_metering_policy_types, nem3_status]
+  source: https://www.dsireusa.org/
+  method: "Net metering policies change by state. DSIRE database has current state-by-state policies. Search 'net metering [state] [current year]' for specific states. NEM 3.0 was California-specific; check if other states have adopted similar models."
+-->
+
 ## Should I get a battery with my solar system?
 
 Depends on your goals:
@@ -68,3 +100,11 @@ Depends on your goals:
 - **Going off-grid:** Essential
 
 Batteries add $6,000-16,000+ to system cost. In states with strong net metering, the grid effectively acts as a free battery. As net metering policies weaken, batteries become more economically attractive.
+
+<!-- refresh
+  decay: volatile
+  as_of: 2026-Q1
+  fields: [battery_cost_range]
+  source: https://www.energysage.com/solar/battery-storage/
+  method: "Cross-reference with battery-systems-2026.md pricing. Refresh together."
+-->

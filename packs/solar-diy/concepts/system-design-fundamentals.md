@@ -107,7 +107,15 @@ Where:
 
 ### Worked Example
 
-**Equipment:** 485W panel (Voc=45.9V, Vmp=45.63V, TempCoef_Voc=-0.27%/°C, TempCoef_Vmp=-0.34%/°C) with SMA CORE1 inverter (max 1000V, MPPT range 550-800V)
+**Equipment (example — verify current specs on manufacturer datasheets):** 485W panel (Voc=45.9V, Vmp=45.63V, TempCoef_Voc=-0.27%/°C, TempCoef_Vmp=-0.34%/°C) with SMA CORE1 inverter (max 1000V, MPPT range 550-800V)
+
+<!-- refresh
+  decay: fast-moving
+  as_of: 2026-Q1
+  fields: [example_panel_model_specs, example_inverter_model_specs]
+  source: manufacturer datasheets (qcells.com, sma.de)
+  method: "The MATH is permanent — formulas never change. The example equipment specs may be outdated. Verify panel Voc/Vmp/TempCoef and inverter voltage ranges on current datasheets before using for real system design."
+-->
 
 **Site:** Portland, Oregon (T_low=-7°C, T_high=32°C, roof-mounted flush)
 

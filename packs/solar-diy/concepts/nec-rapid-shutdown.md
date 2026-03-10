@@ -95,6 +95,14 @@ This is jurisdiction-specific. States, counties, and cities adopt NEC editions o
 - **Four jurisdictions** adopted NEC 2023 by late 2023, with 13+ in process
 - **Some states** are still on NEC 2014
 
+<!-- refresh
+  decay: fast-moving
+  as_of: 2026-Q1
+  fields: [nec_adoption_by_state, jurisdiction_counts]
+  source: https://www.nfpa.org/education-and-research/electrical/nec-enforcement-maps
+  method: "NFPA maintains an interactive NEC adoption map. State adoption changes as legislatures act. The next NEC edition (2026) may begin adoption cycles soon."
+-->
+
 **Always check:** Contact your local AHJ (building department) to confirm which NEC edition they enforce. Your installer should know this, but verify independently.
 
 ## Marking Requirements (NEC 2023, 690.12(D))

@@ -30,6 +30,14 @@ sources:
 | 9 | Risen Energy | N-type TOPCon | 475 | 23.8% | TOPCon |
 | 10 | Astronergy | Astra N7 2.0 | 530 | 23.8% | TOPCon |
 
+<!-- refresh
+  decay: fast-moving
+  as_of: 2026-02
+  fields: [rankings, model_names, power_ratings, efficiency_percentages]
+  source: https://www.cleanenergyreviews.info/blog/most-efficient-solar-panels
+  method: "Clean Energy Reviews updates this ranking monthly. Check their top 20 chart for current rankings, models, and efficiency figures."
+-->
+
 ## Cell Technology Comparison
 
 ### Back-contact (IBC / ABC / HPBC)
@@ -55,6 +63,14 @@ sources:
 - Less common than TOPCon in 2026 market — higher manufacturing cost without a clear efficiency lead
 - Some manufacturers (Panasonic, REC) use HJT variants
 
+<!-- refresh
+  decay: slow-moving
+  as_of: 2026-Q1
+  fields: [cell_technology_landscape, market_share_by_type, manufacturer_leadership]
+  source: https://www.cleanenergyreviews.info/blog/latest-solar-panel-cell-technology
+  method: "Cell technology landscape shifts over years, not months. Check Clean Energy Reviews annual technology overview or PV Magazine for major shifts (e.g., a new cell type reaching commercial viability)."
+-->
+
 ## Pricing Tiers (Approximate, 2025-2026)
 
 | Tier | $/Watt | Examples | Efficiency Range |
@@ -63,6 +79,14 @@ sources:
 | Premium TOPCon | $2.75-3.25 | REC Alpha Pure, Silfab QD, Qcells | 22.5-24% |
 | Value TOPCon | $2.25-2.75 | Jinko Tiger Neo, Trina Vertex S+, Canadian Solar | 22-23.8% |
 | Budget / Economy | $1.75-2.25 | Various lesser-known brands | 20-22% |
+
+<!-- refresh
+  decay: volatile
+  as_of: 2026-Q1
+  fields: [dollar_per_watt_ranges, tier_boundaries]
+  source: https://www.energysage.com/solar/
+  method: "Panel pricing changes quarterly. Check EnergySage marketplace data, request installer quotes, or search 'solar panel cost per watt [current year]'. SEIA publishes quarterly market insight reports with pricing trends."
+-->
 
 ## Warranty Landscape
 
@@ -74,6 +98,14 @@ sources:
 | Jinko Solar | 25 years (product), 30 years (linear) | 87.4% at year 30 | Large manufacturer, widespread availability |
 | Trina Solar | 25 years | 87.4% at year 25 | One of the world's largest panel producers |
 | LONGi Solar | 25 years (product), 30 years (power) | 87.4% at year 30 | World's largest solar manufacturer by capacity |
+
+<!-- refresh
+  decay: slow-moving
+  as_of: 2026-Q1
+  fields: [warranty_years, performance_guarantee_percentages]
+  source: manufacturer warranty documents (each manufacturer's website)
+  method: "Warranty terms change infrequently (years). Verify at manufacturer websites. Major changes (like Maxeon's 40-year introduction) are widely reported in trade press."
+-->
 
 ## How to Choose
 
