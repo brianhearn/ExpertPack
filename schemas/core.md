@@ -378,6 +378,78 @@ sources:
 
 ---
 
+## Time Variance
+
+Not all facts in a pack have the same shelf life. A string sizing formula is permanent; a panel's price per watt is stale within months. ExpertPacks must distinguish between durable knowledge and time-variant data — and handle each appropriately.
+
+### The Principle: Store the Method, Not the Value
+
+For any fact that changes faster than the pack's expected update cycle, store:
+
+1. **What it is** — the concept or data point (e.g., "installed cost per kWh for home batteries")
+2. **How to obtain the current value** — a URL, search query, API endpoint, or procedure
+3. **A reference value with a date** — for ballpark/sanity-check purposes, clearly marked as a snapshot
+
+### Time Variance Categories
+
+| Category | Symbol | Meaning | Typical Decay | Examples |
+|----------|--------|---------|---------------|---------|
+| **Permanent** | ⚪ | Doesn't change | Never | Physics formulas, mathematical relationships, fundamental concepts |
+| **Slow-moving** | 🟢 | Changes every 1-3 years | Annual review | Code editions, warranty terms, industry standards |
+| **Fast-moving** | 🟡 | Changes every few months | Semi-annual review | Product rankings, model specs, new entrants |
+| **Volatile** | 🔴 | Changes weeks-to-months | Quarterly review | Pricing, incentive amounts, availability, stock-like values |
+
+### Inline Annotation
+
+When a time-variant value appears in content, annotate it inline so both agents and humans know it may be stale:
+
+```markdown
+| Approx installed price | ~$10,500-14,000 (as of 2026-Q1) |
+
+> ⏳ **Time-variant:** Battery pricing changes frequently. For current pricing,
+> check [EnergySage](https://www.energysage.com/solar/battery-storage/) or
+> request quotes from local installers.
+```
+
+The `⏳` marker and `(as of YYYY-QN)` date make staleness detectable by both humans scanning the file and agents evaluating answer confidence.
+
+### Freshness Guide (freshness.md)
+
+Recommended file at the pack root that catalogs all time-variant data points, grouped by source file. Each entry includes:
+
+- Which file and data point
+- Time variance category (🔴/🟡/🟢/⚪)
+- How to obtain the current value (URL, search, API)
+- Reference value with date (the last-known value)
+
+```markdown
+# Freshness Guide — {Pack Name}
+
+Last full review: YYYY-MM-DD
+
+## {source-file.md}
+
+| Data Point | Category | How to Refresh | Reference Value (YYYY-MM) |
+|-----------|----------|----------------|--------------------------|
+| Panel pricing per watt | 🔴 | Check [EnergySage marketplace](https://...) | $2.25-3.75/W range |
+| Top 10 rankings | 🟡 | Check [Clean Energy Reviews](https://...) | Aiko #1 at 25.0% |
+| NEC code section numbers | 🟢 | NFPA 70 (new edition every 3 yrs) | Current: NEC 2023, 690.12 |
+| String sizing formula | ⚪ | N/A — physics | Permanent |
+```
+
+**Context tier:** Tier 2 (Searchable). The freshness guide is useful for maintenance agents and humans reviewing pack currency.
+
+**Maintenance:** Update reference values and the "Last full review" date whenever the pack is refreshed. The freshness guide is the first file a maintenance agent should read when performing a pack update.
+
+### Design Guidance
+
+- **Don't avoid time-variant facts** — packs that omit pricing, product names, and current specs to avoid staleness end up too abstract to be useful. Include them, but annotate them.
+- **Include enough permanent context** that the pack remains valuable even when volatile data is stale. A good pack with stale pricing is still useful; a pack that's mostly stale pricing is not.
+- **The freshness guide doubles as an update runbook.** When it's time to refresh the pack, the guide tells you exactly what to check and where to check it.
+- **Agents consuming the pack** should check the freshness guide before presenting volatile data points as current facts. If data is potentially stale, the agent should say so and offer to look up the current value.
+
+---
+
 ## Cross-Referencing
 
 ### Markdown Links
@@ -632,10 +704,11 @@ These principles apply to every ExpertPack, regardless of type:
 | Directory indexes | `_index.md` in every content directory |
 | Context strategy | Three tiers: always → searchable → on-demand, declared in manifest |
 | Retrieval optimization | Summaries (broad), propositions (precise), file splitting, lead summaries (front-loaded answers), and glossary (vocabulary bridging) — use together; see [Retrieval Optimization](#retrieval-optimization) |
+| Time variance | Annotate time-variant facts inline (⏳ + date); maintain `freshness.md` cataloging all volatile data with refresh methods; see [Time Variance](#time-variance) |
 | Conflict resolution | Never overwrite — flag and ask the human |
 | Version control | Git-native, semantic versioning |
 
 ---
 
-*Schema version: 1.7*
+*Schema version: 1.8*
 *Last updated: 2026-03-10*
