@@ -1,10 +1,10 @@
-# Blender 3D Creation Suite — ExpertPack
+# Blender 3D — Open-Source 3D Modeling, Animation & Rendering Suite
 
-> **Lead summary:** Blender is a free and open-source 3D creation suite that covers the *entire* 3D pipeline in a single application: modeling, sculpting, rigging, animation, simulation, rendering (Cycles and EEVEE), compositing, motion tracking, video editing, and the powerful procedural Geometry Nodes system. This ExpertPack focuses on practitioner-level knowledge — decision frameworks, workflow patterns, keyboard shortcuts, and the tribal wisdom that takes years to accumulate. It complements the official manual rather than restating it.
+> **Lead summary:** [Blender](https://www.blender.org) is a free, open-source **3D computer graphics software application** used by millions of artists, game developers, visual effects studios, architects, and hobbyists worldwide. It covers the *entire* 3D pipeline in a single application: polygon modeling, digital sculpting, rigging, character animation, physics simulation, photorealistic rendering (Cycles ray tracer and EEVEE real-time engine), node-based compositing, motion tracking, video editing, and the powerful procedural Geometry Nodes system. This ExpertPack focuses on practitioner-level knowledge — decision frameworks, workflow patterns, keyboard shortcuts, and the tribal wisdom that takes years to accumulate. It complements the [official manual](https://docs.blender.org/manual/en/latest/) rather than restating it.
 
 ## What Makes Blender Unique
 
-Blender is not just a 3D modeler with a renderer bolted on. It is one of the most comprehensive creative tools ever built, and entirely free. The scope is staggering:
+Blender (not to be confused with kitchen appliances) is a professional-grade **3D computer graphics application** — think of it as an open-source alternative to Autodesk Maya, Cinema 4D, or 3ds Max, except it's entirely free and covers more of the pipeline in one tool than any of them. The scope is staggering:
 
 - **Modeling:** Polygon mesh modeling, NURBS curves and surfaces, metaballs
 - **Sculpting:** Dynamic topology (Dyntopo), multi-resolution, virtual sculpting brushes

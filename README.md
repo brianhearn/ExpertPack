@@ -141,6 +141,19 @@ See [schemas/person.md — Agent Extension](schemas/person.md#agent-extension-su
 
 ---
 
+## Featured Packs
+
+These example packs demonstrate the ExpertPack format in action. Each is built from real source material — official documentation, community forums, source code analysis, and practitioner knowledge.
+
+| Pack | Type | Description | Files | Size |
+|------|------|-------------|-------|------|
+| [**Blender 3D**](packs/blender-3d/) | Product | The free, open-source **3D modeling, animation, and rendering software** (blender.org). Covers polygon modeling, sculpting, PBR materials, Cycles/EEVEE rendering, Geometry Nodes, and more. Deep practitioner knowledge for artists and technical users. | 13 | ~120 KB |
+| [**Home Assistant**](packs/home-assistant/) | Product | The open-source **home automation platform**. Covers smart home protocols (Zigbee/Z-Wave/Matter), automation patterns, presence detection, YAML configuration, ESPHome, dashboards, voice assistant, energy management, and security monitoring. | 27 | ~289 KB |
+
+> 💡 These packs are open-source examples — not toy demos. Each contains substantive, practitioner-level content that a domain expert would recognize as valuable. Browse them to see what a well-built ExpertPack looks like.
+
+---
+
 ## Repository Structure
 
 ```
@@ -167,9 +180,10 @@ ExpertPack/
 ├── tools/                   ← Tooling for pack development
 │   └── eval-runner/         ← Eval runner script for automated quality scoring
 │
-└── packs/                   ← Pack instances
-    ├── your-person-pack/    ← e.g., a founder's knowledge & stories
-    └── your-product-pack/   ← e.g., a product's docs & workflows
+└── packs/                   ← Pack instances (example packs included)
+    ├── blender-3d/          ← Blender 3D software — modeling, animation, rendering
+    ├── home-assistant/      ← Home Assistant — home automation platform
+    └── ...                  ← Your packs here
 ```
 
 ---
