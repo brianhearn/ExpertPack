@@ -159,6 +159,40 @@ Categories are pack-type flexible. Use what applies:
 | **End-to-End Latency** | Total time from question to answer delivered | Milliseconds |
 | **Time to First Token** | Time until the model starts generating | Milliseconds |
 
+### Esoteric Knowledge Metrics
+
+| Metric | What It Measures | How to Score |
+|--------|-----------------|-------------|
+| **EK Ratio** | Proportion of pack propositions containing esoteric knowledge | See [core.md — EK Ratio](core.md#esoteric-knowledge-ek-ratio) for full methodology |
+| **EK by Section** | Which sections contribute most/least esoteric knowledge | EK ratio calculated per `propositions/{section}.md` file |
+| **GK Bloat** | How much pack space is consumed by general knowledge | Total tokens in low-EK files / total pack tokens |
+
+**Methodology:** EK ratio is measured via proposition-level blind probing — asking frontier models each proposition as a question without pack context. See [core.md — Measuring EK Ratio](core.md#measuring-ek-ratio) for the complete protocol.
+
+**Including EK in eval runs:** Add an `ek_ratio` block to results files:
+
+```yaml
+ek_ratio:
+  value: 0.72
+  models_probed: ["gpt-5", "claude-opus-4", "gemini-2"]
+  propositions_total: 142
+  ek_count: 83
+  partial_count: 21
+  gk_count: 38
+  by_section:
+    troubleshooting: 0.89
+    process/gotchas: 0.84
+    concepts/esphome: 0.78
+    concepts/core-architecture: 0.21
+    overview: 0.15
+```
+
+**Actionable insights from EK metrics:**
+- **Low EK sections** (< 0.30) are candidates for compaction — compress to glossary entries or brief context
+- **High EK sections** (> 0.80) are the pack's core value — invest in deeper hydration, better propositions, and lead summaries
+- **GK bloat** above 30% suggests the pack needs an EK-focused pruning pass
+- **EK ratio trending down** between measurements means model training data is absorbing the pack's domain — time to deepen with more tribal knowledge
+
 ### Pack Health Metrics (Structural)
 
 | Metric | What It Measures | How to Score |
@@ -329,9 +363,11 @@ eval:
   eval_set: "eval/questions.yaml"
   latest_baseline: "eval/baselines/2026-03-10-initial-baseline.yaml"
   last_eval_run: "2026-03-10"
+  ek_ratio: 0.72              # Latest measured EK ratio (also declared at top level)
 ```
 
 ---
 
-*Schema version: 1.0*
+*Schema version: 1.1*
 *Created: 2026-03-05*
+*Last updated: 2026-03-12*
