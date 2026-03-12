@@ -1,3 +1,5 @@
+<!-- context: section=product, topic=glossary, related=system-design-fundamentals,inverter-types,nec-rapid-shutdown,battery-systems-2026 -->
+
 # Solar & Battery — Glossary
 
 Quick-reference definitions for residential solar terminology. Maps technical terms to how homeowners and DIYers actually talk about them.

@@ -1,5 +1,7 @@
 # Phase 4: Permitting & Utility Interconnection
 
+<!-- context: section=process, topic=phase-4-permitting, related=nec-rapid-shutdown,installation,inspection-commissioning,system-design,120-percent-rule -->
+
 > **Lead summary:** Permitting is the longest phase for most projects — not because the work is hard, but because of queue times. A building permit typically takes 1–4 weeks; utility interconnection approval takes 4–12 weeks (and up to 6 months in congested areas). You'll need both before you can legally operate your system. Start both applications as early as possible and run them in parallel.
 
 ## Overview of What's Required

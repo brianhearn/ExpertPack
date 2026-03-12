@@ -1,5 +1,7 @@
 # Phase 1: Site Assessment
 
+<!-- context: section=process, topic=phase-1-site-assessment, related=system-design,diy-vs-contractor,permitting,shading-analysis -->
+
 > **Lead summary:** Before designing anything, assess whether your site is actually suitable for solar. A thorough site assessment covers four areas: roof condition and orientation, shading analysis, structural capacity, and utility interconnection feasibility. Skipping this phase leads to expensive surprises — installing on a failing roof, designing around shading you didn't model, or hitting utility interconnection limits that make your project impractical.
 
 ## What You're Evaluating

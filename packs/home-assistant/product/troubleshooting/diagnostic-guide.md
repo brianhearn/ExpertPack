@@ -1,3 +1,4 @@
+<!-- context: section=troubleshooting, topic=diagnostic-guide, related=core-architecture,yaml-configuration,integrations-guide -->
 ---
 sources:
   - type: documentation

@@ -1,3 +1,5 @@
+<!-- context: section=overview, topic=pack-index, related=product-overview,process-overview,system-design-fundamentals,inverter-types -->
+
 # Residential Solar & Battery DIY Guide
 
 > **Lead summary:** This composite pack covers the full arc of a residential solar project — from understanding the technology to completing a permitted, code-compliant installation. It combines a **technology reference pack** (what solar equipment IS, how it works, current product landscape) with a **process pack** (how to plan, design, permit, install, and commission a system step by step).

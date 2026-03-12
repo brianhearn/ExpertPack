@@ -1,4 +1,8 @@
+<!-- context: section=concepts, topic=core-architecture, related=modeling-fundamentals,python-scripting,animation-rigging -->
+
 # Blender Core Architecture
+
+> **Lead summary:** Blender's internal architecture is built on a data-block system — every piece of data (Object, Mesh, Material, Action, NodeTree) is a named, reference-counted container. Understanding the Object vs Object Data distinction, how reference counting and Fake Users prevent data loss, and how Collections and View Layers organize scenes is the structural knowledge that unlocks everything else in Blender, from linked duplicates to production render pipelines.
 
 Understanding Blender's internal data model is the single most important piece of knowledge for becoming a proficient Blender user. Everything — the behavior of linked duplicates, why deleting an object doesn't delete its mesh, how instancing works, why modifiers sometimes behave unexpectedly — stems from understanding this architecture.
 

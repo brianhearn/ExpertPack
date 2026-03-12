@@ -1,3 +1,4 @@
+<!-- context: section=concepts, topic=voice-assistant, related=esphome-fundamentals,integrations-guide,automation-fundamentals -->
 ---
 sources:
   - type: documentation

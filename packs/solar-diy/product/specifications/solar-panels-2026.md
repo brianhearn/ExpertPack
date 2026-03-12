@@ -13,6 +13,8 @@ sources:
 
 # Solar Panel Landscape — 2026
 
+<!-- context: section=product, topic=solar-panels-specs, related=system-design-fundamentals,component-selection,battery-systems-2026,inverter-types -->
+
 > **Lead summary:** The residential solar panel market in 2026 is split between premium back-contact panels approaching 25% efficiency (Aiko, Recom, LONGi, Maxeon) and high-volume N-type TOPCon panels at 23-24% (Jinko, Trina, Qcells, REC). Standard residential panels now produce 440-500W. Prices range from ~$2.50/W (value TOPCon) to ~$3.75/W (premium back-contact). Maxeon offers the industry's longest warranty at 40 years.
 
 ## Top 10 Most Efficient Residential Panels (Feb 2026)

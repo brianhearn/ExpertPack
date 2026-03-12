@@ -46,8 +46,18 @@ Start with **Core Architecture** (`concepts/core-architecture.md`) to build the 
 - For material/rendering questions → `concepts/shading-rendering.md`
 - For modeling topology questions → `concepts/modeling-fundamentals.md`
 - For procedural/GeoNodes questions → `concepts/geometry-nodes.md`
+- For animation systems (keyframes, NLA, constraints, drivers) → `concepts/animation-rigging.md`
+- For digital sculpting (Dyntopo, Multiresolution, brushes) → `concepts/sculpting.md`
+- For compositing and render passes → `concepts/compositing.md`
+- For physics and simulations → `concepts/physics-simulation.md`
+- For the VSE and video editing → `concepts/video-editing.md`
+- For Python scripting and add-on development → `concepts/python-scripting.md`
 - For common errors and confusing behaviors → `troubleshooting/common-mistakes.md`
 - For hard surface modeling workflows → `workflows/hard-surface-modeling.md`
+- For character rigging and animation production → `workflows/character-animation.md`
+- For product renders and studio lighting → `workflows/product-visualization.md`
+- For motion graphics and procedural animation → `workflows/motion-graphics.md`
+- For performance optimization and render farm prep → `workflows/scene-optimization.md`
 
 ## The Philosophy of This Pack
 

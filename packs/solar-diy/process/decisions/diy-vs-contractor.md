@@ -1,5 +1,7 @@
 # Decision: DIY vs. Contractor
 
+<!-- context: section=process, topic=decision-diy-vs-contractor, related=permitting,installation,site-assessment -->
+
 > **Lead summary:** DIY solar can save 30–50% of installed cost ($8,000–$20,000 on a typical residential system) but requires electrical and construction skills, willingness to do permit paperwork, and the ability to safely work on a roof. The right choice depends on your skills, risk tolerance, local regulations, and how much your time is worth. Many successful projects use a hybrid approach: DIY most of the work but hire an electrician for the service panel connection.
 
 ## What "DIY Solar" Actually Means

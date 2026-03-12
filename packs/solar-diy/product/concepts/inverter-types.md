@@ -1,5 +1,7 @@
 # Inverter Types — Microinverters vs String Inverters vs Optimizers
 
+<!-- context: section=product, topic=inverter-types, related=system-design-fundamentals,nec-rapid-shutdown,inverter-topology,component-selection -->
+
 > **Lead summary:** There are three main residential inverter architectures: microinverters (one per panel, best for shading/complex roofs, Enphase dominates), string inverters (one central unit, most cost-effective for simple unshaded roofs, SMA/Fronius), and string inverters with power optimizers (SolarEdge's approach — central inverter + per-panel DC optimizers). Microinverters and optimizers are both MLPE and satisfy rapid shutdown requirements. String inverters alone require additional rapid shutdown devices unless using UL 3741 compliant systems.
 
 ## The Three Architectures

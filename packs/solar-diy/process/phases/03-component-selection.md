@@ -1,5 +1,7 @@
 # Phase 3: Component Selection
 
+<!-- context: section=process, topic=phase-3-component-selection, related=solar-panels-2026,battery-systems-2026,inverter-types,system-design,permitting -->
+
 > **Lead summary:** Component selection takes your system design spec and turns it into a specific bill of materials. The five main component categories are panels, inverter, battery (if included), racking/mounting, and balance-of-system (BOS) electrical hardware. Each category has real tradeoffs; this phase walks through selection criteria, common choices, and pitfalls. Order equipment only after your permit application is in (or close) — equipment specs appear on permit drawings.
 
 ## Procurement Timing

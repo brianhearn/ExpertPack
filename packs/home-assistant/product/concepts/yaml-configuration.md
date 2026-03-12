@@ -1,3 +1,4 @@
+<!-- context: section=concepts, topic=yaml-configuration, related=core-architecture,automation-fundamentals -->
 ---
 sources:
   - type: documentation

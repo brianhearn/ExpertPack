@@ -1,3 +1,4 @@
+<!-- context: section=concepts, topic=protocols, related=core-architecture,esphome-fundamentals,network-architecture -->
 ---
 sources:
   - type: documentation

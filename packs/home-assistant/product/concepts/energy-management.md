@@ -1,3 +1,4 @@
+<!-- context: section=concepts, topic=energy-management, related=core-architecture,integrations-guide,yaml-configuration -->
 ---
 sources:
   - type: documentation

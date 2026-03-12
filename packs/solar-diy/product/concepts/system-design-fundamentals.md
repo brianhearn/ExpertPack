@@ -10,6 +10,8 @@ sources:
 
 # System Design Fundamentals
 
+<!-- context: section=product, topic=system-design-fundamentals, related=inverter-types,solar-panels-2026,battery-systems-2026,system-design-phase,string-sizing -->
+
 > **Lead summary:** Residential solar system design involves four key decisions: (1) array sizing based on energy usage and available roof space, (2) inverter selection (micro, string, or optimizer), (3) string sizing calculations using panel voltage specs and local temperature extremes, and (4) battery sizing based on backup goals and load profiles. The most critical calculation is string sizing — too many panels per string can damage the inverter or cause a fire; too few and the system underperforms.
 
 ## Step 1: Determine Your Energy Needs

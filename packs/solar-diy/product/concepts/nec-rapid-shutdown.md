@@ -13,6 +13,8 @@ sources:
 
 # NEC 690.12 — Rapid Shutdown Requirements
 
+<!-- context: section=product, topic=nec-rapid-shutdown, related=inverter-types,permitting,installation,component-selection -->
+
 > **Lead summary:** NEC 690.12 requires residential rooftop solar systems to reduce voltage within the array boundary to ≤80V within 30 seconds of shutdown initiation, primarily for firefighter safety. Compliance methods include MLPE (microinverters or optimizers), module-level shutdown devices, or UL 3741 PV Hazard Control Systems. The 2023 NEC consolidated shutdown rules, moved marking to 690.12(D), and exempted parking/carport structures. Check which NEC edition your jurisdiction has adopted — it varies significantly by state.
 
 ## Why Rapid Shutdown Exists

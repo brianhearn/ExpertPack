@@ -1,5 +1,7 @@
 # Decision: Inverter Topology (String vs Optimizer vs Microinverter)
 
+<!-- context: section=process, topic=decision-inverter-topology, related=inverter-types,nec-rapid-shutdown,component-selection,system-design -->
+
 > **Lead summary:** The inverter topology choice affects shading tolerance, monitoring granularity, installation complexity, cost, and future expandability. In 2026, microinverters (Enphase) dominate the residential market for good reason: they're the most installer-friendly and the most resilient to partial shading. String inverters with optimizers (SolarEdge) remain competitive for large, unshaded arrays. Plain string inverters are lowest cost but least flexible.
 
 ## The Three Architectures

@@ -1,4 +1,8 @@
+<!-- context: section=concepts, topic=shading-rendering, related=modeling-fundamentals,compositing,geometry-nodes -->
+
 # Shading and Rendering
+
+> **Lead summary:** Blender offers two production-quality render engines — EEVEE (fast rasterization, real-time feedback) and Cycles (physically-accurate path tracing) — plus a node-based material system built around the Principled BSDF. The decision of which engine to use, the correct color space for each texture type, how denoising replaces raw sample counts, and how to configure HDRI lighting are the practical knowledge that closes the gap between technically correct and actually looking good.
 
 Blender's rendering system is one of its strongest features, offering two production-quality render engines alongside a flexible node-based material system. The gap between "technically correct" and "looks good" in rendering is enormous — this file focuses on the decision-making layer.
 

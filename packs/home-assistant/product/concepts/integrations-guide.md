@@ -1,3 +1,4 @@
+<!-- context: section=concepts, topic=integrations-guide, related=core-architecture,protocols,esphome-fundamentals -->
 ---
 sources:
   - type: documentation

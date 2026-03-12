@@ -1,3 +1,4 @@
+<!-- context: section=concepts, topic=dashboard-design, related=core-architecture,integrations-guide -->
 ---
 sources:
   - type: documentation

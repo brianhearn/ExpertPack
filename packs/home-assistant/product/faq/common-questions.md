@@ -1,3 +1,4 @@
+<!-- context: section=faq, topic=common-questions, related=core-architecture,protocols,backup-migration -->
 ---
 sources:
   - type: documentation

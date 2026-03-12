@@ -1,3 +1,4 @@
+<!-- context: section=concepts, topic=presence-detection, related=esphome-fundamentals,automation-fundamentals -->
 ---
 sources:
   - type: documentation

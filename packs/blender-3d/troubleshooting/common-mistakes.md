@@ -1,4 +1,8 @@
+<!-- context: section=troubleshooting, topic=common-mistakes, related=modeling-fundamentals,shading-rendering,animation-rigging,physics-simulation,sculpting -->
+
 # Common Blender Mistakes
+
+> **Lead summary:** The most costly Blender mistakes are unapplied scale (causing physics, modifier, and texture inconsistencies), hidden objects/geometry across multiple independent visibility systems, accidental Action proliferation during animation, IK pole target flipping in rigs, and physics cache path problems on render farms. Most of these issues are invisible until they cause serious problems — this guide provides both symptoms and fixes organized by frequency and diagnosis difficulty.
 
 A field guide to the most common confusing behaviors, mistakes, and gotchas in Blender — organized by how often they trip up users and how hard they are to diagnose.
 
@@ -244,6 +248,103 @@ A field guide to the most common confusing behaviors, mistakes, and gotchas in B
 - `Ctrl+X` — quick-dissolve the selection
 
 **Rule:** When in doubt, use Dissolve instead of Delete for topology editing. Delete is for removing sections of a mesh; Dissolve is for topology cleanup.
+
+---
+
+## Phase 2 Pitfalls — Animation, Sculpting, and Physics
+
+### Animation: Accidental Action Proliferation
+
+**Symptom:** The Action dropdown shows dozens of `Action.001`, `Action.002`, etc. Animations seem to vanish when switching objects.
+
+**Cause:** Every time you press `I` to keyframe an object with no active Action, Blender creates a new Action named after the object. Switching objects in the timeline automatically switches the active Action. Stacking new keyframes on a fresh Action every time you switch objects creates an ever-growing Action list.
+
+**Fix:** Before keyframing any object, check the Action Editor dropdown — set a named Action for each animated object and keep it active. Use the Fake User (`F` button) on any Action you want to persist even when not assigned.
+
+**Cleanup:** In the Action Editor, identify Actions with zero users (shown with an asterisk `*` prefix). Either assign them (drag to an object in NLA) or delete them to prevent .blend file bloat.
+
+---
+
+### Animation: IK Pole Target Flipping
+
+**Symptom:** The knee or elbow flips to the wrong side when the limb reaches certain poses. The flip is sudden and unpredictable.
+
+**Cause:** IK chains have a preferred bend direction set by the pole target. When the limb passes through a mathematically ambiguous pose (fully straight, or near-straight), the solver can choose either bend direction. A poorly positioned pole target or wrong Pole Angle setting causes flipping at unexpected angles.
+
+**Fix:**
+1. Verify pole target is placed far enough from the limb — at least 3–5 bone lengths away in the bend direction
+2. Check **Pole Angle** in the IK constraint: try 0°, 90°, -90°, 180° to find which keeps the knee pointing the right direction
+3. In the Graph Editor, the flip shows as a sudden jump on the rotation channel — go to that frame and manually correct the pose, then add a keyframe
+
+**Prevention:** Test IK at the full range of motion before animating. Check extreme poses (fully raised, fully lowered, fully extended) for flipping behavior.
+
+---
+
+### Animation: NLA Strip Conflicts
+
+**Symptom:** An animation looks correct in the Action Editor but plays wrong when NLA strips are active. Bones move to wrong positions or blend weirdly.
+
+**Cause:** Multiple NLA strips are affecting the same bones simultaneously. When two strips both key the same bone rotation with blend type `Replace`, the values conflict based on strip order and blend amounts.
+
+**Fix:**
+- Check NLA strip **Blend In/Out** — make sure strips don't overlap unless intentional
+- Check strip **Blend Type**: `Replace` for primary animations, `Add` or `Combine` for additive overlays
+- Use the **Solo** button (star icon) on a track to isolate it and diagnose which strip is causing the problem
+- **Mute** (`H`) individual tracks to narrow down conflicts
+
+---
+
+### Sculpting: Dyntopo Ruining Mesh Structure
+
+**Symptom:** After Dyntopo sculpting, the mesh has chaotic topology that won't retopologize cleanly. Or: Dyntopo is very slow on a dense base mesh.
+
+**Cause:** Dyntopo dynamically adds and removes geometry during sculpting — it's optimized for *sculpting*, not for *topology quality*. Using Dyntopo on a mesh that already has meaningful topology (like a retopologized mesh) destroys that topology immediately.
+
+**Rule:** Dyntopo is for **starting fresh** from a rough form, not for refining. Once you have a base sculpt you like, **remesh** (`Ctrl+R` or the Remesh button in the header) to get clean quad topology, then continue with Multi-Resolution sculpting.
+
+**Fix for slow Dyntopo:** Lower the detail size (in the Dyntopo panel during sculpting) or switch to Relative Detail mode so the brush size controls polygon density rather than an absolute size.
+
+---
+
+### Sculpting: Losing Multiresolution Detail When Applying Modifiers
+
+**Symptom:** Sculpting at high multi-resolution levels, applied a modifier (Solidify, Mirror, etc.), and all the high-level detail vanished.
+
+**Cause:** The Multiresolution modifier stores sculpt data as displacement at each subdivision level. Applying any modifier *below* the Multiresolution modifier in the stack collapses the base mesh, discarding the stored subdivisions.
+
+**Fix (pre-emptive):** Apply all other modifiers **before** adding the Multiresolution modifier. The modifier stack should have Multiresolution at the top or as the last modifier.
+
+**Fix (after-the-fact):** If you have a render of the high-detail sculpt, you can bake a normal map from a saved version and apply it to the low-poly mesh. If you have no backup, the detail is gone.
+
+**Prevention:** Save incremental versions (`File → Save Incremental`) before applying any modifier when a Multiresolution modifier is in the stack.
+
+---
+
+### Physics: Cache Location Problems on Render Farms
+
+**Symptom:** Physics simulation plays back correctly on one machine but renders wrong (or not at all) on another.
+
+**Cause:** Physics cache files are stored at an absolute path. When the render job runs on a different machine, the path doesn't exist or points to a different location.
+
+**Fix:**
+1. Set cache path to a relative path: `//cache/sim_name/`
+2. Ensure the cache directory is on shared storage accessible by all render nodes
+3. Or: export the simulation to Alembic (`File → Export → Alembic`) and use the Alembic file instead — it's a baked mesh sequence with no cache dependency
+
+---
+
+### Physics: Cloth Passes Through Collider
+
+**Symptom:** Cloth simulation clips through the character body or other collision objects.
+
+**Cause:** Collision **quality** (number of collision substeps) is insufficient, or the cloth mesh has too few vertices for the collision geometry detail.
+
+**Fix:**
+1. `Physics Properties → Cloth → Collision → Quality: 10–15` (default is 5 — too low for detailed characters)
+2. `Scene Properties → Scene → Gravity` — ensure it's set to -9.81 Z (not accidentally 0 or wrong axis)
+3. Check collider mesh has the **Collision** physics property enabled (`Properties → Physics → Collision`)
+4. Increase cloth mesh resolution at the problem areas (cloth needs enough vertices to conform to the collider geometry)
+5. Reduce `Distance` in collision settings — sometimes it's too large and pushes cloth away prematurely
 
 ---
 

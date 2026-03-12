@@ -1,4 +1,8 @@
+<!-- context: section=workflows, topic=hard-surface-modeling, related=modeling-fundamentals,shading-rendering,scene-optimization -->
+
 # Hard Surface Modeling Workflow
+
+> **Lead summary:** Hard surface modeling in Blender centers on one workflow: build a clean, low-poly control cage and use the Subdivision Surface modifier to generate smoothness — where support loops and creases control edge sharpness. Boolean operations, the Bevel modifier, and the Mirror modifier are the supporting cast. The "Level 2 rule" is the litmus test: if the model doesn't look correct at Subdivision Level 2, fix the topology rather than raising the level.
 
 Hard surface modeling refers to creating mechanical, manufactured, or architectural objects — things with defined sharp edges, smooth flat panels, precise geometry, and no organic deformation. Think robots, vehicles, weapons, machinery, architecture, consumer electronics.
 

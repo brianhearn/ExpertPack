@@ -1,3 +1,4 @@
+<!-- context: section=concepts, topic=esphome-fundamentals, related=protocols,integrations-guide,presence-detection -->
 ---
 sources:
   - type: documentation

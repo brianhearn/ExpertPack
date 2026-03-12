@@ -1,3 +1,4 @@
+<!-- context: section=troubleshooting, topic=top-ha-mistakes, related=protocols,automation-fundamentals,backup-migration -->
 # Top Home Assistant Mistakes
 
 ## 1. Using WiFi for Everything

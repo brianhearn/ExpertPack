@@ -1,3 +1,4 @@
+<!-- context: section=concepts, topic=core-architecture, related=automation-fundamentals,protocols,integrations-guide -->
 ---
 sources:
   - type: documentation

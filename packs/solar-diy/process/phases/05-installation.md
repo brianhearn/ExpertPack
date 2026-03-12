@@ -1,5 +1,7 @@
 # Phase 5: Installation
 
+<!-- context: section=process, topic=phase-5-installation, related=nec-rapid-shutdown,permitting,inspection-commissioning,common-mistakes,racking,dc-wiring -->
+
 > **Lead summary:** Installation day(s) are the most physically demanding part of the project but, with good preparation, among the most straightforward. The work proceeds in a logical sequence: roof penetrations and racking → panel mounting → DC wiring → inverter and battery → AC wiring and service panel → grounding and labeling. Safety is paramount — roof work and high-voltage DC are both lethal hazards. Work with a partner. Never work alone on a roof.
 
 ## Pre-Installation Checklist

@@ -1,5 +1,7 @@
 # Common Mistakes in Residential Solar Projects
 
+<!-- context: section=process, topic=common-mistakes, related=system-design,permitting,installation,nec-rapid-shutdown,string-sizing -->
+
 > **Lead summary:** Most solar project failures are preventable. The most costly mistakes happen at three points: string sizing errors (Phase 2), skipping or rushing the permit process (Phase 4), and incorrect service panel work (Phase 5). This file documents the most common mistakes organized by project phase, with prevention patterns.
 
 ## Design Mistakes

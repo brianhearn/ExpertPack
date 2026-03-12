@@ -1,5 +1,7 @@
 # Decision: Grid-Tied vs Hybrid vs Off-Grid
 
+<!-- context: section=process, topic=decision-grid-tied-vs-hybrid, related=battery-systems-2026,inverter-types,system-design,component-selection -->
+
 > **Lead summary:** Most residential solar in the US is grid-tied — it sells excess power to the utility and draws from the grid at night. Hybrid systems add battery storage for backup capability and bill optimization. Off-grid systems operate completely independently of the utility. In 2026, hybrid (grid-tied + battery) is the fastest-growing configuration as battery costs have dropped and net metering has weakened in several states.
 
 ## The Three System Configurations

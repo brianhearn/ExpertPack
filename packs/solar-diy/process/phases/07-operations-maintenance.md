@@ -1,5 +1,7 @@
 # Phase 7: Operations & Maintenance
 
+<!-- context: section=process, topic=phase-7-operations-maintenance, related=inspection-commissioning,battery-systems-2026,solar-panels-2026,monitoring -->
+
 > **Lead summary:** A well-installed solar system requires minimal maintenance but rewards attentive monitoring. The main ongoing tasks are: monitoring production against expectations, annual cleaning (in most climates), periodic visual inspections, degradation tracking over years, and proactive warranty management. Most system problems are caught early through monitoring — set up alerts on day one and check monthly.
 
 ## What to Expect from Your System

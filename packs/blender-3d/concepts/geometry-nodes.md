@@ -1,4 +1,8 @@
+<!-- context: section=concepts, topic=geometry-nodes, related=python-scripting,physics-simulation,animation-rigging -->
+
 # Geometry Nodes
+
+> **Lead summary:** Geometry Nodes is Blender's procedural geometry system — a visual, non-destructive, functional programming environment for creating and modifying geometry through a node graph. The single most important concept to internalize is the **field**: a per-element recipe for computing a value, not a single constant. Getting fields right unlocks scatter workflows, parametric shapes, procedural animation, and custom simulation — the four domains where Geometry Nodes is genuinely superior to any alternative approach in Blender.
 
 Geometry Nodes is Blender's procedural geometry system — a visual, node-based programming environment for creating and modifying geometry. It was introduced in Blender 2.92 (2021) and has been one of the fastest-evolving parts of Blender since. It represents a paradigm shift in how Blender models can be built.
 

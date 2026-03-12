@@ -1,3 +1,5 @@
+<!-- context: section=product, topic=product-overview, related=system-design-fundamentals,inverter-types,solar-panels-2026,battery-systems-2026,nec-rapid-shutdown -->
+
 # Solar Technology Reference
 
 > **Lead summary:** This pack is the technology backbone of the solar DIY guide. It covers what solar equipment IS — how panels, inverters, and batteries work; current product specifications and comparisons; NEC code requirements; and troubleshooting. Use this alongside the process pack (`../process/`) when you need technical depth on equipment selection or code compliance.

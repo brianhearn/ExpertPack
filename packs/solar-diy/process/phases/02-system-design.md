@@ -1,5 +1,7 @@
 # Phase 2: System Design
 
+<!-- context: section=process, topic=phase-2-system-design, related=system-design-fundamentals,inverter-types,battery-systems-2026,site-assessment,component-selection,string-sizing -->
+
 > **Lead summary:** System design translates your site assessment into a specific array configuration: how many panels, in what arrangement, with which inverter, and what battery capacity. The core calculations are load analysis (how much energy you need), array sizing (how many panels to generate it), string sizing (how to wire panels without damaging equipment), and battery sizing (how much storage for your backup goals). Errors in string sizing are dangerous — verify your math before ordering equipment.
 
 ## Step 1: Load Analysis — How Much Power Do You Need?

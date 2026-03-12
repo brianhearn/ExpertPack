@@ -13,6 +13,8 @@ sources:
 
 # Home Battery Storage — 2026 Comparison
 
+<!-- context: section=product, topic=battery-systems-specs, related=system-design-fundamentals,component-selection,solar-panels-2026,grid-tied-vs-hybrid -->
+
 > **Lead summary:** The three leading residential battery systems in 2026 are Tesla Powerwall 3 (13.5 kWh, built-in solar inverter, 10-year warranty), Enphase IQ Battery 5P (5 kWh modular blocks, 15-year/6,000-cycle warranty, AC-coupled), and FranklinWH aPower 2 (15 kWh, strongest surge capability at 185A LRA, 15-year warranty). All three use LFP chemistry. Choose based on your power needs, existing equipment, and backup goals — not just kWh capacity.
 
 ## Head-to-Head Comparison

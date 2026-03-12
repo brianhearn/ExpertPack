@@ -1,3 +1,5 @@
+<!-- context: section=process, topic=process-overview, related=site-assessment,system-design,component-selection,permitting,installation,inspection-commissioning,operations-maintenance -->
+
 # Planning & Installing Residential Solar
 
 > **Lead summary:** A residential solar project has seven sequential phases spanning 3–9 months. Most projects stall in Phase 2 (design) or Phase 4 (permitting) — not because the work is hard, but because people don't know what to expect. This process pack maps the full journey, surfaces the decisions that matter, and documents the gotchas that surprise first-timers.

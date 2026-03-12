@@ -1,5 +1,7 @@
 # Phase 6: Inspection & Commissioning
 
+<!-- context: section=process, topic=phase-6-inspection-commissioning, related=permitting,installation,operations-maintenance,net-metering,federal-tax-credit -->
+
 > **Lead summary:** Two inspections gate your ability to legally operate your solar system: the building/electrical inspection (from your AHJ) and the utility inspection (sometimes). After both pass, the utility issues Permission to Operate (PTO), swaps your meter for a net meter, and you can flip the inverter on. The inspection process typically takes 2–8 weeks; commissioning itself (the day you turn it on) takes a few hours.
 
 ## The Two-Gate Model

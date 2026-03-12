@@ -1,4 +1,8 @@
+<!-- context: section=concepts, topic=modeling-fundamentals, related=core-architecture,shading-rendering,sculpting -->
+
 # Modeling Fundamentals
+
+> **Lead summary:** Blender's modeling toolkit centers on topology quality (all-quad, edge-loop-based geometry), the non-destructive modifier stack (where order matters enormously), and a set of core Edit Mode operations. The principles that separate good models from bad ones — poles in safe locations, support loops for SubD sharpness, applied scale before modifiers and physics — are universal rules that apply whether you're doing hard surface or organic work.
 
 Blender's modeling toolkit is vast. This file focuses on the underlying principles and the non-obvious knowledge that separates good models from bad ones — topology theory, modifier strategy, and common failure modes.
 
