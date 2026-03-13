@@ -114,6 +114,17 @@ Every pack can include an eval suite to measure quality. The [eval schema](schem
 
 The included [eval-ek.py](tools/eval-ek.py) tool measures EK ratio via blind probing across multiple frontier models.
 
+### Schema-Aware Chunker
+
+Generic RAG chunkers split files by character count — they don't understand markdown structure. The [schema-aware chunker](tools/schema-chunker/) pre-processes ExpertPack files into semantically coherent chunks that respect `##` headers, lead summaries, proposition groups, and glossary tables.
+
+**Results on a real product pack (EZT Designer):**
+- **+9.4% correctness** (79% → 88.4%) — best improvement from any single change
+- **-52% input tokens** (4,372 → 2,111 avg per query)
+- **-60% hallucination** (10% → 4%)
+
+Designed for [OpenClaw](https://openclaw.ai) — outputs pre-sized `.md` files that OpenClaw's indexer passes through as single chunks. See the [chunker README](tools/schema-chunker/README.md) for integration details.
+
 ---
 
 ## Schemas
@@ -166,7 +177,8 @@ ExpertPack/
 │   └── population-methods.md ← How to hydrate packs from various sources (v1.3)
 │
 ├── tools/                   ← Tooling
-│   └── eval-ek.py           ← EK ratio measurement via blind probing
+│   ├── eval-ek.py           ← EK ratio measurement via blind probing
+│   └── schema-chunker/      ← Schema-aware chunking for OpenClaw RAG (+9.4% correctness)
 │
 ├── skills/                  ← Agent skills
 │   └── expertpack-export/   ← Auto-discover & export agent → EP

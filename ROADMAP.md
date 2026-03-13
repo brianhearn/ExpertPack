@@ -57,7 +57,7 @@ Keep the framework current as LLMs advance.
 - [ ] **Structured fact tables** — replace narrative repetition with key/value facts, decision tables, canonicalized terms/glossaries for deduplication and retrieval precision
 - [ ] **Entity cross-reference indexes** — use entities.json as canonical registry with aliases for term normalization (evaluate whether current RAG actually benefits)
 - [ ] **File size flexibility** — revisit 1-3KB for large-context models; maybe a "dense mode"
-- [ ] **Chunking strategy review** — evaluate semantic chunking vs header-based
+- [x] **Chunking strategy review** — built schema-aware chunker (`tools/schema-chunker/`). Pre-processes pack files respecting `##` headers, lead summaries, proposition groups, glossary tables. +9.4% correctness, -52% tokens on EZT Designer eval. (2026-03-13)
 - [ ] **Agentic RAG patterns** — multi-step retrieval, query refinement
 - [ ] **Minimum capability declarations** — manifest field for required model capabilities
 - [ ] **Regular schema review cadence** — triggered by major model releases
