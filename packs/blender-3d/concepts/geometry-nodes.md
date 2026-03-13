@@ -259,3 +259,59 @@ Simulation Nodes added temporal simulation to Geometry Nodes. A Simulation Zone 
 **The catch:** Simulation Nodes must be evaluated sequentially from frame 1. You cannot jump to frame 100 without computing frames 1–99. Always **bake** simulations before rendering animation: click `Bake` in the Modifier properties. Otherwise, scrubbing the timeline triggers full re-simulation.
 
 **Simulation zone state:** The geometry that "flows back" from the Simulation Output to the Simulation Input is the persistent state. You can store arbitrary attributes in this state to track custom properties over time.
+
+---
+
+## Advanced Patterns (Community-Sourced)
+
+### Verlet Integration for Custom Rope/Soft Body
+
+A pure Geometry Nodes alternative to Cloth/Soft Body simulation for controllable elastic behavior (ropes, chains, cables):
+
+1. Create a Simulation Zone with a point line (Mesh Line or Curve to Points)
+2. Store `previous_position` as a named attribute via Store Named Attribute
+3. Inside the Simulation Zone, nest a **Repeat Zone** (8-12 iterations) for constraint solving:
+   - `new_pos = current + (current - previous) × 0.98 + gravity × dt²`
+   - Apply distance constraints: if distance between consecutive points > rest_length, move both toward each other proportionally
+4. Set `previous = current`, `current = new_pos`
+5. Output to Simulation Output
+
+The damping factor (~0.98) prevents energy accumulation and explosion. Lower values = more damping. Without distance constraint solving in the Repeat Zone, the rope stretches infinitely. This pattern gives far more artistic control than Blender's built-in physics.
+
+### Attribute Transfer Between Mesh and Curve
+
+Transferring attributes across geometry types (e.g., UV data from mesh to curve, or vertex colors from curve to mesh):
+
+1. Temporarily convert the source geometry with `Curve to Mesh` or `Mesh to Curve`
+2. Use `Sample Nearest` on the converted geometry to find closest point indices
+3. Use `Sample Index` with those indices to read attribute values from the source
+4. Delete the temporary converted geometry
+
+The two-node pattern (`Sample Nearest → Sample Index`) is the standard for cross-geometry attribute transfer. Order matters — Sample Nearest gives you the index, Sample Index reads the value at that index.
+
+### Set Position vs Transform: Performance Rule
+
+- **Transform node:** Operates on the entire geometry as a single matrix transform. Use when moving, rotating, or scaling *all* elements.
+- **Set Position node:** Evaluates a field per element. Use when applying different offsets to different elements (with a selection mask or position-dependent math).
+
+On meshes with 100k+ vertices, using Set Position for a uniform translation is measurably slower than Transform. Wrong choice at scale causes noticeable viewport lag.
+
+### Geometry to Instance for Join Performance
+
+`Join Geometry` with many inputs (50+) degrades linearly. The `Geometry to Instance` node converts each input to a lightweight instance before joining — dramatically faster for merging procedurally generated segments (road systems, modular architecture, parametric buildings). The result is instances, not real geometry — further per-vertex operations require Realize Instances.
+
+### Hidden GeoNodes Modifiers Still Consume Resources
+
+Disabling a Geometry Nodes modifier in the viewport (eye icon off in the modifier stack) does **not** fully stop evaluation in all cases. If other modifiers reference its output, or it has side effects, it may still consume memory and CPU. To truly disable: either delete the modifier, or add a `Switch` node connected to a boolean input exposed on the modifier panel to bypass the computation graph entirely.
+
+### GeoNodes Playback Performance Regression (4.x)
+
+Geometry Nodes animation playback is measurably slower in Blender 4.3 compared to 3.6 for complex animated setups. This is a known regression. Workarounds:
+- Bake geometry to avoid per-frame recalculation (`Object → Geometry Nodes → Bake`)
+- Replace objects with bounding boxes in viewport during animation preview
+- Use Render > Simplify to reduce complexity during iteration
+- For performance-critical GeoNodes animation projects, 3.6 LTS or 4.2 LTS may perform better
+
+### Instances in Camera View: Cycles Viewport Bug
+
+Cycles rendered viewport with many GeoNodes instances is dramatically slower in camera view than in perspective view. This is caused by BVH rebuilding for instanced geometry within camera bounds. Workaround: add a `Realize Instances` node before output for final renders (increases memory), or switch to perspective view while iterating in the viewport.

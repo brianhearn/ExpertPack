@@ -12,6 +12,12 @@ Atomic factual statements extracted from the workflow files.
 - IK chain requires: a control bone at the endpoint (outside the chain), an IK constraint on the chain's last deform bone, a Chain Length, and optionally a Pole Target.
 - The IK Pole Angle is adjusted in 90° increments; if the knee flips, adjust the pole target position or pole angle.
 - Automatic Weights (`Ctrl+P → With Automatic Weights`) is a starting point for mesh-to-armature binding — always refine with Weight Paint.
+- The Weight Paint Gradient tool creates a linear weight falloff between two click points — far more precise than brush painting for joint transitions; use from bone center to joint boundary with Auto Normalize enabled.
+- Shoulder deformation cannot be fixed by weight painting alone — it requires twist bones (a bone chain between shoulder and upper_arm with Copy Rotation at Influence 0.5) to distribute rotation across multiple bones.
+- The armpit must have horizontal edge loops (wrapping around the arm like rings); vertical-only loops collapse when the arm raises past 90°.
+- Corrective Shape Keys driven by a Rotation Difference driver automatically activate as joints bend to restore volume that weight painting can't preserve.
+- Critical retopology edge loop placements for animation: horizontal rings at armpit (2+), 3 concentric loops around mouth, loops following nasolabial fold, 2+ concentric rings around eyes, clean loops at wrist/ankle boundaries.
+- A model with correct edge loop placement and automatic weights deforms better than a model with bad topology and hours of manual weight painting.
 - In a walk cycle, the contact pose (heel strikes ground) occurs at frames 1 and 5 (for an 8-frame cycle at 24fps); the down pose (body lowest) at frame 3, passing pose at frame 5.
 - Hips in a walk cycle rotate left-right (~5–10°), translate up-down (~2–4cm bobbing), and sway side-to-side over the weight-bearing leg.
 - Shoulders counter-rotate opposite to hips in a walk cycle: left shoulder forward when the right leg is forward.

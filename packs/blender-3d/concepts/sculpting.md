@@ -37,6 +37,15 @@ Dyntopo dynamically adds and removes triangles under the brush as you sculpt. Th
 
 **Warning:** Dyntopo destroys UV maps, vertex groups, shape keys, and any attribute data it touches. Once you enable Dyntopo on a mesh with UVs, the UVs in the sculpted area are gone. This is intentional — Dyntopo isn't meant for final production meshes.
 
+**Dyntopo for hard-surface concept sculpting (expert settings):**
+For mechanical parts and hard-surface concepts, Dyntopo requires specific configuration that differs from organic sculpting defaults:
+- Use **Constant Detail** mode (not Relative) at size 2.0–4.0
+- Refine method: **Subdivide Edges only** (not Collapse or both) — preserves sharp transitions
+- Detail size **3.5px** is the community-recommended sweet spot for mechanical parts
+- Run `Detail Flood Fill` after major strokes to regularize triangle density across the surface
+- Enable Smooth Shading during sculpting to see hard-surface flow clearly
+- This gives you a fast concept sculpt that can be retopologized — don't try to get final topology from Dyntopo
+
 ### Multi-Resolution (Multires)
 
 Multires is the professional sculpting workflow. It subdivides a mesh into multiple levels (like Subdivision Surface) and lets you sculpt on each level independently.

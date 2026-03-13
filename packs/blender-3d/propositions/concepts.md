@@ -69,6 +69,18 @@ Atomic factual statements extracted from the concepts files.
 - AgX (Blender 4.0+) is the recommended view transform; it has better chromatic accuracy in highlights than Filmic.
 - Film Transparent (`Render Properties → Film → Transparent`) renders an alpha channel, required for compositing over other footage.
 
+#### EEVEE Next Migration (4.2+)
+
+- EEVEE Next world volume shaders completely block distant light (sun lights and world lights); old scenes with world volume + sun will render dark — convert the volume to a physical mesh object via the Help menu conversion operator.
+- EEVEE Next shadow system replaces per-light shadow resolution with a "Resolution Limit" setting; old files with low shadow resolution may trigger "Shadow buffer full" errors or massive performance drops.
+- Contact Shadows are removed in EEVEE Next — the new shadow maps are accurate enough; scenes relying on Contact Shadows may need Resolution Limit lowered to prevent light leaking.
+- Bloom is removed as a render setting in EEVEE Next (4.2+) and replaced by the realtime compositor Glare node with Bloom type; any tutorial showing Render Properties > Bloom is outdated.
+- Material "Blend Mode" is replaced by "Render Method" in EEVEE Next; reproducing Alpha Clip behavior requires adding a Greater Than Math node in the shader tree.
+- Screen Space Refraction and Light Probe Planes no longer work with Blended render method in EEVEE Next; the only workaround is switching to Dithered render method + enabling Raytracing.
+- EEVEE Next at default settings renders slower than old EEVEE — the architecture trades speed for correctness; studios may need separate material versions for 3.6, 4.1, and 4.2+.
+- Translucent BSDF behavior changed in EEVEE Next: to reproduce 4.1 results, connect a Value node (value=0) to the Thickness socket of Material Output.
+- Light Probe Volumes in EEVEE Next only record diffuse lighting — all specular/glossy is converted to diffuse (known limitation); baked data is now stored in the probe object and requires re-baking.
+
 ---
 
 ### animation-rigging.md
@@ -135,6 +147,16 @@ Atomic factual statements extracted from the concepts files.
 - Attribute domains: Point (per vertex/point), Edge, Face, Face Corner (for UV seams), Instance (per instance in a collection).
 - Built-in geometry attributes include: `position` (Vector), `normal` (Vector), `index` (Integer), `material_index` (Integer).
 
+#### Advanced Patterns (community-sourced)
+
+- Verlet integration in a Simulation Zone with nested Repeat Zone (8-12 iterations) enables custom rope/soft body physics: new_pos = current + (current - previous) × 0.98 + gravity × dt², with distance constraints solving in the repeat loop for rigidity.
+- The two-node pattern for cross-geometry attribute transfer is Sample Nearest → Sample Index: Sample Nearest finds the closest point index on the target, Sample Index reads the value at that index — required for transferring attributes between mesh and curve types.
+- The Transform node operates on entire geometry as a single matrix transform; Set Position evaluates a field per element — using Set Position for a uniform translation on 100k+ vertex meshes is measurably slower than Transform.
+- The Geometry to Instance node converts each input to a lightweight instance before Join Geometry, dramatically improving performance when merging 50+ procedural segments (road systems, modular architecture).
+- Disabling a Geometry Nodes modifier in the viewport (eye icon off) does not fully stop evaluation if other modifiers reference its output; use a Switch node connected to an exposed boolean input to truly bypass computation.
+- Geometry Nodes animation playback is measurably slower in Blender 4.3 compared to 3.6 for complex setups — a known regression; baking geometry or using viewport simplification are the current workarounds.
+- Cycles rendered viewport with many GeoNodes instances is dramatically slower in camera view than perspective view due to BVH rebuilding for instanced geometry within camera bounds.
+
 ---
 
 ### python-scripting.md
@@ -161,6 +183,7 @@ Atomic factual statements extracted from the concepts files.
 - Blender sculpting has three paradigms: Dyntopo (dynamic mesh generation), Multi-Resolution (subdivision levels), and Remeshing (voxel/quad cleanup).
 - Dyntopo dynamically adds and removes triangles under the brush; it destroys UV maps, vertex groups, and shape keys in sculpted areas.
 - Dyntopo is best for freeform concept sculpting and exploration from a rough base; NOT for final production sculpting or after retopology.
+- For hard-surface Dyntopo sculpting, use Constant Detail mode at 2.0–4.0, Refine method "Subdivide Edges" only, detail size 3.5px for mechanical parts, and run Detail Flood Fill after major strokes to regularize density.
 - Multi-Resolution (Multires) preserves the base mesh topology while enabling sculpting at multiple subdivision levels independently.
 - Multires sculpting follows a macro-to-micro funnel: levels 1–2 for major forms, 3–4 for secondary forms (muscle groups), 5–6 for fine detail (pores, wrinkles).
 - Voxel Remesh (`Ctrl+R` in Sculpt Mode) creates a watertight all-quad mesh from a voxel representation; it loses UV maps and vertex groups.

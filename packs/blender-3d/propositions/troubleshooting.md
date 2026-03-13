@@ -34,3 +34,14 @@ Atomic factual statements extracted from troubleshooting/common-mistakes.md.
 - `X → Dissolve Vertices` removes a vertex while preserving surrounding topology; `X → Vertices` (Delete) also removes all connected edges and faces, often collapsing more than intended.
 - Lost objects can be recovered via `File → Recover → Last Session` (last normal close) or `File → Recover → Auto Save` (most recent autosave, default every 2 minutes).
 - Broken links in `.blend` files are shown as orange in the Outliner; fix with `File → External Data → Report Missing Files` and then re-link.
+
+### Game Engine Export (common-mistakes.md)
+
+- Objects with negative scale (mirrored via S, X, -1) export to FBX with inverted normals because the exporter applies scale and flips face winding order; fix by applying scale (`Ctrl+A → Scale`) before export.
+- Blender's Z-up to Unity's Y-up FBX conversion adds a -90° X rotation on the root; fix in Unity 2020.1+ by disabling "Use Space Transform" in Blender and enabling "Bake Axis Conversion" in Unity.
+- Blender's Auto Smooth normals (especially the modifier-based system in 4.1+) can produce custom normals that the FBX exporter writes incorrectly; triangulating the mesh before export freezes shading and prevents the game engine from retriangulating differently.
+- Geometry Nodes instances are not automatically realized during FBX or glTF export, producing empty or incomplete files; fix with Realize Instances before Group Output or `Ctrl+A → Visual Geometry to Mesh`.
+- After Realize Instances, materials assigned per-instance via Set Material node may not transfer to glTF/FBX because the attribute domain changes from "Instancer" to "Geometry"; use Set Material Index with actual material slots on the object.
+- When baking normals with Selected to Active, if the low-poly has sharp edges, mark all edges smooth before baking, then re-apply sharp edges with Auto Smooth afterward — the normal map encodes smoothing direction and sharp edges subtract from it.
+- The "exploded mesh" technique for multi-part normal map baking moves each mesh element far apart so rays from one element don't hit neighbors, allowing higher ray cast distances without cross-element bleeding.
+- "Extrude" in texture baking sets where rays originate (inflates the low-poly outward); "Max Ray Distance" filters how far rays travel — they serve different purposes, and a manually created cage mesh gives better control than Extrude alone for complex shapes.

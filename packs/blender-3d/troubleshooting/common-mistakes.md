@@ -373,3 +373,79 @@ A field guide to the most common confusing behaviors, mistakes, and gotchas in B
 **For linked files:** `File → External Data → Report Missing Files` shows what's missing. Broken links appear orange in the Outliner.
 
 **Prevention:** Use `File → External Data → Pack Resources` before archiving or sharing files. For linked libraries, maintain consistent directory structures and use relative paths.
+
+---
+
+## Game Engine Export Gotchas
+
+### FBX Export: Negative Scale Inverts Normals
+
+**Symptom:** Model looks inside-out in Unity/Unreal. Some faces are black or invisible.
+
+**Cause:** Objects mirrored via `S, X, -1` (or S, Y, -1) have negative scale. Blender's FBX exporter applies scale on export, which flips the face winding order, inverting normals.
+
+**Fix:** Apply scale before export: `Ctrl+A → Scale`. Or use the Mirror modifier instead of negative scale for mirrored copies. This is the single most common "inside-out model in Unreal" issue.
+
+---
+
+### FBX Export: Axis Conversion and Unity's -90° Rotation
+
+**Symptom:** Imported model in Unity has a root transform of (-90, 0, 0). Rotating the object in-game requires compensating for this offset.
+
+**Cause:** Blender uses Z-up coordinate system; Unity uses Y-up. The FBX exporter adds a -90° X rotation on the root to compensate.
+
+**Fix (Unity 2020.1+):**
+1. In Blender: FBX export settings → disable "Use Space Transform"
+2. In Unity: FBX import settings → enable "Bake Axis Conversion"
+
+**Fix (Unreal):** Apply all transforms in Blender before export (`Ctrl+A → All Transforms`). Use the "FBX Unreal" export preset which sets correct forward/up axes.
+
+---
+
+### Shade Smooth Breaks FBX Normals
+
+**Symptom:** Smooth-shaded model has broken normals or visual artifacts after import in Unity/Unreal.
+
+**Cause:** Blender's Auto Smooth normals (especially the new modifier-based system in 4.1+) can produce custom normals that the FBX exporter writes incorrectly for some engines.
+
+**Fix:** Triangulate the mesh before export. This freezes the shading as-is and prevents the game engine from retriangulating differently. Add a Triangulate modifier as the last modifier, or apply `Ctrl+T` in Edit Mode. Also: run `Mesh → Clean Up → Degenerate Dissolve` to remove zero-area faces — Unity's "Remove Degenerate" import option can silently delete faces if left on.
+
+---
+
+### Geometry Nodes Instances Don't Export
+
+**Symptom:** FBX or glTF export produces an empty or incomplete file for objects with Geometry Nodes modifiers.
+
+**Cause:** GeoNodes instances are not automatically realized during export. The exporter only sees the raw object, not the evaluated geometry.
+
+**Fix:** Either:
+1. Add a `Realize Instances` node before the Group Output in the node tree
+2. Use `Ctrl+A → Visual Geometry to Mesh` (works even on curve-based GeoNodes setups where "Apply Modifier" fails)
+
+**Note on materials:** After Realize Instances, materials assigned per-instance via `Set Material` may not transfer correctly. The attribute domain changes from "Instancer" to "Geometry." For glTF export specifically, materials must be assigned via material slots on the object — GeoNodes attribute-based material assignment is not preserved.
+
+---
+
+### Normal Map Baking: Split Normals Trap
+
+**Symptom:** Baked normal map has visible seam artifacts or doubled sharpness at sharp edges.
+
+**Cause:** When baking normals with Selected to Active, if the low-poly mesh has sharp edges (split normals / custom normals), the baked normal map must account for the split. If the low-poly uses flat shading but the normal map was baked assuming smooth, the result doubles the sharpness at those edges. If the low-poly is smooth but has hard-edge marks, the edges can cancel out.
+
+**Fix:** Mark all edges as smooth on the low-poly, bake the normal map, *then* re-apply sharp edges with Auto Smooth. The normal map "encodes" the smoothing direction, and the sharp edges "subtract" from it at display time. Getting this order wrong produces artifacts.
+
+**Exploded mesh technique for multi-part bakes:** When baking normal maps for multiple separate mesh elements sharing a UV atlas, move each element far apart ("explode" the mesh) so rays from one element don't hit neighboring elements. This allows higher ray cast distances without cross-element bleeding. Essential for game asset UV atlases.
+
+---
+
+### Texture Baking: Cage vs Ray Distance
+
+**Symptom:** Normal map bake has artifacts — some areas capture the wrong surface, or rays miss the high-poly entirely.
+
+**Cause:** Confusion between "Extrude" and "Max Ray Distance" — they serve different purposes:
+- **Extrude** inflates the low-poly mesh outward to set ray origin (where rays start). Like a uniform shrink/fatten.
+- **Max Ray Distance** filters results by discarding hits beyond a distance threshold (how far rays travel).
+
+Using only Extrude with no cage fails on concave areas because the uniform inflation creates incorrect ray origins. A manually created cage mesh (same topology, ballooned out to fully enclose the high-poly) gives much better control for complex shapes.
+
+**Tip:** Color the cage and high-poly differently (green vs red) to verify no high-poly geometry pokes through the cage — poke-through areas will bake incorrectly.

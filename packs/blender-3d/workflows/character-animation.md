@@ -84,6 +84,39 @@ Rigify handles this automatically with its IK/FK sliders. For manual rigs, add a
 - **Pinching at joints:** Paint the joint area with smooth falloff across 2–3 bones
 - **Rigidity:** Hard-surface elements (armor plates, glasses) should be fully weighted (1.0) to a single bone with no gradient
 
+### Advanced Weight Painting Techniques
+
+**The Gradient Tool (massively underused):**
+The Gradient tool in Weight Paint mode creates a linear weight falloff between two click points — far more precise than brush painting for joint transitions. Click on the bone center, drag to the joint boundary. For fingers: Gradient from knuckle to fingertip. For shoulders: Gradient from upper arm center to torso edge. Always use with Auto Normalize enabled (Header → Weights → Auto Normalize) to keep all bone weights summing to 1.0 per vertex.
+
+**Shoulder Deformation — Why Weight Painting Alone Can't Fix It:**
+No amount of weight painting fixes shoulder twist deformation. The problem is anatomical: a single bone from shoulder to elbow can't represent the complex twist distribution of a real shoulder joint. The fix is **twist bones** — a bone chain between shoulder and upper_arm that distributes rotation:
+- Add a bone between the shoulder and upper_arm joints
+- Constrain it with `Copy Rotation` from the upper arm bone at Influence 0.5
+- This splits the twist across two bones instead of concentrating it at the shoulder
+- Rigify includes twist bones by default — this is a manual-rig-only problem
+
+The mesh topology also matters: the armpit must have **horizontal edge loops** (wrapping around the arm like rings). Vertical-only loops collapse when the arm raises past 90°.
+
+**Corrective Shape Keys for Volume Preservation:**
+Even with twist bones and good weights, extreme poses (arm raised overhead, deep knee bend) lose volume. The fix:
+1. Create a Shape Key for the problem pose
+2. Add a Rotation Difference driver (measures angle between two bones)
+3. As the joint bends, the corrective shape key automatically activates, restoring volume
+
+### Retopology Edge Loop Placement for Animation
+
+The deformation quality of a character mesh is determined at the retopology stage, not the weight painting stage. Critical loop placements:
+
+1. **Armpit:** Horizontal loops wrapping around the arm — at least 2 rings. Vertical-only loops collapse on arm raise.
+2. **Mouth:** 3 concentric circular loops minimum around the mouth opening for speech animation (M/B/P, OOH, EE shapes).
+3. **Nasolabial fold:** Loops following the crease from nose to mouth corner — required for smile/sneer expressions.
+4. **Eyes:** Loops following the orbicularis oculi (circular muscle around the eye) — at minimum 2 concentric rings for blink and squint.
+5. **Wrist/Ankle:** A clean loop at each joint boundary provides a sharp deformation edge between hand/forearm, foot/shin.
+6. **Elbow/Knee front:** Extra loop density on the crease side (front of elbow, back of knee) where the skin bunches.
+
+A model with correct loop placement and automatic weights will deform better than a model with bad topology and hours of weight painting.
+
 ---
 
 ## Phase 2 — Walk Cycle

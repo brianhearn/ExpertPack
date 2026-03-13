@@ -51,6 +51,36 @@ EEVEE was completely rewritten in Blender 4.2 as "EEVEE Next." Key improvements:
 - Some complex shader node combinations don't work the same as in Cycles
 - Transparent shadows are simulated, not physically traced
 
+### ⚠️ EEVEE Next Migration Gotchas (Upgrading from < 4.2)
+
+Opening files created in Blender 4.1 or earlier in 4.2+ triggers silent or breaking changes. These are the most impactful:
+
+**World Volume Blocks Distant Light:**
+World volume shaders now completely block sun lights and world lights. Old scenes with world volume + sun light will render dark or black. Fix: convert the volume to a physical mesh object using the operator in Help menu or World > Volume panel (only appears if conversion is needed).
+
+**Shadow System Rewritten:**
+- Sun light shadow resolution settings cannot be auto-converted. The new `Resolution Limit` replaces per-light resolution. If your old resolution was much lower than the new default, expect "Shadow buffer full" errors or massive performance drops. Increase Resolution Limit to lower resolution.
+- Contact Shadows are **removed entirely** — the new shadow maps are accurate enough in most cases. Scenes relying heavily on Contact Shadows may need Resolution Limit lowered to prevent light leaking.
+- Soft Shadows moved from a global render setting to a per-light `Jitter` option (disabled by default). Jittered shadows are off in the viewport by default.
+
+**Bloom Removed:**
+The Bloom feature and its render pass are removed. Replaced by the realtime compositor `Glare` node (Bloom type). Any tutorial showing Render Properties > Bloom is outdated for 4.2+. Fix: add a Glare node in compositor with Bloom type, enable compositor in Shading popover.
+
+**Material Blend Mode → Render Method:**
+"Blend Mode" (Alpha Clip, Opaque, Alpha Blend) is replaced by "Render Method." To reproduce old Alpha Clip behavior, add a `Greater Than` Math node in the shader tree. Simple materials auto-convert; complex mixed-alpha setups need manual conversion. Shadow Mode is now Object > Visibility > Ray Visibility Shadow.
+
+**Screen Space Refraction + Blended = Broken:**
+Screen Space Refraction and Light Probe Planes no longer work with Blended render method (formerly Alpha Blend). Only workaround: switch to Dithered render method + enable Render Settings > Raytracing. This breaks glass/water materials that relied on Alpha Blend + SSR.
+
+**Translucent BSDF Changed:**
+Translucent BSDF uses a more accurate approximation when thickness ≠ 0. To reproduce 4.1 behavior: connect a Value node (value=0) to the Thickness socket of Material Output. Subsurface Translucency is always evaluated now (was a toggle) — result depends on Thickness socket for inner absorption.
+
+**Light Probe Volumes Changed:**
+Sample locations and influence volumes changed. May need manual scale-up to avoid light leaking. New "Surfel Resolution" requires tweaking for older scenes. Baked data is now stored in the probe object — requires re-baking. Probe spheres and planes **only record diffuse lighting** — all specular/glossy is converted to diffuse (known limitation).
+
+**Performance Regression:**
+EEVEE Next at default settings renders slower than old EEVEE. This is architectural — trades some speed for correctness. Studios maintaining production files may need to keep separate material versions for 3.6, 4.1, and 4.2+.
+
 ---
 
 ## Cycles: GPU and Performance
