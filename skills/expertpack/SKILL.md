@@ -1,6 +1,6 @@
 ---
 name: expertpack
-description: "Work with ExpertPacks — structured knowledge packs for AI agents. Use when: (1) Loading/consuming an ExpertPack as agent context, (2) Creating or hydrating a new ExpertPack from scratch, (3) Measuring EK (Esoteric Knowledge) ratio via blind probing, (4) Chunking a pack for RAG deployment, (5) Running quality evals against a pack-powered agent, (6) Backing up/exporting an OpenClaw agent's workspace into an ExpertPack. Triggers on: 'expertpack', 'expert pack', 'EK ratio', 'esoteric knowledge', 'knowledge pack', 'pack hydration', 'backup to expertpack', 'export agent knowledge'."
+description: "Work with ExpertPacks — structured knowledge packs for AI agents. Use when: (1) Loading/consuming an ExpertPack as agent context, (2) Creating or hydrating a new ExpertPack from scratch, (3) Chunking a pack for RAG deployment, (4) Backing up/exporting an OpenClaw agent's workspace into an ExpertPack. Triggers on: 'expertpack', 'expert pack', 'esoteric knowledge', 'knowledge pack', 'pack hydration', 'backup to expertpack', 'export agent knowledge'. For EK ratio measurement and quality evals, install the separate expertpack-eval skill."
 metadata:
   openclaw:
     homepage: https://expertpack.ai
@@ -71,39 +71,7 @@ For detailed platform integration (Cursor, Claude Code, custom APIs, direct cont
 
 For full hydration methodology, EK triage process, and source prioritization: read `{skill_dir}/references/hydration.md`.
 
-### 3. Measure EK Ratio
-
-Run the blind-probing evaluator:
-
-```bash
-python3 {skill_dir}/scripts/eval-ek.py <pack-path> [--models model1,model2] [--sample N] [--output FILE]
-```
-
-- Defaults: GPT-4.1-mini, Claude Sonnet 4.6, Gemini 2.0 Flash via OpenRouter
-- API key: auto-resolves from OpenClaw auth profiles or `OPENROUTER_API_KEY` env var
-- Outputs YAML with per-proposition scores and aggregate EK ratio
-
-**Interpretation:**
-
-| EK Ratio | Meaning |
-|----------|---------|
-| 0.80+ | Exceptional — almost entirely esoteric |
-| 0.60–0.79 | Strong — majority esoteric |
-| 0.40–0.59 | Mixed — significant GK padding |
-| 0.20–0.39 | Weak — most content already in weights |
-| < 0.20 | Minimal value-add |
-
-Add measured ratio to `manifest.yaml`:
-
-```yaml
-ek_ratio:
-  value: 0.72
-  measured: "2026-03-12"
-  models: ["gpt-4.1-mini", "claude-sonnet-4-6", "gemini-2.0-flash"]
-  propositions_tested: 142
-```
-
-### 4. Chunk for RAG
+### 3. Chunk for RAG
 
 Run the schema-aware chunker:
 
@@ -117,23 +85,17 @@ python3 {skill_dir}/scripts/chunk.py --pack <pack-path> --output <pack-path>/.ch
 
 **Why this matters:** Schema-aware chunking produced +9.4% correctness and -52% tokens vs. generic chunking in controlled experiments. It's the single highest-impact consumption optimization.
 
-### 5. Run Quality Eval
+### 4. Measure EK Ratio & Run Quality Evals
 
-```bash
-python3 {skill_dir}/scripts/run-eval.py \
-  --questions <eval-set.yaml> \
-  --endpoint <ws://host:port/path> \
-  --output <results.yaml> \
-  --label "baseline"
+For EK ratio measurement (blind probing) and automated quality evals, install the companion skill:
+
+```
+clawhub install expertpack-eval
 ```
 
-- Build eval set: 30+ questions (basic, intermediate, advanced, out-of-scope)
-- Fix one dimension at a time: structure → agent training → model
-- Re-run after each change to verify improvement
+See `expertpack-eval` for full details on EK measurement, eval runner, and the improvement loop.
 
-Common failure patterns and the eval-driven improvement loop: read `{skill_dir}/references/consumption.md`.
-
-### 6. Backup / Export OpenClaw → ExpertPack
+### 5. Backup / Export OpenClaw → ExpertPack
 
 Export an OpenClaw agent's accumulated knowledge into a structured ExpertPack composite.
 
