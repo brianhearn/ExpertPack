@@ -36,16 +36,17 @@ The native deployment platform. Add the pack path to `memorySearch.extraPaths` i
 }
 ```
 
-OpenClaw auto-indexes all `.md` files in the specified paths. For best results, pre-chunk with the [schema-aware chunker](../tools/schema-chunker/) and point `extraPaths` at the `.chunks/` directory instead (see [Chunking Strategy](#chunking-strategy)).
+OpenClaw auto-indexes all `.md` files in the specified paths. Packs authored to the ExpertPack schema (400–800 token files) pass through OpenClaw's chunker as single units — no pre-processing needed.
 
-**Recommended RAG settings for chunked packs:**
+**Recommended RAG settings:**
 
 ```json
 {
   "memorySearch": {
-    "extraPaths": ["path/to/pack/.chunks"],
-    "chunking": { "tokens": 500, "overlap": 0 },
+    "extraPaths": ["path/to/pack"],
+    "chunking": { "tokens": 1000, "overlap": 0 },
     "query": {
+      "maxResults": 10,
       "hybrid": {
         "enabled": true,
         "mmr": { "enabled": true, "lambda": 0.7 },
@@ -56,8 +57,10 @@ OpenClaw auto-indexes all `.md` files in the specified paths. For best results, 
 }
 ```
 
-- **Overlap 0** — pre-chunked files are already semantically complete; overlap would duplicate content
-- **MMR enabled (λ=0.7)** — prevents near-duplicate proposition/summary/content chunks from crowding results
+- **tokens: 1000** — comfortably above the pack's 800-token file ceiling; ensures no file is split
+- **overlap: 0** — pack files are self-contained retrieval units; overlap duplicates content
+- **maxResults: 10** — small, focused files benefit from more retrieval slots (adjust for pack size)
+- **MMR enabled (λ=0.7)** — prevents near-duplicate proposition/summary/content files from crowding results
 - **Temporal decay off** — pack knowledge doesn't expire based on file modification time
 
 ### Cursor / Claude Code / IDE Agents
@@ -68,7 +71,7 @@ Place the pack in your project directory. IDE agents discover and index workspac
 - **Claude Code:** Reference from `CLAUDE.md` or let the agent discover it
 - **Other IDE agents:** Place pack where the agent's workspace indexer can find it
 
-For IDE agents, the pack's small-file structure (1–3KB per content file) is already optimized for their built-in chunking. Schema-aware pre-chunking is optional but still beneficial.
+For IDE agents, the small-file structure (400–800 tokens per file) is already optimized for any chunker. No pre-processing needed.
 
 ### Custom / API Integrations
 
@@ -100,59 +103,43 @@ For larger packs, RAG retrieval is essential — a 200-file pack won't fit in co
 
 ## Chunking Strategy
 
-**This is the single most impactful consumption decision.** How you chunk the pack for retrieval determines correctness, hallucination rate, and token efficiency more than any other factor.
+ExpertPack files are designed to be **retrieval-ready by default**. When authored to the file-size guidelines in the core schema (400–800 tokens per file; 1,500 token ceiling), each file passes through any RAG platform's chunker as a single unit. The schema IS the chunking strategy — no external preprocessing or schema-aware chunker is needed for new packs.
 
-### The Problem with Generic Chunkers
+Author content files as self-contained retrieval units. RAG chunkers that see a file under their token budget leave it intact, preserving lead summaries, proposition groups, glossary tables, and `<!-- refresh -->` metadata.
 
-Most RAG systems chunk files by character or token count. They don't understand Markdown structure. A generic chunker will:
+**Legacy packs** with oversized files can still use the schema-chunker as a migration tool (see Legacy Migration below).
 
-- Split a lead summary from its `# Title`
-- Cut a proposition group between the `### source.md` header and its bullet list
-- Slice a glossary table mid-row
-- Orphan a `<!-- refresh -->` metadata block from the content it describes
-- Break a `##` section in the middle of a thought
+### Atomic vs. Sectioned Content
 
-The result: every retrieved chunk is an arbitrary text slice that may have lost its context. You spent effort structuring knowledge with headers, lead summaries, and grouped propositions — and the chunker throws that structure away.
-
-### Schema-Aware Chunking
-
-The [schema-aware chunker](../tools/schema-chunker/) pre-processes ExpertPack files into semantically coherent chunk files. Each output file is one complete thought, sized to fit within the RAG system's token budget. The consuming platform's chunker then passes each file through 1:1 — no re-splitting.
-
-**What it respects:**
-- `##` headers as semantic boundaries (never splits mid-section)
-- Lead summaries stay attached to their `# Title`
-- Proposition groups (`### source.md` + bullet list) stay intact
-- Glossary category tables stay together
-- YAML frontmatter stays with the first chunk
-- `<!-- refresh -->` metadata stays with its content
-- `_index.md` files chunked as single units when possible
-- **Atomic vs. sectioned strategies** per directory and per file (see below)
-- **Sequence metadata** in chunk source comments for sectioned splits
-
-**Usage:**
-
-```bash
-python3 tools/schema-chunker/chunk.py --pack ./packs/my-pack --output ./packs/my-pack/.chunks
-```
-
-Then point your RAG system at `.chunks/` instead of the raw pack directory. See the [chunker README](../tools/schema-chunker/README.md) for the full CLI reference.
-
-### Atomic vs. Sectioned Strategies
-
-*(Schema 2.4+)*
-
-Not all content should be split the same way. A 10-step workflow must be retrieved whole — retrieving step 5 of 10 without context produces hallucinated instructions. A large concept file with independent sections can be split safely.
-
-The schema-aware chunker supports two strategies:
+Not all content should be authored to the standard size target. Procedural content that depends on sequential context must be retrieved as complete units.
 
 | Strategy | Behavior | Default For |
 |----------|----------|-------------|
-| **atomic** | Emit the entire file as a single chunk, regardless of size. Never split. | `workflows/`, `troubleshooting/errors/`, `troubleshooting/diagnostics/`, `troubleshooting/common-mistakes/` |
-| **sectioned** | Split on `##` headers, then `###` if oversized, then paragraphs. Standard behavior. | `concepts/`, `interfaces/`, `faq/`, `propositions/`, `summaries/`, `commercial/`, and all other directories |
+| **standard** | Author within 400–800 token target. Chunker passes through whole. | All content files (default) |
+| **atomic** | May exceed size ceiling. Must be retrieved whole. Declare in frontmatter with `retrieval.strategy: atomic` | `workflows/`, `troubleshooting/errors/`, `troubleshooting/diagnostics/`, `troubleshooting/common-mistakes/` |
 
-**Why workflows are atomic:** Workflows are step-by-step procedures where each step depends on the previous. Retrieving a fragment without the surrounding steps causes the model to fill gaps with fabricated UI paths and invented interactions.
+**Why workflows are atomic:** Workflows are step-by-step procedures where each step depends on the previous. Retrieving step 5 of 10 without the surrounding steps produces hallucinated instructions — the model fills gaps with fabricated UI paths and invented interactions. Workflow files must be retrieved as complete units or not at all.
 
 **Why troubleshooting is atomic:** Error resolution files (symptom → cause → fix) and diagnostic decision trees lose their logical flow when split. An agent that retrieves only the "fix" without the "symptom" and "cause" gives dangerously decontextualized advice.
+
+### Platform Configuration - The Three-Knob Model
+
+The pack's file sizes interact with three RAG knobs:
+
+1. **Indexing granularity (`chunking.tokens`)** — Set to 1000 for authored packs. Ensures no file is split.
+2. **Retrieval count (`maxResults`)** — Use 8–15 for packs with many small files to capture sufficient context.
+3. **System prompt overhead** — Static context (SOUL.md, always-tier files) consumed 72% of input tokens in experiments. Minimize it to maximize room for retrieved content.
+
+See core schema for detailed OpenClaw config example and full guidance.
+
+### Legacy Migration
+
+For packs authored before Schema 2.5 with oversized files:
+
+- **Recommended:** Refactor into 400–800 token files following the new File Size guidance.
+- **Optional:** Use the [schema-aware chunker](../tools/schema-chunker/) to generate a `.chunks/` directory. Point RAG at it instead of the raw pack.
+
+The +9.4% correctness from schema-aware chunking (footnote: measured at `chunking.tokens=500` with GPT-5 Mini; gain disappears at higher budgets where the dumb chunker doesn't activate) came entirely from preventing splits. With correctly sized files at authoring time, the tool is unnecessary.
 
 #### Directory Defaults
 
@@ -423,8 +410,8 @@ After deployment, ongoing quality management:
 A condensed deployment checklist for getting a pack into production:
 
 - [ ] **Choose platform** — OpenClaw, IDE agent, custom API, or direct context window
-- [ ] **Run schema-aware chunker** — `python3 chunk.py --pack ./pack --output ./pack/.chunks`
-- [ ] **Configure RAG** — chunk size 500, overlap 0, MMR enabled, temporal decay off
+- [ ] **Author to spec** — keep content files 400–800 tokens (schema IS the chunker)
+- [ ] **Configure RAG** — `tokens: 1000`, `overlap: 0`, `maxResults: 10`, MMR enabled, temporal decay off
 - [ ] **Write SOUL.md** — identity, scope rules, response style, anti-hallucination guidance
 - [ ] **Select model** — balance cost, speed, and instruction following for your use case
 - [ ] **Load Tier 1 files** — manifest, overview, glossary in system prompt or always-load config
@@ -435,5 +422,5 @@ A condensed deployment checklist for getting a pack into production:
 
 ---
 
-*Guide version: 1.1*
-*Last updated: 2026-03-26*
+*Guide version: 2.0*
+*Last updated: 2026-03-27*

@@ -38,7 +38,7 @@ Default directory: `~/expertpacks/`. Check there first, fall back to current wor
   "agents": {
     "defaults": {
       "memorySearch": {
-        "extraPaths": ["path/to/pack/.chunks"],
+        "extraPaths": ["path/to/pack"],
         "chunking": { "tokens": 500, "overlap": 0 },
         "query": {
           "hybrid": {
@@ -73,17 +73,16 @@ For full hydration methodology, EK triage process, and source prioritization: re
 
 ### 3. Chunk for RAG
 
-Run the schema-aware chunker:
+**Legacy migration only (for oversized files):** 
 
 ```bash
+# Optional: for legacy packs with oversized files only
 python3 {skill_dir}/scripts/chunk.py --pack <pack-path> --output <pack-path>/.chunks
 ```
 
-- Respects `##` headers, lead summaries, proposition groups, `<!-- refresh -->` metadata
-- Each output file = one semantically coherent chunk
-- Point OpenClaw RAG at `.chunks/` with overlap=0
+Point OpenClaw RAG at the pack directly. The 400–800 token file constraint makes files retrieval-ready by design.
 
-**Why this matters:** Schema-aware chunking produced +9.4% correctness and -52% tokens vs. generic chunking in controlled experiments. It's the single highest-impact consumption optimization.
+(The +9.4% correctness was measured at chunking.tokens=500 on GPT-5 Mini; at higher budgets or with correctly-sized files, the tool provides no additional benefit.)
 
 ### 4. Measure EK Ratio & Run Quality Evals
 

@@ -114,16 +114,11 @@ Every pack can include an eval suite to measure quality. The [eval schema](schem
 
 The included [eval-ek.py](tools/eval-ek.py) tool measures EK ratio via blind probing across multiple frontier models.
 
-### Schema-Aware Chunker
+### Retrieval-Ready Authoring (Schema 2.5+)
 
-Generic RAG chunkers split files by character count — they don't understand markdown structure. The [schema-aware chunker](tools/schema-chunker/) pre-processes ExpertPack files into semantically coherent chunks that respect `##` headers, lead summaries, proposition groups, glossary tables, and content-type-aware strategies — workflows and troubleshooting files are kept atomic (never split), while reference content is sectioned on headers. Per-file overrides via `retrieval.strategy` frontmatter.
+The schema itself is now the chunking strategy. Author content files as self-contained retrieval units **(400–800 tokens, 1,500 token hard ceiling)**. Any RAG chunker will pass these files through intact without splitting, preserving structure, lead summaries, propositions, and metadata.
 
-**Results on a real product pack (EZT Designer):**
-- **+9.4% correctness** (79% → 88.4%) — best improvement from any single change
-- **-52% input tokens** (4,372 → 2,111 avg per query)
-- **-60% hallucination** (10% → 4%)
-
-Designed for [OpenClaw](https://openclaw.ai) — outputs pre-sized `.md` files that OpenClaw's indexer passes through as single chunks. See the [chunker README](tools/schema-chunker/README.md) for integration details.
+The [schema-aware chunker](tools/schema-chunker/) remains available as an **optional legacy migration tool** for packs with oversized files only (see [Consumption Guide](guides/consumption.md) for details; measured at chunking.tokens=500 on GPT-5 Mini; at higher budgets or with correctly-sized files, the tool provides no additional benefit).
 
 ---
 
@@ -131,7 +126,7 @@ Designed for [OpenClaw](https://openclaw.ai) — outputs pre-sized `.md` files t
 
 | Schema | Version | What It Covers |
 |--------|---------|---------------|
-| [core.md](schemas/core.md) | 2.4 | Shared principles: MD-canonical, file structure, retrieval optimization, chunking strategies, EK ratio, context tiers, provenance |
+| [core.md](schemas/core.md) | 2.5 | Shared principles: MD-canonical, file structure, retrieval optimization, chunking strategies, EK ratio, context tiers, provenance |
 | [person.md](schemas/person.md) | 1.6 | Person packs: verbatim, mind taxonomy, relationships, presentation, agent subtype |
 | [product.md](schemas/product.md) | 1.8 | Product packs: concepts, workflows, interfaces, troubleshooting, commercial, customers |
 | [process.md](schemas/process.md) | 1.4 | Process packs: phases, decisions, checklists, exceptions, scheduling, regulations |
@@ -179,7 +174,7 @@ ExpertPack/
 │
 ├── tools/                   ← Tooling
 │   ├── eval-ek.py           ← EK ratio measurement via blind probing
-│   └── schema-chunker/      ← Schema-aware chunking for OpenClaw RAG (+9.4% correctness)
+│   └── schema-chunker/      ← Legacy migration tool for oversized files (optional)
 │
 ├── skills/                  ← Agent skills
 │   └── expertpack-export/   ← Auto-discover & export agent → EP

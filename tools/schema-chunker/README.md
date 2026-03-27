@@ -1,3 +1,5 @@
+> **Note (Schema 2.5+):** For new packs authored to the ExpertPack file-size guidelines (400–800 tokens per file), this tool is unnecessary. The schema's file-size constraints ensure files pass through any RAG chunker intact. This tool remains useful for **migrating legacy packs** with oversized files. See the [Consumption Guide](../../guides/consumption.md) for the recommended workflow.
+
 # Schema-Aware Chunker
 
 Pre-processes ExpertPack `.md` files into optimally-sized chunk files for [OpenClaw](https://openclaw.ai)'s RAG indexer.

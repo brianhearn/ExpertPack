@@ -125,13 +125,27 @@ Type-specific schemas may define additional access semantics — see [person.md]
 
 ## File Structure Rules
 
-### File Size: 1–3KB Per File
+### File Size: Retrieval-Ready by Design
 
-Keep individual content files small and focused. A file about "User Roles" should not also contain pricing information. One topic per file.
+Every content file in an ExpertPack should be a self-contained retrieval unit — sized and structured so that any RAG chunker passes it through intact, without splitting.
 
-**Why this matters:** RAG chunkers split files into ~400-token windows. Large files produce poor search results — a 20KB file about "everything the product does" will match almost any query with mediocre relevance. Small, focused files produce high-relevance matches.
+**Target: 400–800 tokens per file (roughly 1,600–3,200 characters).**
 
-There are reasonable exceptions: reference documents (like this schema), index files, and narrative content (verbatim stories) may be longer. The guideline applies to knowledge content files that agents will retrieve via search.
+This range ensures files pass through any reasonable chunker's token budget (typically 400–2,500 tokens) as single units. A file within this range is:
+- Small enough to never trigger a dumb line-based splitter
+- Large enough to carry a complete thought with sufficient context
+- Sized to maximize retrieval precision — one file = one topic = one chunk
+
+**Why this matters:** RAG chunkers that split files by character/token count destroy structure — they slice lead summaries from titles, split proposition groups from headers, and orphan metadata from content. By keeping files within the target range, the schema itself prevents this. No external chunking tool is needed.
+
+**Hard ceiling: 1,500 tokens (~6,000 characters) for standard content files.** Files above this will be split by most chunkers and should be broken into focused sub-files. The only exception is files with `retrieval.strategy: atomic` in their frontmatter (workflows, troubleshooting procedures — see Chunking Strategy below).
+
+**When a topic needs more space:**
+1. Split into numbered parts with cross-references: `territories-overview.md`, `territories-assignment.md`, `territories-balancing.md`
+2. Each part should be independently useful — an agent loading one part gets a complete answer for that sub-topic
+3. Add an `_index.md` entry linking the parts together
+
+There are reasonable exceptions: workflow files that must be atomic (see Chunking Strategy), schema/reference documents like this one, and narrative content where splitting would destroy coherence. These exceptions should use `retrieval.strategy: atomic` frontmatter to signal that splitting is not allowed.
 
 ### Section Headers for RAG Chunking
 
@@ -315,42 +329,37 @@ The three-layer approach (split files + summaries + propositions) consistently o
 
 ### Chunking Strategy
 
-When an ExpertPack is consumed via a RAG chunker (as opposed to direct file loading), the chunker must decide how to decompose each file into retrieval units. Different content types have fundamentally different retrieval requirements — a 10-step workflow must be retrieved whole, while a large concept file with independent sections can be split safely.
+ExpertPack files are designed to be **retrieval-ready by default**. When authored to the file-size guidelines above (400–800 tokens, hard ceiling 1,500 tokens for standard content), each file passes through any RAG platform's chunker as a single unit — no external preprocessing needed. The schema IS the chunking strategy.
 
-ExpertPacks declare chunking intent through two mechanisms: **directory-based defaults** (convention-driven) and **per-file frontmatter overrides** (explicit).
+This eliminates the need for a schema-aware chunking tool in the standard workflow. The intelligence that was previously in a post-processing tool now lives in the authoring rules: every file is a self-contained retrieval unit by design.
 
-#### Strategies
+#### Why This Works
+
+RAG chunkers split files when they exceed a token/character budget. If every file is under the budget, the chunker has nothing to split. The result:
+- Lead summaries stay with their titles
+- Proposition groups stay intact
+- Glossary tables stay together
+- `<!-- refresh -->` metadata stays with its content
+- No lost context, no orphaned fragments
+
+This was validated empirically: pre-sized files (~222 tokens average) pass through intact at any chunker budget from 400 to 2,500+ tokens. The schema-aware chunker we previously recommended showed a +9.4% correctness improvement — but its entire value came from preventing dumb splits of oversized files. When files are correctly sized at authoring time, there's nothing left for a chunking tool to fix.
+
+#### Atomic vs. Sectioned Content
+
+Not all content should follow the standard file-size guidelines. Procedural content that depends on sequential context must be retrieved as a complete unit, even if it exceeds the normal size ceiling.
 
 | Strategy | Behavior | Default For |
 |----------|----------|-------------|
-| **atomic** | Emit the entire file as a single chunk, regardless of size. Never split. | `workflows/`, `troubleshooting/errors/`, `troubleshooting/diagnostics/`, `troubleshooting/common-mistakes/` |
-| **sectioned** | Split on `##` headers, then `###` if oversized, then paragraphs. Standard behavior. | `concepts/`, `interfaces/`, `faq/`, `propositions/`, `summaries/`, `commercial/`, and all other directories |
+| **standard** | Author within 400–800 token target. Chunker passes through whole. | All content files (default) |
+| **atomic** | May exceed size ceiling. Must be retrieved whole. Declare in frontmatter. | `workflows/`, `troubleshooting/errors/`, `troubleshooting/diagnostics/`, `troubleshooting/common-mistakes/` |
 
 **Why workflows are atomic:** Workflows are step-by-step procedures where each step depends on the previous. Retrieving step 5 of 10 without the surrounding steps produces hallucinated instructions — the model fills gaps with fabricated UI paths and invented interactions. Workflow files must be retrieved as complete units or not at all.
 
 **Why troubleshooting is atomic:** Error resolution files (symptom → cause → fix) and diagnostic decision trees lose their logical flow when split. An agent that retrieves only the "fix" without the "symptom" and "cause" gives dangerously decontextualized advice.
 
-#### Directory Defaults
-
-Schema-aware chunkers should map ExpertPack directory conventions to default strategies:
-
-| Directory | Default Strategy | Rationale |
-|-----------|-----------------|-----------|
-| `workflows/` | atomic | Procedures are indivisible |
-| `troubleshooting/errors/` | atomic | Error + fix is one unit |
-| `troubleshooting/diagnostics/` | atomic | Decision trees are indivisible |
-| `troubleshooting/common-mistakes/` | atomic | Symptom + fix is one unit |
-| `interfaces/` | sectioned | Large files; regions are independent |
-| `concepts/` | sectioned | Sections are self-contained |
-| `faq/` | sectioned | Each Q&A stands alone |
-| `propositions/` | sectioned | Groups of atomic facts |
-| `summaries/` | sectioned | Section summaries are independent |
-| `commercial/` | sectioned | Topics within commercial docs are independent |
-| All others | sectioned | Safe default |
-
 #### Per-File Override
 
-Any content file can override its directory default by declaring a `retrieval` block in its YAML frontmatter:
+Any content file can declare its retrieval strategy via YAML frontmatter:
 
 ```yaml
 ---
@@ -359,51 +368,69 @@ retrieval:
 ---
 ```
 
-The precedence order is: **frontmatter override → directory default → sectioned fallback.**
-
-Use per-file overrides when a file's retrieval needs differ from its directory convention. For example, a concept file that contains a critical decision framework that must not be fragmented:
-
-```yaml
----
-retrieval:
-  strategy: atomic
----
-
-# Workload Calculation Framework
-
-## The Formula
-...
-```
+Use this when a file's retrieval needs differ from the standard — e.g., a concept file containing a critical decision framework that must not be fragmented.
 
 #### Sequence Metadata
 
-When a file IS split (sectioned strategy), the chunker should embed sequence metadata in each chunk's source comment so that consuming agents know:
-1. How many sibling chunks exist
-2. How to find them
+When a topic spans multiple files (because splitting was needed to stay within size guidelines), include cross-references so consuming agents can find related parts:
 
-**Format:**
-
-```
-<!-- source: concepts/territories.md | section: How It Works (part 3 of 7) | tier: 2 | sequence: concepts--territories--*.md -->
+```markdown
+<!-- sequence: concepts--territories--*.md | part: 2 of 3 -->
 ```
 
-The `part X of Y` tells the agent this is an incomplete fragment. The `sequence` glob pattern tells it where to find the full set. An agent receiving a sequence-tagged chunk should load all sibling chunks before synthesizing an answer.
+The `part X of Y` tells the agent this is one piece of a larger topic. The `sequence` glob tells it where to find siblings. An agent receiving a sequence-tagged file should consider loading siblings before synthesizing a complete answer.
 
-#### Atomic Chunks and Size Limits
+#### Platform Configuration
 
-Atomic files may exceed the chunker's default character budget. This is expected and acceptable — the alternative (splitting a workflow) is worse than a larger chunk. RAG systems that impose hard size limits should:
+The pack's file-size constraints interact with three RAG platform knobs. Configure them as a system:
 
-1. **Index the full atomic chunk** for retrieval
-2. Optionally also generate a **summary companion chunk** (`{name}--summary.md`) containing the file's lead summary and step/section titles, for lightweight search matching
+**1. Indexing granularity (`chunking.tokens` or equivalent)**
+Set this high enough that pack files pass through whole. For packs authored to spec (400–800 token files), a budget of 800–1,000 tokens ensures no file gets split. Higher budgets (1,500–2,500) are safe but provide no additional benefit for well-sized packs.
 
-The summary chunk acts as the search target; the full atomic chunk is what the agent loads for answering.
+**2. Retrieval count (`maxResults` or `top_k`)**
+Packs with many small, focused files benefit from retrieving more chunks. Where a pack with 10 large files might need `maxResults: 5`, a well-chunked pack with 100+ small files should use `maxResults: 8–15` to capture enough relevant context.
 
-#### Design Guidance
+**3. System prompt overhead**
+Every token in your system prompt (SOUL.md, workspace files, platform overhead) competes with retrieved pack content for context window space. In our experiments, static context consumed 72% of every query's input tokens — dwarfing the retrieved pack content. **Minimize your system prompt. Treat it like a Tier 1 file — every token must earn its place.**
 
-- **Prefer atomic for procedural content.** If a file describes a sequence of steps that depend on each other, it should be atomic. When in doubt, err toward atomic — a larger chunk that's complete beats a smaller chunk that's fragmentary.
-- **Prefer sectioned for reference content.** If a file's sections are independently useful (each FAQ answer, each concept explanation), sectioned splitting improves precision.
-- **Lead summaries matter more for atomic chunks.** Since atomic chunks are larger, the lead summary blockquote serves as a concentrated search target at the top of the chunk. Always add lead summaries to atomic workflow files.
-- **Don't fight the chunker — annotate.** If a file is being chunked wrong, add a `retrieval.strategy` frontmatter field rather than restructuring the content to fit chunker assumptions.
+**OpenClaw example configuration:**
+
+```json
+{
+  "agents": {
+    "defaults": {
+      "memorySearch": {
+        "extraPaths": ["path/to/pack"],
+        "chunking": { "tokens": 1000, "overlap": 0 },
+        "query": {
+          "maxResults": 10,
+          "hybrid": {
+            "enabled": true,
+            "mmr": { "enabled": true, "lambda": 0.7 },
+            "temporalDecay": { "enabled": false }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+- **tokens: 1000** — comfortably above the 800-token file ceiling; no file gets split
+- **overlap: 0** — files are self-contained; overlap would duplicate content
+- **maxResults: 10** — more slots for small, precise files (adjust based on pack size)
+- **MMR enabled (λ=0.7)** — prevents near-duplicate proposition/summary/content files from crowding results
+- **Temporal decay off** — pack knowledge doesn't expire by file modification time
+
+#### Legacy Packs and Migration
+
+Packs authored before these file-size guidelines may contain oversized files. Two options:
+
+1. **Recommended: Refactor the files.** Split oversized files into focused sub-files following the guidelines above. This is a one-time investment that makes the pack permanently retrieval-ready.
+
+2. **Optional: Use the schema-chunker tool.** The [schema-aware chunker](../tools/schema-chunker/) can pre-process oversized files into correctly-sized chunks as a `.chunks/` directory. This is a stopgap for packs that can't be immediately refactored. Point your RAG system at `.chunks/` instead of the raw pack directory.
+
+The schema-chunker remains available as a migration aid, but is not part of the standard ExpertPack workflow for new packs.
 
 ---
 
@@ -1100,7 +1127,7 @@ These principles apply to every ExpertPack, regardless of type:
 |-----------|------|
 | Canonical format | Markdown for content, YAML for identity, JSON for navigation only |
 | One source of truth | Each fact lives in exactly one place |
-| File size | 1–3KB per content file, one topic per file |
+| File size | 400–800 tokens per file; 1,500 token ceiling; retrieval-ready by design |
 | Section headers | `##` headers at natural topic breaks for RAG chunking |
 | Naming | kebab-case for files, directories, and slugs |
 | Cross-references | Relative markdown links between related files |
@@ -1108,7 +1135,7 @@ These principles apply to every ExpertPack, regardless of type:
 | Directory indexes | `_index.md` in every content directory |
 | Context strategy | Three tiers: always → searchable → on-demand, declared in manifest |
 | Retrieval optimization | Summaries (broad), propositions (precise), file splitting, lead summaries (front-loaded answers), and glossary (vocabulary bridging) — use together; see [Retrieval Optimization](#retrieval-optimization) |
-| Chunking strategy | Workflows and troubleshooting files are atomic (never split); concepts and reference files are sectioned; override via `retrieval.strategy` frontmatter; see [Chunking Strategy](#chunking-strategy) |
+| Chunking strategy | The schema IS the chunking strategy. Author files to target size so every file passes through RAG chunkers intact (400–800 tokens). Atomic strategy for workflows/troubleshooting via frontmatter; see [Chunking Strategy](#chunking-strategy) |
 | Research coverage | Every pack includes `sources/_coverage.md` documenting what was checked, what was extracted, and what's untouched; see [Research Coverage](#research-coverage-sources_coveragemd) |
 | Time variance | Annotate time-variant facts inline with `<!-- refresh -->` blocks; maintain `freshness.md` as supplementary index; see [Time Variance](#time-variance) |
 | EK ratio | Measure and maximize esoteric knowledge ratio; declare in manifest; guide hydration priority; see [Esoteric Knowledge Ratio](#esoteric-knowledge-ek-ratio) |
@@ -1117,5 +1144,5 @@ These principles apply to every ExpertPack, regardless of type:
 
 ---
 
-*Schema version: 2.4*
-*Last updated: 2026-03-24*
+*Schema version: 2.5*
+*Last updated: 2026-03-27*

@@ -12,16 +12,17 @@ How to deploy an ExpertPack as the knowledge backend for an AI agent.
 
 ### OpenClaw
 
-Add pack to `memorySearch.extraPaths` in `openclaw.json`:
+Add pack to `memorySearch.extraPaths` in `openclaw.json` (use raw pack dir, not .chunks for Schema 2.5+):
 
 ```json
 {
   "agents": {
     "defaults": {
       "memorySearch": {
-        "extraPaths": ["path/to/pack/.chunks"],
-        "chunking": { "tokens": 500, "overlap": 0 },
+        "extraPaths": ["path/to/pack"],
+        "chunking": { "tokens": 1000, "overlap": 0 },
         "query": {
+          "maxResults": 10,
           "hybrid": {
             "enabled": true,
             "mmr": { "enabled": true, "lambda": 0.7 },
@@ -34,13 +35,15 @@ Add pack to `memorySearch.extraPaths` in `openclaw.json`:
 }
 ```
 
-- **Overlap 0** — pre-chunked files are already semantically complete
-- **MMR (λ=0.7)** — prevents near-duplicate chunks from crowding results
-- **Temporal decay off** — pack knowledge doesn't expire by file modification time
+- **tokens:1000** — above 800-token file ceiling; files pass through whole
+- **overlap:0** — self-contained files; no duplication needed
+- **maxResults:10** — more slots for many small precise files
+- **MMR (λ=0.7)** — prevents duplicate proposition/summary/content results
+- **Temporal decay off** — pack knowledge doesn't expire
 
 ### IDE Agents (Cursor, Claude Code)
 
-Place the pack in the project directory. Reference from `.cursorrules` or `CLAUDE.md`. The small-file structure (1–3KB) is already optimized for built-in chunking. Schema-aware pre-chunking is optional but still beneficial.
+Place the pack in the project directory. Reference from `.cursorrules` or `CLAUDE.md`. The small-file structure (1–3KB) is already optimized for built-in chunking. The small-file structure (400–800 tokens per file) is already optimized for any chunker. No pre-processing needed.
 
 ### Custom / API
 
@@ -53,7 +56,11 @@ Feed `.md` files into your vector store. Respect context tiers from `manifest.ya
 
 Packs under ~20 files / 30KB: skip RAG. Concatenate Tier 1 + Tier 2 files directly into system prompt.
 
-## Schema-Aware Chunking — Evidence
+## Retrieval-Ready Design & Evidence
+
+For new packs, **author files to 400–800 tokens** so the schema prevents large files: every file passes through RAG chunkers intact as a self-contained unit.
+
+**Legacy packs** may still benefit from the schema-chunker.
 
 Results from 6 controlled experiments on a deployed product pack (204 source files, 50-question eval):
 
@@ -64,24 +71,20 @@ Results from 6 controlled experiments on a deployed product pack (204 source fil
 | Prose compaction (~40% denser) | 76.8% (-2.2%) | 14.0% (+4%) | 3,721 | ❌ Harder to parse |
 | Summaries + propositions + splits | 78.7% (-0.3%) | 6.0% (-4%) | 3,733 | ✅ First quality win |
 | Model upgrade (GPT-5.3 Chat) | 80.1% (+1.1%) | 4.0% (-6%) | 3,050 | ✅ Better reasoning |
-| **Schema-aware chunking** (GPT-5 Mini) | **88.4%** (+9.4%) | **4.0%** (-6%) | **2,111** (-52%) | 🔥 Best single change |
+| **Schema-aware chunking** (GPT-5 Mini) | **88.4%** (+9.4%*) | **4.0%** (-6%) | **2,111** (-52%) | 🔥 Best single change |
 
-**Key takeaway:** Schema-aware chunking is the highest-impact single change. A cheap model with precise retrieval beat an expensive model with generic retrieval.
+\* Note: +9.4% measured at `chunking.tokens=500`. At recommended higher budgets (1000+) the gain disappears because sized files pass through whole without splitting.
 
-## Chunking Strategies (Schema 2.4+)
+## Chunking Strategy (Schema 2.5+)
 
-The chunker applies **atomic** or **sectioned** strategy per file:
+**The schema IS the chunker.** Author files as retrieval-ready (400–800 tokens). Atomic vs. standard via frontmatter:
 
 | Strategy | Behavior | Default For |
 |----------|----------|-------------|
-| **atomic** | Entire file as one chunk; never split | `workflows/`, `troubleshooting/errors/`, `troubleshooting/diagnostics/`, `troubleshooting/common-mistakes/` |
-| **sectioned** | Split on `##` headers | `concepts/`, `interfaces/`, `faq/`, `propositions/`, `summaries/`, `commercial/`, all others |
+| **standard** | 400–800 tokens; passes through whole | All content (default) |
+| **atomic** | May exceed ceiling; retrieve whole | workflows/, troubleshooting/ dirs |
 
-**Why atomic matters:** Workflows and troubleshooting are step-by-step procedures or symptom → cause → fix units. Splitting them causes the model to hallucinate missing steps.
-
-**Precedence:** frontmatter override → directory default → sectioned fallback.
-
-Per-file override via YAML frontmatter:
+**Per-file override:**
 ```yaml
 ---
 retrieval:
@@ -89,7 +92,12 @@ retrieval:
 ---
 ```
 
-**Sequence metadata:** Sectioned splits include `part X of Y` and a `sequence` glob in source comments so consuming agents can find all sibling chunks.
+Use three-knob config: `chunking.tokens: 1000`, higher `maxResults` (10+), minimize system prompt (72% overhead observed).
+
+**Quick-Start Checklist** (updated):
+- Author files to target size (schema = chunker)
+- Use OpenClaw config with tokens:1000, maxResults:10
+- Write SOUL.md, build eval, run baseline, fix structure first
 
 ## Context Tier Loading
 

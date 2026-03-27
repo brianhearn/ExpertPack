@@ -749,18 +749,15 @@ These results come from 6 controlled experiments on a real product pack (EZT Des
 
 #### Integration
 
-The chunker outputs a `.chunks/` directory inside the pack. Point your RAG system at `.chunks/` instead of the raw pack files:
+For Schema 2.5+ packs, point your RAG system at the pack root (no `.chunks/` directory needed):
 
 ```bash
-# Generate chunks
-python3 tools/schema-chunker/chunk.py --pack ./packs/my-pack --output ./packs/my-pack/.chunks
-
-# Configure OpenClaw to index chunks
+# Configure OpenClaw to index the pack directly
 # In openclaw.json:
 {
   "memorySearch": {
-    "extraPaths": ["path/to/pack/.chunks"],
-    "chunking": { "tokens": 500, "overlap": 0 },
+    "extraPaths": ["path/to/pack"],
+    "chunking": { "tokens": 1000, "overlap": 0 },
     "query": {
       "hybrid": {
         "mmr": { "enabled": true, "lambda": 0.7 },
@@ -770,6 +767,8 @@ python3 tools/schema-chunker/chunk.py --pack ./packs/my-pack --output ./packs/my
   }
 }
 ```
+
+`.chunks/` and the schema-aware chunker remain available only as a legacy migration step for oversized files (see Consumption Guide).
 
 - **Overlap 0** — chunks are already semantically complete
 - **MMR enabled** — prevents near-duplicate proposition/summary/content chunks from crowding results
