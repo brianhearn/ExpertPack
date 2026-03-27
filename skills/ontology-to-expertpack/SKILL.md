@@ -46,7 +46,7 @@ Filenames use kebab-case. Content files kept under 3KB.
 ## Post-Conversion Steps
 
 1. `cd` into the generated ExpertPack directory
-2. Run the ExpertPack chunker to generate `summaries/` and `propositions/`
+2. Verify content files are 400–800 tokens each (Schema 2.5 — no external chunker needed for correctly-sized files)
 3. Run EK evaluator to measure esoteric knowledge ratio
 4. Review and refine `manifest.yaml` context tiers
 5. Commit to git and share via expertpack.ai or ClawHub
