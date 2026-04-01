@@ -118,15 +118,13 @@ The included [eval-ek.py](tools/eval-ek.py) tool measures EK ratio via blind pro
 
 The schema itself is now the chunking strategy. Author content files as self-contained retrieval units **(400–800 tokens, 1,500 token hard ceiling)**. Any RAG chunker will pass these files through intact without splitting, preserving structure, lead summaries, propositions, and metadata.
 
-The schema itself is now the chunking strategy. Author content files as self-contained retrieval units **(400–800 tokens, 1,500 token hard ceiling)**. Any RAG chunker will pass these files through intact without splitting, preserving structure, lead summaries, propositions, and metadata.
-
 ---
 
 ## Schemas
 
 | Schema | Version | What It Covers |
 |--------|---------|---------------|
-| [core.md](schemas/core.md) | 2.5 | Shared principles: MD-canonical, file structure, retrieval optimization, chunking strategies, EK ratio, context tiers, provenance |
+| [core.md](schemas/core.md) | 2.7 | Shared principles: MD-canonical, file structure, retrieval optimization, chunking strategies, EK ratio, context tiers, provenance |
 | [person.md](schemas/person.md) | 1.6 | Person packs: verbatim, mind taxonomy, relationships, presentation, agent subtype |
 | [product.md](schemas/product.md) | 1.8 | Product packs: concepts, workflows, interfaces, troubleshooting, commercial, customers |
 | [process.md](schemas/process.md) | 1.4 | Process packs: phases, decisions, checklists, exceptions, scheduling, regulations |
@@ -161,7 +159,7 @@ ExpertPack/
 ├── LICENSE                  ← Apache 2.0
 │
 ├── schemas/                 ← Pack blueprints (the framework)
-│   ├── core.md              ← Shared principles (v2.4)
+│   ├── core.md              ← Shared principles (v2.7)
 │   ├── person.md            ← Person-pack schema (v1.6)
 │   ├── product.md           ← Product-pack schema (v1.8)
 │   ├── process.md           ← Process-pack schema (v1.4)
