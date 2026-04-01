@@ -18,7 +18,7 @@ These axioms guide all ExpertPack development decisions.
    a. **Compactness** of EK in the EP vs the raw source data size (maintaining minimum loss)
    b. **Volume** of esoteric knowledge (while internal redundancy is minimal)
    c. **Retrieval quality** — ability to find all of the correct EK for a given prompt
-   d. **Minimal data decay** — not volatile but static and resilient
+   d. **Minimal data decay** — prefer knowledge that is static and resilient; for time-bound EK (pricing, API specs, current metrics), isolate it in `volatile/`, declare a `refresh` interval in frontmatter, and exclude it from EK ratio measurement; volatile content that cannot be refreshed is a quality liability
 
 7. The **market value** of an EP is the product of:
    a. **EP quality** (see axiom 6)

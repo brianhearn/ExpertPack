@@ -351,7 +351,7 @@ Not all content should follow the standard file-size guidelines. Procedural cont
 | Strategy | Behavior | Default For |
 |----------|----------|-------------|
 | **standard** | Author within 400–800 token target. Chunker passes through whole. | All content files (default) |
-| **atomic** | May exceed size ceiling. Must be retrieved whole. Declare in frontmatter. | `workflows/`, `troubleshooting/errors/`, `troubleshooting/diagnostics/`, `troubleshooting/common-mistakes/` |
+| **atomic** | May exceed size ceiling. Must be retrieved whole. Declare in frontmatter. | `workflows/`, `troubleshooting/errors/`, `troubleshooting/diagnostics/`, `troubleshooting/common-mistakes/`, `volatile/` |
 
 **Why workflows are atomic:** Workflows are step-by-step procedures where each step depends on the previous. Retrieving step 5 of 10 without the surrounding steps produces hallucinated instructions — the model fills gaps with fabricated UI paths and invented interactions. Workflow files must be retrieved as complete units or not at all.
 
@@ -776,6 +776,59 @@ Last full review: YYYY-MM-DD
 
 **Relationship to inline metadata:** The freshness guide is derived from the inline refresh blocks. If they disagree, the inline block is the source of truth (it's closer to the data). When refreshing the pack, update the inline blocks first, then regenerate or update the freshness guide.
 
+### Volatile Files & Frontmatter TTL
+
+The inline `<!-- refresh -->` block handles *individual volatile facts within otherwise-static files*. For content that is **entirely time-bound** — a current pricing page, a live leaderboard snapshot, a current API rate-limit table — use a dedicated **`volatile/` directory** with file-level frontmatter TTL instead.
+
+**Why the distinction matters:** Inline refresh blocks are author-declared hints. Frontmatter TTL is machine-readable and enables automatic staleness detection without parsing markdown content. A consuming agent can check all of `volatile/*.md` in one pass at session start.
+
+**File-level frontmatter:**
+
+```yaml
+---
+volatile:
+  refresh: P30D          # ISO 8601 duration — how often this should be refreshed
+  source: https://example.com/pricing   # URL or named refresh procedure
+  fetched_at: "2026-04-01"              # when this version was captured
+  expires_at: "2026-05-01"              # computed: fetched_at + refresh; agent checks this
+---
+
+# Current Pricing
+
+...
+```
+
+**`volatile/` directory rules:**
+- Lives at the pack root alongside `concepts/`, `workflows/`, etc.
+- Files in `volatile/` are always Tier 2 (Searchable) — never Tier 1 (always-loaded)
+- Static and volatile content never coexist in the same file — if a file is partly static and partly volatile, split it
+- Chunking default for `volatile/` is `atomic` — volatile files are retrieved whole
+- Volatile files are **excluded from EK ratio measurement** (see EK Ratio section below); declare `volatile_excluded: true` in the manifest's `ek_ratio` block
+
+**Staleness detection (agent behavior):**
+At session start (or first pack query), the agent checks frontmatter `expires_at` across all `volatile/*.md`:
+- If `expires_at >= today`: serve content as-is
+- If `expires_at < today` and `source` is a URL: auto-refresh using the provided URL and `method`; update `fetched_at` and `expires_at`
+- If `expires_at < today` and `source` requires human input: caveat the content and alert the user that it needs refreshing
+
+This is passive, not a cron job — staleness is detected on demand, not on a schedule.
+
+**EK ratio manifest addition:**
+```yaml
+ek_ratio:
+  value: 0.78
+  measured_at: "2026-04-01"
+  sample_size: 240
+  models: ["gpt-5", "claude-opus-4"]
+  volatile_excluded: true   # volatile/ files were excluded from this measurement
+```
+
+**Relationship to inline refresh blocks:** Both mechanisms coexist.
+- Use `<!-- refresh -->` inline blocks for volatile *facts* embedded in otherwise-static files (the existing pattern).
+- Use `volatile/` + frontmatter TTL for *entire files* that are time-bound and should be machine-checkable.
+
+When in doubt: if more than ~50% of a file's facts are volatile, move the whole file to `volatile/` with frontmatter TTL. If only a few data points are time-sensitive, keep the file in its normal location and use inline refresh blocks.
+
 ### Design Guidance
 
 - **Refresh metadata travels with the data.** This is the non-negotiable rule. A volatile fact without an inline refresh block is a bug — it will become wrong and nobody will know how to fix it.
@@ -1142,12 +1195,12 @@ These principles apply to every ExpertPack, regardless of type:
 | Retrieval optimization | Summaries (broad), propositions (precise), file splitting, lead summaries (front-loaded answers), and glossary (vocabulary bridging) — use together; see [Retrieval Optimization](#retrieval-optimization) |
 | Chunking strategy | The schema IS the chunking strategy. Author files to target size so every file passes through RAG chunkers intact (400–800 tokens). Atomic strategy for workflows/troubleshooting via frontmatter. Consumer config must set `chunking.tokens` ≥ pack's hard ceiling (1,000 recommended); see [Chunking Strategy](#chunking-strategy) |
 | Research coverage | Every pack includes `sources/_coverage.md` documenting what was checked, what was extracted, and what's untouched; see [Research Coverage](#research-coverage-sources_coveragemd) |
-| Time variance | Annotate time-variant facts inline with `<!-- refresh -->` blocks; maintain `freshness.md` as supplementary index; see [Time Variance](#time-variance) |
+| Time variance | Annotate time-variant facts inline with `<!-- refresh -->` blocks; maintain `freshness.md` as supplementary index; for entirely time-bound files use `volatile/` directory with frontmatter TTL (`refresh`, `source`, `fetched_at`, `expires_at`); see [Time Variance](#time-variance) |
 | EK ratio | Measure and maximize esoteric knowledge ratio; declare in manifest; guide hydration priority; see [Esoteric Knowledge Ratio](#esoteric-knowledge-ek-ratio) |
 | Conflict resolution | Never overwrite — flag and ask the human |
 | Version control | Git-native, semantic versioning |
 
 ---
 
-*Schema version: 2.6*
-*Last updated: 2026-03-31*
+*Schema version: 2.7*
+*Last updated: 2026-04-01*

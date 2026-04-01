@@ -126,6 +126,40 @@ Precedence: frontmatter > directory default > sectioned fallback.
 
 When splitting (sectioned), chunks carry sequence metadata: `part X of Y | sequence: {glob}`.
 
+## Volatile Data & Refresh Intervals
+
+For time-bound EK (pricing, API specs, current metrics, leaderboards), isolate in a `volatile/` subdirectory.
+Declare a refresh interval in the file's frontmatter:
+
+```yaml
+---
+volatile:
+  refresh: P30D          # ISO 8601 duration — how often to refresh
+  source: https://example.com/pricing
+  fetched_at: "2026-04-01"
+  expires_at: "2026-05-01"   # computed: fetched_at + refresh
+---
+```
+
+**Rules:**
+- `volatile/` files are always Tier 2 (Searchable) — never Tier 1
+- Static and volatile content never coexist in the same file
+- Volatile files are **excluded from EK ratio measurement** — declare `volatile_excluded: true` in the manifest's `ek_ratio` block
+- Staleness check is passive: at session start the agent checks `expires_at` across `volatile/*.md`; if stale, auto-refresh from `source` (URL) or alert the user (manual source)
+- The existing `<!-- refresh -->` inline block in core.md remains the standard for *individual volatile facts within static files*; frontmatter TTL is for *fully volatile files* in `volatile/`
+
+**Manifest addition:**
+```yaml
+ek_ratio:
+  value: 0.78
+  measured_at: "2026-04-01"
+  sample_size: 240
+  models: ["gpt-5", "claude-opus-4"]
+  volatile_excluded: true   # volatile/ files excluded from measurement
+```
+
+**Directory default:** `volatile/` → `atomic` chunking strategy (volatile files are retrieved whole).
+
 ## Key Rules
 - NO secrets ever
 - Distill knowledge, do not copy raw state
