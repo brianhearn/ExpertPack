@@ -55,7 +55,7 @@ These apply to every ExpertPack. See [schemas/core.md](schemas/core.md) for the 
 
 The schema system has two layers:
 
-### Core Schema ([schemas/core.md](schemas/core.md)) — v1.6
+### Core Schema ([schemas/core.md](schemas/core.md)) — v2.7
 Shared principles and conventions that apply to every ExpertPack:
 - The MD-canonical principle
 - Required files (`manifest.yaml`, `overview.md`)
@@ -64,6 +64,7 @@ Shared principles and conventions that apply to every ExpertPack:
 - Cross-referencing patterns
 - Layered loading strategy (three-tier context: always → searchable → on-demand)
 - Retrieval optimization layers (summaries, propositions, lead summaries, glossary)
+- Volatile data isolation (`volatile/` directory + frontmatter TTL for time-bound EK)
 - Source provenance tracking
 - Schema versioning system
 - Conflict resolution
@@ -72,11 +73,11 @@ Shared principles and conventions that apply to every ExpertPack:
 ### Type-Specific Schemas
 Each pack type has its own schema that extends core with domain-specific structure:
 
-- **[schemas/person.md](schemas/person.md)** (v1.5) — Mind taxonomy (9 universal categories), verbatim content with story card frontmatter, two-tier content system (verbatim → summary mirroring), biographical facts, timeline, relationships, legacy/memorial mode, privacy modes, presentation (voice, appearance), reasoning and conflict handling
+- **[schemas/person.md](schemas/person.md)** (v1.6) — Mind taxonomy (9 universal categories), verbatim content with story card frontmatter, two-tier content system (verbatim → summary mirroring), biographical facts, timeline, relationships, legacy/memorial mode, privacy modes, presentation (voice, appearance), reasoning and conflict handling
 - **[schemas/product.md](schemas/product.md)** (v1.8) — Concepts, workflows, troubleshooting (errors, diagnostics, common mistakes), screens/interface specs, FAQ, commercial info, entity cross-references, timeline, decisions, customers, limitations, competitive landscape, mental model, lead summaries, glossary
 - **[schemas/process.md](schemas/process.md)** (v1.4) — Phases with enhanced structure, decisions, checklists, roles, resources, examples, gotchas, exceptions, variants
-- **[schemas/composite.md](schemas/composite.md)** (v1.0) — Multi-pack deployments with role assignments, context tier overrides, cross-pack conflict resolution
-- **[schemas/eval.md](schemas/eval.md)** (v1.0) — Evaluation framework for measuring pack quality (response quality, retrieval quality, efficiency, pack health)
+- **[schemas/composite.md](schemas/composite.md)** (v1.1) — Multi-pack deployments with role assignments, context tier overrides, cross-pack conflict resolution
+- **[schemas/eval.md](schemas/eval.md)** (v1.2) — Evaluation framework for measuring pack quality (response quality, retrieval quality, efficiency, pack health)
 
 A pack declares its type in `manifest.yaml`, which determines which type-specific schema applies.
 
@@ -89,23 +90,27 @@ A pack is an instantiation of a schema — a concrete knowledge base about a spe
 ```
 ExpertPack/
 ├── schemas/               ← The blueprints
-│   ├── core.md            ← Shared principles (v1.6)
-│   ├── person.md          ← Person-pack schema (v1.5)
+│   ├── core.md            ← Shared principles (v2.7)
+│   ├── person.md          ← Person-pack schema (v1.6)
 │   ├── product.md         ← Product-pack schema (v1.8)
 │   ├── process.md         ← Process-pack schema (v1.4)
-│   ├── composite.md       ← Composite schema (v1.0)
-│   └── eval.md            ← Eval framework (v1.0)
+│   ├── composite.md       ← Composite schema (v1.1)
+│   └── eval.md            ← Eval framework (v1.2)
 │
 ├── guides/                ← Practical how-to guides for pack builders
-│   ├── hydration.md           ← Complete hydration lifecycle (replaces population-methods.md)
+│   ├── hydration.md           ← Complete hydration lifecycle
 │   └── consumption.md         ← How to deploy and consume packs with AI agents
 │
 ├── tools/                 ← Tooling for pack development
+│   ├── eval-ek.py         ← EK ratio measurement via blind probing
 │   └── eval-runner/       ← Automated eval execution and scoring
 │
+├── skills/                ← Agent skills for pack creation and export
+│
 └── packs/                 ← The instances
-    ├── bob-gpt/           ← Person pack: BobGPT
-    └── acme-hq/           ← Product pack: AcmeHQ
+    ├── home-assistant/    ← Composite pack: Home Assistant (EK 54%)
+    ├── blender-3d/        ← Product pack: Blender 3D (EK 42%)
+    └── solar-diy/         ← Composite pack: Solar & Battery DIY (EK 52%)
 ```
 
 Creating a new pack means:
@@ -232,6 +237,9 @@ The eval system answers the question: "Is this pack getting better or worse?"
 | 2026-02-18 | — | Person schema: mind taxonomy (9 categories); broadened examples |
 | 2026-03-05 | — | Added eval framework (schemas/eval.md); added ROADMAP.md for improvement project |
 | 2026-03-09 | — | Updated to reflect schema state: retrieval optimization layers, schema versioning, provenance, eval, updated type-specific schema descriptions |
+| 2026-03-13 | — | Schema 2.5: files authored as self-contained 400–800 token retrieval units; schema itself became the chunking strategy |
+| 2026-03-27 | — | Schema 2.5 split eval; schema versions advanced (core 2.5→2.6, eval 1.0→1.2, composite 1.0→1.1) |
+| 2026-04-01 | — | Schema 2.7: volatile data isolation — `volatile/` directory convention + frontmatter TTL for time-bound EK |
 
 ---
 
