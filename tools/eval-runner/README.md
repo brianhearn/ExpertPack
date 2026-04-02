@@ -1,60 +1,50 @@
-# ExpertPack Eval Runner
+# ExpertPack Eval Runner (Pack-Agnostic)
 
-Automated evaluation tool for ExpertPack quality assessment. Sends questions from an eval set to a pack-powered agent endpoint, captures responses, and scores them against expected answers.
+Simple Python script to evaluate how well an LLM performs with an ExpertPack loaded as context. Pack-agnostic, uses OpenRouter, no agent/web socket required.
+
+## Installation
+
+```bash
+cd /root/.openclaw/workspace/ExpertPack
+pip install pyyaml requests
+# OPENROUTER_API_KEY should be in /root/.openclaw/.env
+```
 
 ## Usage
 
 ```bash
-python3 run_eval.py \
-  --questions /path/to/eval/questions.yaml \
-  --endpoint ws://host:port/path \
-  --output /path/to/eval/results/YYYY-MM-DD-label.yaml \
-  --model "gemini-2.0-flash" \
-  --label "baseline-gemini-flash"
+python tools/eval-runner/run_eval.py \
+  --pack packs/blender-3d \
+  --eval packs/blender-3d/eval/benchmark.yaml \
+  [--model openrouter/openai/gpt-4o-mini]
 ```
 
-## Options
+The script:
+- Loads all relevant pack files (overview, glossary, key concepts, workflows, etc.)
+- Loads eval questions from YAML (following schemas/eval.md)
+- For each question: builds prompt with pack context + question, queries LLM via OpenRouter
+- Compares response to expected_answer using simple text matching or optional judge
+- Outputs structured scorecard with correctness %, hallucination count, refusal accuracy, token usage
 
-| Flag | Required | Description |
-|------|----------|-------------|
-| `--questions` | Yes | Path to questions.yaml eval set |
-| `--endpoint` | Yes | WebSocket or HTTP endpoint for the agent |
-| `--output` | Yes | Path to write results YAML |
-| `--model` | No | Model name (for metadata; default: from endpoint) |
-| `--label` | No | Human-readable label for this run |
-| `--judge-model` | No | Model to use for LLM-as-judge scoring (default: openrouter/anthropic/claude-sonnet-4) |
-| `--timeout` | No | Per-question timeout in seconds (default: 60) |
-| `--delay` | No | Delay between questions in seconds (default: 2) |
-| `--dry-run` | No | Parse questions and validate, don't send |
-| `--structure-version` | No | Pack version for dimensions metadata |
-| `--agent-training-version` | No | Agent training version for dimensions metadata |
+## Output Meaning
 
-## How Scoring Works
+- **Correctness %**: How often the generated answer matches key facts from expected_answer
+- **Hallucination count**: Times the model invented facts not in pack
+- **Refusal accuracy**: How well it declines out-of-scope questions (category=refusal)
+- **Token usage**: Average input/output tokens per query (cost indicator)
+- Per-question details for debugging specific failures
 
-### Automated Scoring (LLM-as-Judge)
-For each question, the judge model evaluates:
-1. **Correctness** — Are the `required_facts` present in the response? (0.0–1.0)
-2. **Hallucination** — Does the response contain any `anti_hallucination` violations? (binary)
-3. **Groundedness** — Does the response stick to pack knowledge vs. fabricating? (0.0–1.0)
-4. **Refusal accuracy** — For out-of-scope questions, did the agent properly decline? (binary)
+## Writing Your Own Eval YAML
 
-### What It Does NOT Score
-- **Retrieval metrics** — Would need access to the RAG system internals (which chunks were retrieved)
-- **Voice fidelity** — Subjective, requires human evaluation
-- **Completeness** — Partially automated via required_facts, but subjective depth assessment is human
+See `schemas/eval.md` for full schema. Minimal fields per question:
+- `id`: unique identifier (q001, q002...)
+- `question`: the user query
+- `expected_answer`: ground truth based on ACTUAL pack content
+- `category`: concept | workflow | troubleshooting | gotcha | refusal
+- `ek_dependent`: true if this tests esoteric knowledge in the pack
 
-## Output
+Ground answers in real pack content (read files first). Include 4+ EK-dependent questions and multiple refusal examples.
 
-Produces a YAML file matching the eval schema format (`schemas/eval.md`), including:
-- Aggregate scores across all questions
-- Per-question detail with facts present/missing, hallucinations detected
-- Dimensions metadata (structure version, model, agent training version)
-- Timing and token data where available
+## Constraints
 
-## Requirements
-
-- Python 3.10+
-- `pyyaml` (pip install pyyaml)
-- `websockets` (pip install websockets) — for WebSocket endpoints
-- `httpx` (pip install httpx) — for HTTP endpoints
-- Access to an LLM API for judge scoring (via OpenRouter or direct)
+Only `requests`, `pyyaml`. Standalone, simple.

@@ -1,0 +1,127 @@
+version: "1.0"
+pack_slug: "blender-3d"
+pack_type: "product"
+created: "2026-04-02"
+updated: "2026-04-02"
+
+questions:
+  - id: "q001"
+    question: "What is the difference between an Object and Object Data in Blender?"
+    expected_answer: "An Object is a container that holds transform, modifiers, constraints. Object Data is the specific data-block like Mesh, Material, Armature. Multiple Objects can share the same Object Data (linked duplicates). The data-block system is reference-counted; user count determines persistence."
+    category: "concept"
+    ek_dependent: true
+  - id: "q002"
+    question: "Why does unapplied scale cause problems with Subdivision Surface and physics?"
+    expected_answer: "Unapplied scale makes the object appear differently sized to different parts of Blender (physics engine, modifiers, textures). Always apply scale with Ctrl+A > Scale before using physics or SubD."
+    category: "concept"
+    ek_dependent: true
+  - id: "q003"
+    question: "When should you use EEVEE vs Cycles?"
+    expected_answer: "Use EEVEE for fast real-time feedback, previews, and when speed is critical. Use Cycles for photorealistic final renders requiring accurate light transport, caustics, or high quality. EEVEE is rasterization; Cycles is path tracing."
+    category: "concept"
+    ek_dependent: false
+  - id: "q004"
+    question: "What is a field in Geometry Nodes?"
+    expected_answer: "A field is a per-element recipe for computing a value, not a single constant value. It allows procedural variation across geometry elements (vertices, faces). Key to understanding scattering, attributes, and procedural animation."
+    category: "concept"
+    ek_dependent: true
+  - id: "q005"
+    question: "Explain the importance of edge loops and support loops in modeling."
+    expected_answer: "Edge loops provide clean deformation for animation and predictable subdivision. Support loops control sharpness in SubD modeling and prevent pinching near poles or hard edges."
+    category: "concept"
+    ek_dependent: false
+  - id: "q006"
+    question: "How do you set up a basic character animation workflow in Blender?"
+    expected_answer: "1. Model and rig character (use Rigify or manual). 2. Weight paint. 3. Animate in Pose Mode using keyframes or Graph Editor. 4. Use NLA for non-linear mixing of actions. 5. Add shape keys for facial expressions."
+    category: "workflow"
+    ek_dependent: false
+  - id: "q007"
+    question: "What are the steps for hard surface modeling with booleans?"
+    expected_answer: "Use non-destructive workflow: model base, add Boolean modifiers for cuts, Bevel and Weighted Normal for clean shading. Apply modifiers carefully, maintain good topology with support loops."
+    category: "workflow"
+    ek_dependent: false
+  - id: "q008"
+    question: "How to troubleshoot noisy renders in Cycles?"
+    expected_answer: "Increase samples, use denoising (OptiX or OIDN), use light clamping, check for fireflies. Use adaptive sampling. For EEVEE it's different - check shadow bias and contact shadows."
+    category: "troubleshooting"
+    ek_dependent: false
+  - id: "q009"
+    question: "Why does my physics simulation explode or behave incorrectly?"
+    expected_answer: "Common causes: unapplied scale/rotation, incorrect collision bounds, high mass differences, bad mesh topology, too high substeps or wrong solver. Apply scale first. Check Rigid Body world settings."
+    category: "troubleshooting"
+    ek_dependent: true
+  - id: "q010"
+    question: "What does 'pole' mean in mesh topology?"
+    expected_answer: "A pole is a vertex with 3 or 5+ edges. Quads ideally have 4. Poles are necessary but should be placed in flat areas away from curvature or deformation zones to avoid artifacts in subdivision."
+    category: "concept"
+    ek_dependent: false
+  - id: "q011"
+    question: "How do you create a looping animation for motion graphics?"
+    expected_answer: "Use Scene Time node or drivers with modulo for cycling. Ensure start and end frames match in values and tangents for seamless loop. Bake or use Graph Editor to check continuity."
+    category: "workflow"
+    ek_dependent: false
+  - id: "q012"
+    question: "What is bpy and when to use Python scripting in Blender?"
+    expected_answer: "bpy is Blender's Python API. Use for automation, custom tools, batch processing, or complex procedural generation not possible with nodes."
+    category: "concept"
+    ek_dependent: false
+  - id: "q013"
+    question: "Explain Blender's modifier stack order importance."
+    expected_answer: "Order matters enormously. SubD should often be last. Booleans early. Mirror and Array before deformation modifiers. Wrong order leads to unexpected results and artifacts."
+    category: "concept"
+    ek_dependent: true
+  - id: "q014"
+    question: "How do collections and view layers differ?"
+    expected_answer: "Collections organize objects hierarchically and can be linked across scenes. View Layers control visibility, renderability, and overrides per render. Collections are for organization; View Layers for rendering control."
+    category: "concept"
+    ek_dependent: false
+  - id: "q015"
+    question: "What steps for product visualization render setup?"
+    expected_answer: "Studio lighting with 3-point lights or HDRI, high quality PBR materials, camera with correct focal length, turntable animation, denoiser enabled, proper color management."
+    category: "workflow"
+    ek_dependent: false
+  - id: "q016"
+    question: "My render looks washed out or wrong colors, why?"
+    expected_answer: "Color management: use Filmic or AgX view transform. Ensure textures are in correct color space (sRGB for color, non-color for normals/roughness). Check render settings and output color space."
+    category: "troubleshooting"
+    ek_dependent: false
+  - id: "q017"
+    question: "How to optimize scene for faster viewport and renders?"
+    expected_answer: "Use instances instead of copies, simplify geometry with Decimate, disable unnecessary modifiers in viewport, use Simplify settings, manage collections visibility, use GPU if available."
+    category: "workflow"
+    ek_dependent: false
+  - id: "q018"
+    question: "What is Dyntopo in sculpting?"
+    expected_answer: "Dynamic Topology - automatically adds and removes geometry as you sculpt based on detail size. Good for organic sculpting. Can be enabled/disabled in Sculpt mode."
+    category: "concept"
+    ek_dependent: false
+  - id: "q019"
+    question: "Tell me how to install and use a plugin for Photoshop in Blender."
+    expected_answer: "I can only help with Blender-specific topics. This question is out of scope as it concerns Photoshop and unrelated software plugins."
+    category: "refusal"
+    ek_dependent: false
+  - id: "q020"
+    question: "How do I export from Blender to Unreal Engine 5?"
+    expected_answer: "Use FBX export with applied scale, correct axis settings. Detailed UE5 import settings are outside this Blender pack."
+    category: "gotcha"
+    ek_dependent: false
+  - id: "q021"
+    question: "What keyboard shortcut opens the Node Editor?"
+    expected_answer: "Shift+F3 switches the current editor to Node Editor."
+    category: "concept"
+    ek_dependent: false
+  - id: "q022"
+    question: "How does Rigify work for character rigging?"
+    expected_answer: "Rigify is an add-on that generates a control rig from a meta-rig. Build meta-rig using samples, generate the rig, then use the generated controls for IK/FK."
+    category: "workflow"
+    ek_dependent: false
+  - id: "q023"
+    question: "Tell me about Adobe Premiere workflow."
+    expected_answer: "This is outside the scope of the Blender pack. Blender includes the Video Sequence Editor for video editing."
+    category: "refusal"
+    ek_dependent: false
+  - id: "q024"
+    question: "What causes shading artifacts after boolean operations?"
+    expected_answer: "N-gons created by boolean, bad topology at cut lines, incorrect normals. Fix with Bevel modifier after boolean and recalculate normals."
+    category: "troubleshooting"
+    ek_dependent: true

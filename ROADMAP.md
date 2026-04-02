@@ -96,6 +96,14 @@ Stay current with developments that could improve the framework.
   3. Content gaps (missing docs, disambiguation layer) → re-eval
   - Each step = one dimension change for clean attribution
 
+### 2026-04-02 — Public eval runner + blender-3d benchmark pack
+- Refactored `tools/eval-runner/run_eval.py` to be fully pack-agnostic (accepts --pack + --eval flags, loads pack files as context)
+- Created `packs/blender-3d/eval/benchmark.yaml` with 24 questions across concept/workflow/troubleshooting/refusal/gotcha (grounded in actual pack files read during creation)
+- Updated `tools/eval-runner/README.md` with new usage, deps (requests+pyyaml), metrics explanation
+- Updated ROADMAP.md status log
+- Design decision: kept simple (no heavy deps, direct OpenRouter calls, no live eval run per constraints)
+- Ready for validation runs (do not run live per task instructions)
+
 ---
 
 *Update this file when meaningful progress happens on any vector. This is the single source of truth for the improvement project.*

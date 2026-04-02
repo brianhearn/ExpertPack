@@ -1,20 +1,29 @@
 #!/usr/bin/env python3
 """
-ExpertPack Eval Runner — Automated evaluation of pack-powered agents.
+ExpertPack Pack-Agnostic Eval Runner
 
-Sends questions from an eval set to an agent endpoint, captures responses,
-and scores them using an LLM-as-judge approach.
+Loads a pack's content as context and runs an eval set against an LLM via OpenRouter.
+No agent endpoint required — queries the LLM directly with pack context in the prompt.
 
 Usage:
-    python3 run_eval.py \
-        --questions /path/to/questions.yaml \
-        --endpoint ws://host:port/path \
-        --output /path/to/results.yaml \
-        --label "baseline-gemini-flash"
+    python tools/eval-runner/run_eval.py \
+        --pack packs/blender-3d \
+        --eval packs/blender-3d/eval/benchmark.yaml
+
+    python tools/eval-runner/run_eval.py \
+        --pack packs/home-assistant/product \
+        --eval packs/home-assistant/product/eval/benchmark.yaml \
+        --model openrouter/anthropic/claude-haiku-3 \
+        --output results/ha-run-1.yaml
+
+    # Validate eval YAML without making API calls:
+    python tools/eval-runner/run_eval.py \
+        --pack packs/blender-3d \
+        --eval packs/blender-3d/eval/benchmark.yaml \
+        --dry-run
 """
 
 import argparse
-import asyncio
 import json
 import os
 import sys
@@ -29,35 +38,130 @@ except ImportError:
     sys.exit(1)
 
 try:
-    import httpx
+    import requests
 except ImportError:
-    httpx = None
+    print("Error: requests required. Install with: pip install requests")
+    sys.exit(1)
 
-try:
-    import websockets
-except ImportError:
-    websockets = None
+OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+DEFAULT_MODEL = "openrouter/openai/gpt-4o-mini"
+DEFAULT_JUDGE_MODEL = "openrouter/openai/gpt-4o-mini"
+
+# Max characters of pack context to load (keeps prompts from exploding)
+MAX_CONTEXT_CHARS = 80_000
+
+# Files to prioritize when loading pack context
+PRIORITY_FILES = [
+    "overview.md",
+    "glossary.md",
+    "manifest.yaml",
+]
+
+# Directories to prioritize (loaded before others)
+PRIORITY_DIRS = [
+    "concepts",
+    "workflows",
+    "troubleshooting",
+    "faq",
+    "summaries",
+]
 
 
 # ---------------------------------------------------------------------------
-# Question loading
+# Pack context loading
 # ---------------------------------------------------------------------------
 
-def load_questions(path: str) -> dict:
-    """Load and validate the eval question set."""
-    with open(path, 'r') as f:
+def load_pack_context(pack_path: Path) -> str:
+    """
+    Load pack markdown files as context string.
+    Prioritizes overview, glossary, concepts, workflows, faq, troubleshooting.
+    Stops loading when MAX_CONTEXT_CHARS is reached.
+    """
+    if not pack_path.exists():
+        print(f"Error: Pack path does not exist: {pack_path}")
+        sys.exit(1)
+
+    chunks = []
+    total_chars = 0
+
+    def add_file(fp: Path):
+        nonlocal total_chars
+        if total_chars >= MAX_CONTEXT_CHARS:
+            return
+        try:
+            content = fp.read_text(encoding="utf-8")
+            # Skip empty files and index files
+            if len(content.strip()) < 10:
+                return
+            header = f"\n\n--- FILE: {fp.relative_to(pack_path)} ---\n"
+            chunk = header + content
+            remaining = MAX_CONTEXT_CHARS - total_chars
+            if len(chunk) > remaining:
+                chunk = chunk[:remaining] + "\n[...truncated]"
+            chunks.append(chunk)
+            total_chars += len(chunk)
+        except Exception:
+            pass
+
+    # Load priority files first
+    for fname in PRIORITY_FILES:
+        fp = pack_path / fname
+        if fp.exists():
+            add_file(fp)
+
+    # Load priority directories
+    for dname in PRIORITY_DIRS:
+        dpath = pack_path / dname
+        if dpath.is_dir():
+            for fp in sorted(dpath.rglob("*.md")):
+                if total_chars < MAX_CONTEXT_CHARS:
+                    add_file(fp)
+
+    # Load remaining markdown files
+    for fp in sorted(pack_path.rglob("*.md")):
+        if total_chars >= MAX_CONTEXT_CHARS:
+            break
+        # Skip already-loaded priority files
+        rel = fp.relative_to(pack_path)
+        rel_str = str(rel)
+        already_loaded = (
+            rel.name in PRIORITY_FILES or
+            any(rel_str.startswith(d + "/") for d in PRIORITY_DIRS)
+        )
+        if not already_loaded:
+            add_file(fp)
+
+    if not chunks:
+        print(f"Warning: No markdown files found in {pack_path}")
+
+    context = "".join(chunks)
+    print(f"Loaded pack context: {len(chunks)} files, {total_chars:,} chars")
+    return context
+
+
+# ---------------------------------------------------------------------------
+# Eval YAML loading
+# ---------------------------------------------------------------------------
+
+def load_eval_set(path: Path) -> dict:
+    """Load and validate eval YAML following schemas/eval.md."""
+    if not path.exists():
+        print(f"Error: Eval file not found: {path}")
+        sys.exit(1)
+
+    with open(path, "r") as f:
         data = yaml.safe_load(f)
 
-    questions = data.get('questions', [])
+    questions = data.get("questions", [])
     if not questions:
         print(f"Error: No questions found in {path}")
         sys.exit(1)
 
-    # Validate required fields
+    required_fields = ("id", "question", "expected_answer", "category", "ek_dependent")
     for i, q in enumerate(questions):
-        for field in ('id', 'question', 'category', 'expected_answer'):
+        for field in required_fields:
             if field not in q:
-                print(f"Error: Question {i} missing required field '{field}'")
+                print(f"Error: Question {i+1} (id={q.get('id','?')}) missing required field '{field}'")
                 sys.exit(1)
 
     print(f"Loaded {len(questions)} questions from {path}")
@@ -65,384 +169,296 @@ def load_questions(path: str) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Agent communication
+# OpenRouter API
 # ---------------------------------------------------------------------------
 
-async def send_question_ws(endpoint: str, question: str, timeout: int) -> dict:
-    """Send a question via WebSocket and collect the full response."""
-    if websockets is None:
-        print("Error: websockets required for ws:// endpoints. Install with: pip install websockets")
-        sys.exit(1)
+def load_api_key() -> str:
+    """Load OpenRouter API key from environment or .env file."""
+    key = os.environ.get("OPENROUTER_API_KEY", "")
+    if key:
+        return key
 
-    response_text = ""
-    start_time = time.time()
-    first_token_time = None
+    for env_path in ["/root/.openclaw/.env", os.path.expanduser("~/.openclaw/.env"), ".env"]:
+        if os.path.exists(env_path):
+            with open(env_path) as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith("OPENROUTER_API_KEY="):
+                        key = line.split("=", 1)[1].strip().strip('"').strip("'")
+                        if key:
+                            return key
+    return ""
 
-    try:
-        async with websockets.connect(endpoint, close_timeout=10) as ws:
-            # Send the question as a chat message
-            await ws.send(json.dumps({
-                "type": "message",
-                "content": question
-            }))
 
-            # Collect response chunks until done
-            while True:
-                try:
-                    raw = await asyncio.wait_for(ws.recv(), timeout=timeout)
-                    msg = json.loads(raw)
-
-                    if first_token_time is None and msg.get("type") in ("chunk", "content", "text"):
-                        first_token_time = time.time()
-
-                    if msg.get("type") == "chunk":
-                        response_text += msg.get("content", "")
-                    elif msg.get("type") == "content":
-                        response_text += msg.get("content", "")
-                    elif msg.get("type") == "text":
-                        response_text += msg.get("text", "")
-                    elif msg.get("type") == "done":
-                        break
-                    elif msg.get("type") == "error":
-                        response_text = f"[ERROR] {msg.get('error', 'Unknown error')}"
-                        break
-                    elif msg.get("type") == "end":
-                        break
-
-                except asyncio.TimeoutError:
-                    response_text += " [TIMEOUT]"
-                    break
-
-    except Exception as e:
-        response_text = f"[CONNECTION_ERROR] {str(e)}"
-
-    end_time = time.time()
-    return {
-        "response": response_text.strip(),
-        "latency_ms": int((end_time - start_time) * 1000),
-        "ttft_ms": int((first_token_time - start_time) * 1000) if first_token_time else None,
+def call_llm(prompt: str, model: str, api_key: str, temperature: float = 0.3) -> dict:
+    """Call OpenRouter and return response text + token usage."""
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+    }
+    payload = {
+        "model": model,
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": temperature,
     }
 
-
-async def send_question_http(endpoint: str, question: str, timeout: int) -> dict:
-    """Send a question via HTTP POST and collect the response."""
-    if httpx is None:
-        print("Error: httpx required for http:// endpoints. Install with: pip install httpx")
-        sys.exit(1)
-
-    start_time = time.time()
-
     try:
-        async with httpx.AsyncClient(timeout=timeout) as client:
-            resp = await client.post(endpoint, json={
-                "message": question
-            })
-            resp.raise_for_status()
-            data = resp.json()
-            response_text = data.get("response", data.get("content", data.get("text", str(data))))
+        resp = requests.post(OPENROUTER_URL, headers=headers, json=payload, timeout=120)
+        resp.raise_for_status()
+        data = resp.json()
+        content = data["choices"][0]["message"]["content"].strip()
+        usage = data.get("usage", {})
+        return {
+            "text": content,
+            "input_tokens": usage.get("prompt_tokens", 0),
+            "output_tokens": usage.get("completion_tokens", 0),
+        }
+    except requests.HTTPError as e:
+        return {"text": f"[HTTP_ERROR] {e}", "input_tokens": 0, "output_tokens": 0}
     except Exception as e:
-        response_text = f"[ERROR] {str(e)}"
-
-    end_time = time.time()
-    return {
-        "response": response_text.strip(),
-        "latency_ms": int((end_time - start_time) * 1000),
-        "ttft_ms": None,
-    }
-
-
-async def send_question(endpoint: str, question: str, timeout: int) -> dict:
-    """Route to the appropriate transport based on endpoint scheme."""
-    if endpoint.startswith("ws://") or endpoint.startswith("wss://"):
-        return await send_question_ws(endpoint, question, timeout)
-    elif endpoint.startswith("http://") or endpoint.startswith("https://"):
-        return await send_question_http(endpoint, question, timeout)
-    else:
-        print(f"Error: Unsupported endpoint scheme: {endpoint}")
-        sys.exit(1)
+        return {"text": f"[ERROR] {e}", "input_tokens": 0, "output_tokens": 0}
 
 
 # ---------------------------------------------------------------------------
-# LLM-as-Judge scoring
+# Prompt building
 # ---------------------------------------------------------------------------
+
+SYSTEM_PROMPT = """You are an expert AI assistant. Use the provided knowledge base context to answer questions accurately.
+If a question is outside the scope of the provided knowledge base, say so clearly rather than guessing.
+Be concise and factual."""
+
+
+def build_question_prompt(context: str, question: str) -> str:
+    return f"""KNOWLEDGE BASE:
+{context}
+
+---
+
+QUESTION: {question}
+
+Answer based on the knowledge base above. If this question is outside the scope of this knowledge base, say: "This question is outside the scope of this knowledge base." """
+
 
 def build_judge_prompt(question: dict, response: str) -> str:
-    """Build the scoring prompt for the LLM judge."""
-    required_facts = question.get('required_facts', [])
-    anti_hallucination = question.get('anti_hallucination', [])
-    category = question.get('category', '')
+    """Build scoring prompt for LLM-as-judge."""
+    category = question.get("category", "")
+    expected = question["expected_answer"]
+    required_facts = question.get("required_facts", [])
+    anti_hallucination = question.get("anti_hallucination", [])
 
-    prompt = f"""You are an evaluation judge for an AI assistant that answers questions about a product.
+    is_refusal = category in ("refusal", "out-of-scope")
+
+    facts_section = ""
+    if required_facts:
+        facts_section = "\nREQUIRED FACTS (must be present for full correctness):\n"
+        facts_section += "\n".join(f"- {f}" for f in required_facts)
+
+    anti_section = ""
+    if anti_hallucination:
+        anti_section = "\nANTI-HALLUCINATION CHECKS (response must NOT contain these):\n"
+        anti_section += "\n".join(f"- {f}" for f in anti_hallucination)
+
+    refusal_note = ""
+    if is_refusal:
+        refusal_note = "\nNOTE: This is an OUT-OF-SCOPE question. The correct behavior is to decline or state it is outside scope."
+
+    return f"""You are an evaluation judge scoring an AI assistant's response.
 
 QUESTION: {question['question']}
 
-EXPECTED ANSWER: {question['expected_answer']}
+EXPECTED ANSWER: {expected}
+{facts_section}{anti_section}{refusal_note}
 
-ACTUAL RESPONSE FROM THE AGENT:
+ACTUAL RESPONSE:
 {response}
 
-REQUIRED FACTS (each must be present for full correctness):
-{chr(10).join(f"- {f}" for f in required_facts)}
-
-ANTI-HALLUCINATION CHECKS (the response must NOT contain these):
-{chr(10).join(f"- {f}" for f in anti_hallucination)}
-
-{"This is an OUT-OF-SCOPE question. The agent should have declined to answer or clearly stated this is outside its expertise." if category == "out-of-scope" else ""}
-
-Score the response. Return ONLY valid JSON (no markdown fences) with this structure:
+Score the response. Return ONLY valid JSON (no markdown fences):
 {{
-  "correctness": <float 0.0-1.0, fraction of required_facts present>,
-  "facts_present": [<list of required_facts that ARE present in the response>],
-  "facts_missing": [<list of required_facts that are NOT present>],
-  "hallucinations": [<list of anti_hallucination violations found, or empty>],
-  "groundedness": <float 0.0-1.0, how well the response sticks to factual claims vs fabricating>,
-  "refusal_correct": <bool, true if out-of-scope question was properly declined, null if not out-of-scope>,
-  "notes": "<brief explanation of scoring>"
+  "correctness": <float 0.0-1.0, fraction of key facts from expected_answer present in response>,
+  "groundedness": <float 0.0-1.0, how well the response sticks to facts vs fabricating>,
+  "hallucinations": [<list of specific wrong claims found, or empty list>],
+  "refusal_correct": <true if out-of-scope question was properly declined, false if not, null if not out-of-scope>,
+  "notes": "<brief explanation>"
 }}
 
-Be strict but fair. A fact counts as present if the response conveys the same meaning, even if phrased differently. A hallucination violation counts if the response contains the specific wrong information described."""
-
-    return prompt
-
-
-async def judge_response(question: dict, response: str, judge_model: str, api_key: str) -> dict:
-    """Use an LLM to score a response against expected answer."""
-    if httpx is None:
-        print("Error: httpx required for judge scoring. Install with: pip install httpx")
-        sys.exit(1)
-
-    prompt = build_judge_prompt(question, response)
-
-    try:
-        async with httpx.AsyncClient(timeout=120) as client:
-            resp = await client.post(
-                "https://openrouter.ai/api/v1/chat/completions",
-                headers={
-                    "Authorization": f"Bearer {api_key}",
-                    "Content-Type": "application/json",
-                },
-                json={
-                    "model": judge_model,
-                    "messages": [{"role": "user", "content": prompt}],
-                    "temperature": 0.0,
-                }
-            )
-            resp.raise_for_status()
-            data = resp.json()
-            content = data['choices'][0]['message']['content'].strip()
-
-            # Strip markdown fences if present
-            if content.startswith("```"):
-                content = content.split("\n", 1)[1] if "\n" in content else content[3:]
-                if content.endswith("```"):
-                    content = content[:-3]
-                content = content.strip()
-
-            scores = json.loads(content)
-
-            # Add token usage if available
-            usage = data.get('usage', {})
-            scores['judge_tokens'] = {
-                'input': usage.get('prompt_tokens', 0),
-                'output': usage.get('completion_tokens', 0),
-            }
-
-            return scores
-
-    except json.JSONDecodeError as e:
-        return {
-            "correctness": 0.0,
-            "facts_present": [],
-            "facts_missing": question.get('required_facts', []),
-            "hallucinations": [],
-            "groundedness": 0.0,
-            "refusal_correct": None,
-            "notes": f"Judge returned invalid JSON: {str(e)}",
-            "judge_tokens": {"input": 0, "output": 0},
-        }
-    except Exception as e:
-        return {
-            "correctness": 0.0,
-            "facts_present": [],
-            "facts_missing": question.get('required_facts', []),
-            "hallucinations": [],
-            "groundedness": 0.0,
-            "refusal_correct": None,
-            "notes": f"Judge error: {str(e)}",
-            "judge_tokens": {"input": 0, "output": 0},
-        }
+Be strict but fair. A fact counts as present if the response conveys the same meaning even if phrased differently."""
 
 
 # ---------------------------------------------------------------------------
 # Main eval loop
 # ---------------------------------------------------------------------------
 
-async def run_eval(args):
-    """Execute the full eval run."""
-    data = load_questions(args.questions)
-    questions = data['questions']
+def run_eval(args):
+    pack_path = Path(args.pack)
+    eval_path = Path(args.eval)
+    output_path = Path(args.output) if args.output else Path(
+        f"results/{pack_path.name}-{datetime.now(timezone.utc).strftime('%Y-%m-%d-%H%M')}.yaml"
+    )
 
-    # Load API key for judge
-    api_key = os.environ.get('OPENROUTER_API_KEY', '')
-    if not api_key and not args.dry_run:
-        # Try loading from .env files
-        for env_path in ['/root/.openclaw/.env', os.path.expanduser('~/.openclaw/.env')]:
-            if os.path.exists(env_path):
-                with open(env_path) as f:
-                    for line in f:
-                        line = line.strip()
-                        if line.startswith('OPENROUTER_API_KEY='):
-                            api_key = line.split('=', 1)[1].strip().strip('"').strip("'")
-                            break
-            if api_key:
-                break
+    eval_data = load_eval_set(eval_path)
+    questions = eval_data["questions"]
 
-    if not api_key and not args.dry_run:
-        print("Warning: No OPENROUTER_API_KEY found. Judge scoring will fail.")
+    # Category summary
+    categories = {}
+    for q in questions:
+        cat = q.get("category", "unknown")
+        categories[cat] = categories.get(cat, 0) + 1
 
     if args.dry_run:
-        print(f"\n=== DRY RUN ===")
-        print(f"Questions: {len(questions)}")
-        categories = {}
-        for q in questions:
-            cat = q.get('category', 'unknown')
-            categories[cat] = categories.get(cat, 0) + 1
+        print("\n=== DRY RUN — validation only, no API calls ===")
+        print(f"Pack:       {pack_path}")
+        print(f"Eval:       {eval_path}")
+        print(f"Questions:  {len(questions)}")
         for cat, count in sorted(categories.items()):
             print(f"  {cat}: {count}")
-        print(f"Endpoint: {args.endpoint}")
-        print(f"Judge model: {args.judge_model}")
-        print(f"Timeout: {args.timeout}s per question")
-        print("Validation passed.")
+        ek_count = sum(1 for q in questions if q.get("ek_dependent"))
+        print(f"EK-dependent: {ek_count}")
+        print("\nValidation passed. ✓")
         return
 
-    print(f"\n=== EVAL RUN: {args.label} ===")
-    print(f"Endpoint: {args.endpoint}")
-    print(f"Judge: {args.judge_model}")
-    print(f"Questions: {len(questions)}")
+    api_key = load_api_key()
+    if not api_key:
+        print("Error: OPENROUTER_API_KEY not found. Set it in the environment or /root/.openclaw/.env")
+        sys.exit(1)
+
+    pack_context = load_pack_context(pack_path)
+    model = args.model or DEFAULT_MODEL
+    judge_model = args.judge_model or DEFAULT_JUDGE_MODEL
+
+    print(f"\n=== EVAL RUN ===")
+    print(f"Pack:         {pack_path}")
+    print(f"Questions:    {len(questions)}")
+    print(f"Model:        {model}")
+    print(f"Judge:        {judge_model}")
+    print(f"Output:       {output_path}")
     print()
 
     results = []
-    total_judge_input = 0
-    total_judge_output = 0
+    total_in_tokens = 0
+    total_out_tokens = 0
+    total_judge_in = 0
+    total_judge_out = 0
 
     for i, q in enumerate(questions):
-        qid = q['id']
-        print(f"[{i+1}/{len(questions)}] {qid}: {q['question'][:60]}...", end=" ", flush=True)
+        qid = q["id"]
+        print(f"[{i+1}/{len(questions)}] {qid} ({q.get('category','?')}): {q['question'][:55]}...", end=" ", flush=True)
 
-        # Send question to agent
-        agent_result = await send_question(args.endpoint, q['question'], args.timeout)
-        response = agent_result['response']
+        t0 = time.time()
+        prompt = build_question_prompt(pack_context, q["question"])
+        answer_result = call_llm(prompt, model, api_key, temperature=0.3)
+        latency_ms = int((time.time() - t0) * 1000)
 
-        if response.startswith("[ERROR]") or response.startswith("[CONNECTION_ERROR]"):
-            print(f"ERROR: {response[:80]}")
-            scores = {
-                "correctness": 0.0,
-                "facts_present": [],
-                "facts_missing": q.get('required_facts', []),
-                "hallucinations": [],
-                "groundedness": 0.0,
-                "refusal_correct": None,
+        response = answer_result["text"]
+        total_in_tokens += answer_result["input_tokens"]
+        total_out_tokens += answer_result["output_tokens"]
+
+        if response.startswith("[ERROR]") or response.startswith("[HTTP_ERROR]"):
+            print(f"ERROR")
+            score = {
+                "correctness": 0.0, "groundedness": 0.0,
+                "hallucinations": [], "refusal_correct": None,
                 "notes": response,
-                "judge_tokens": {"input": 0, "output": 0},
             }
         else:
-            # Score with judge
-            scores = await judge_response(q, response, args.judge_model, api_key)
-            print(f"correctness={scores.get('correctness', '?')}", end=" ")
+            judge_prompt = build_judge_prompt(q, response)
+            judge_result = call_llm(judge_prompt, judge_model, api_key, temperature=0.0)
+            total_judge_in += judge_result["input_tokens"]
+            total_judge_out += judge_result["output_tokens"]
 
-        total_judge_input += scores.get('judge_tokens', {}).get('input', 0)
-        total_judge_output += scores.get('judge_tokens', {}).get('output', 0)
+            raw = judge_result["text"]
+            # Strip markdown fences if present
+            if raw.startswith("```"):
+                lines = raw.split("\n")
+                raw = "\n".join(lines[1:])
+                if raw.endswith("```"):
+                    raw = raw[:-3]
+                raw = raw.strip()
 
-        result = {
+            try:
+                score = json.loads(raw)
+            except json.JSONDecodeError:
+                score = {
+                    "correctness": 0.0, "groundedness": 0.0,
+                    "hallucinations": [], "refusal_correct": None,
+                    "notes": f"Judge returned invalid JSON: {raw[:100]}",
+                }
+
+        print(f"correctness={score.get('correctness', '?'):.2f} ({latency_ms}ms)")
+
+        results.append({
             "id": qid,
-            "category": q.get('category', ''),
-            "difficulty": q.get('difficulty', ''),
-            "correctness": scores.get('correctness', 0.0),
-            "groundedness": scores.get('groundedness', 0.0),
-            "facts_present": scores.get('facts_present', []),
-            "facts_missing": scores.get('facts_missing', []),
-            "hallucinations": scores.get('hallucinations', []),
-            "refusal_correct": scores.get('refusal_correct'),
-            "latency_ms": agent_result['latency_ms'],
-            "ttft_ms": agent_result.get('ttft_ms'),
+            "category": q.get("category", ""),
+            "ek_dependent": q.get("ek_dependent", False),
+            "correctness": round(float(score.get("correctness", 0)), 3),
+            "groundedness": round(float(score.get("groundedness", 0)), 3),
+            "hallucinations": score.get("hallucinations", []),
+            "refusal_correct": score.get("refusal_correct"),
+            "latency_ms": latency_ms,
             "response_preview": response[:300],
-            "notes": scores.get('notes', ''),
-        }
-        results.append(result)
-        print(f"({agent_result['latency_ms']}ms)")
+            "notes": score.get("notes", ""),
+        })
 
-        # Delay between questions
         if args.delay > 0 and i < len(questions) - 1:
-            await asyncio.sleep(args.delay)
+            time.sleep(args.delay)
 
-    # -----------------------------------------------------------------------
-    # Compute aggregates
-    # -----------------------------------------------------------------------
+    # Aggregate scores
     n = len(results)
-    avg_correctness = sum(r['correctness'] for r in results) / n if n else 0
-    avg_groundedness = sum(r['groundedness'] for r in results) / n if n else 0
-
-    hallucination_count = sum(1 for r in results if r['hallucinations'])
+    avg_correctness = sum(r["correctness"] for r in results) / n if n else 0
+    avg_groundedness = sum(r["groundedness"] for r in results) / n if n else 0
+    hallucination_count = sum(1 for r in results if r["hallucinations"])
     hallucination_rate = hallucination_count / n if n else 0
 
-    oos_questions = [r for r in results if r['category'] == 'out-of-scope']
-    refusal_correct = sum(1 for r in oos_questions if r.get('refusal_correct') is True)
-    refusal_accuracy = refusal_correct / len(oos_questions) if oos_questions else 1.0
+    refusal_qs = [r for r in results if r["category"] in ("refusal", "out-of-scope")]
+    refusal_correct = sum(1 for r in refusal_qs if r.get("refusal_correct") is True)
+    refusal_accuracy = refusal_correct / len(refusal_qs) if refusal_qs else None
 
-    avg_latency = sum(r['latency_ms'] for r in results) / n if n else 0
+    ek_qs = [r for r in results if r.get("ek_dependent")]
+    ek_correctness = sum(r["correctness"] for r in ek_qs) / len(ek_qs) if ek_qs else None
 
-    # -----------------------------------------------------------------------
-    # Build output
-    # -----------------------------------------------------------------------
+    avg_latency = sum(r["latency_ms"] for r in results) / n if n else 0
+
     output = {
         "run_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
-        "label": args.label,
-        "eval_set_version": data.get('version', '1.0'),
-        "questions_total": len(questions),
-        "questions_evaluated": n,
-        "dimensions": {
-            "structure": {
-                "version": args.structure_version or data.get('version', 'unknown'),
-                "changes": "",
-            },
-            "model": {
-                "name": args.model or "unknown",
-                "provider": "openrouter",
-            },
-            "agent_training": {
-                "version": args.agent_training_version or "1.0",
-                "changes": "",
-            },
-        },
+        "pack": str(pack_path),
+        "eval_set": str(eval_path),
+        "eval_set_version": eval_data.get("version", "1.0"),
+        "model": model,
+        "judge_model": judge_model,
+        "questions_total": n,
         "scores": {
             "correctness": round(avg_correctness, 3),
             "groundedness": round(avg_groundedness, 3),
             "hallucination_rate": round(hallucination_rate, 3),
-            "refusal_accuracy": round(refusal_accuracy, 3),
+            "hallucination_count": hallucination_count,
+            "refusal_accuracy": round(refusal_accuracy, 3) if refusal_accuracy is not None else None,
+            "ek_correctness": round(ek_correctness, 3) if ek_correctness is not None else None,
             "avg_latency_ms": int(avg_latency),
         },
-        "judge": {
-            "model": args.judge_model,
-            "total_input_tokens": total_judge_input,
-            "total_output_tokens": total_judge_output,
+        "tokens": {
+            "model_input": total_in_tokens,
+            "model_output": total_out_tokens,
+            "judge_input": total_judge_in,
+            "judge_output": total_judge_out,
+            "total": total_in_tokens + total_out_tokens + total_judge_in + total_judge_out,
         },
         "details": results,
     }
 
-    # Write output
-    output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(output_path, 'w') as f:
+    with open(output_path, "w") as f:
         yaml.dump(output, f, default_flow_style=False, sort_keys=False, allow_unicode=True)
 
-    print(f"\n=== RESULTS ===")
-    print(f"Correctness:      {output['scores']['correctness']:.1%}")
-    print(f"Groundedness:     {output['scores']['groundedness']:.1%}")
-    print(f"Hallucination:    {output['scores']['hallucination_rate']:.1%}")
-    print(f"Refusal accuracy: {output['scores']['refusal_accuracy']:.1%}")
-    print(f"Avg latency:      {output['scores']['avg_latency_ms']}ms")
-    print(f"Judge tokens:     {total_judge_input} in / {total_judge_output} out")
-    print(f"\nResults written to: {output_path}")
+    print(f"\n=== SCORECARD ===")
+    print(f"Correctness:       {output['scores']['correctness']:.1%}")
+    print(f"Groundedness:      {output['scores']['groundedness']:.1%}")
+    print(f"Hallucination:     {output['scores']['hallucination_rate']:.1%}  ({hallucination_count}/{n})")
+    if refusal_accuracy is not None:
+        print(f"Refusal accuracy:  {output['scores']['refusal_accuracy']:.1%}  ({refusal_correct}/{len(refusal_qs)})")
+    if ek_correctness is not None:
+        print(f"EK correctness:    {output['scores']['ek_correctness']:.1%}  ({len(ek_qs)} EK questions)")
+    print(f"Avg latency:       {output['scores']['avg_latency_ms']}ms")
+    print(f"Total tokens:      {output['tokens']['total']:,}")
+    print(f"\nResults → {output_path}")
 
 
 # ---------------------------------------------------------------------------
@@ -451,24 +467,26 @@ async def run_eval(args):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="ExpertPack Eval Runner — Automated quality evaluation"
+        description="ExpertPack Eval Runner — measure pack quality via LLM-as-judge"
     )
-    parser.add_argument('--questions', required=True, help='Path to questions.yaml')
-    parser.add_argument('--endpoint', required=True, help='Agent endpoint (ws:// or http://)')
-    parser.add_argument('--output', required=True, help='Output results YAML path')
-    parser.add_argument('--model', default=None, help='Model name for metadata')
-    parser.add_argument('--label', default='eval-run', help='Label for this run')
-    parser.add_argument('--judge-model', default='anthropic/claude-sonnet-4',
-                        help='Model for LLM-as-judge scoring')
-    parser.add_argument('--timeout', type=int, default=60, help='Per-question timeout (seconds)')
-    parser.add_argument('--delay', type=float, default=2.0, help='Delay between questions (seconds)')
-    parser.add_argument('--dry-run', action='store_true', help='Validate without sending')
-    parser.add_argument('--structure-version', default=None, help='Pack version for dimensions')
-    parser.add_argument('--agent-training-version', default=None, help='Agent training version')
+    parser.add_argument("--pack", required=True,
+                        help="Path to pack directory (e.g. packs/blender-3d)")
+    parser.add_argument("--eval", required=True,
+                        help="Path to eval YAML file (e.g. packs/blender-3d/eval/benchmark.yaml)")
+    parser.add_argument("--model", default=None,
+                        help=f"Model for answering questions (default: {DEFAULT_MODEL})")
+    parser.add_argument("--judge-model", default=None,
+                        help=f"Model for LLM-as-judge scoring (default: {DEFAULT_JUDGE_MODEL})")
+    parser.add_argument("--output", default=None,
+                        help="Output YAML path (default: results/<pack>-<date>.yaml)")
+    parser.add_argument("--delay", type=float, default=1.0,
+                        help="Seconds to wait between questions (default: 1.0)")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="Validate eval YAML and pack path without making API calls")
 
     args = parser.parse_args()
-    asyncio.run(run_eval(args))
+    run_eval(args)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
