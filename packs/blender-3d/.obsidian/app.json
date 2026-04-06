@@ -1,0 +1,12 @@
+{
+  "newLinkFormat": "relative",
+  "useMarkdownLinks": true,
+  "attachmentFolderPath": "assets",
+  "newFileFolderPath": "",
+  "alwaysUpdateLinks": true,
+  "promptDelete": true,
+  "trashOption": "system",
+  "showUnsupportedFiles": false,
+  "theme": "obsidian",
+  "cssTheme": ""
+}

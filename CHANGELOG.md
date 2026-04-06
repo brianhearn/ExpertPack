@@ -19,6 +19,17 @@ Schema versions use the format `core.X.Y` for core schema and `type.X.Y` for typ
 
 ---
 
+## [2026-04-06] — Community Packs: Obsidian Ready Out of the Box
+
+### Added
+- `.obsidian/` config folder copied into each community pack directory:
+  - `packs/blender-3d/.obsidian/`
+  - `packs/home-assistant/.obsidian/`
+  - `packs/solar-diy/.obsidian/`
+- Packs are now fully self-contained Obsidian vaults — download any pack folder and open directly in Obsidian without any manual setup step
+
+---
+
 ## [2026-04-06] — Obsidian Vault Template
 
 ### Added
