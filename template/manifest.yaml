@@ -1,0 +1,55 @@
+# ExpertPack Manifest — Fill in all fields before hydrating
+
+# ── Identity ──────────────────────────────────────────────────────────────────
+name: "Your Pack Name"
+slug: "your-pack-slug"           # kebab-case, no spaces
+
+# Change type to match your subject:
+#   product  — a software product, platform, or tool
+#   person   — a human being (stories, beliefs, voice, relationships)
+#   process  — a complex multi-phase endeavor
+#   composite — combines multiple packs (advanced)
+type: "product"
+
+version: "1.0.0"
+schema_version: "2.8"
+description: "One paragraph describing what this pack covers and who it's for."
+entry_point: "overview.md"
+
+# ── Author ────────────────────────────────────────────────────────────────────
+author: "Your Name"
+created: "YYYY-MM-DD"
+updated: "YYYY-MM-DD"
+
+# ── Product-specific fields (remove if type != product) ───────────────────────
+product_version: "x.x"
+vendor: "Vendor Name"
+website: "https://example.com"
+documentation: "https://docs.example.com"
+
+# ── EK Ratio (fill in after running blind-probe eval) ─────────────────────────
+# ek_ratio:
+#   value: 0.00
+#   measured: "YYYY-MM-DD"
+#   models: ["gpt-4.1", "claude-sonnet-4-6", "gemini-2.0-flash"]
+#   propositions_tested: 0
+
+# ── Context strategy ──────────────────────────────────────────────────────────
+# Controls how AI agents load this pack.
+# Tier 1 (always): loaded every session
+# Tier 2 (searchable): indexed for RAG retrieval
+# Tier 3 (on_demand): loaded only on explicit request
+context:
+  always:
+    - overview.md
+    - glossary.md
+  searchable:
+    - concepts/
+    - workflows/
+    - troubleshooting/
+    - faq/
+    - summaries/
+  on_demand:
+    - sources/
+    - propositions/
+    - volatile/

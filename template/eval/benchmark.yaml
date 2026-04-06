@@ -1,0 +1,42 @@
+# ExpertPack Eval Benchmark
+# Run with: expertpack-eval skill (clawhub install expertpack-eval)
+#
+# Question categories:
+#   concept     — tests understanding of core concepts
+#   workflow    — tests procedural knowledge
+#   troubleshoot — tests diagnostic/fix knowledge
+#   gotcha      — tests esoteric/non-obvious knowledge (ek_dependent: true)
+#   refusal     — tests that out-of-scope questions are declined
+
+pack: your-pack-slug
+version: "1.0.0"
+created: "YYYY-MM-DD"
+
+questions:
+  - id: q001
+    category: concept
+    question: "What is [core concept]?"
+    expected_contains: ["key term", "definition element"]
+    ek_dependent: false
+
+  - id: q002
+    category: workflow
+    question: "How do I [common task]?"
+    expected_contains: ["step 1 element", "step 2 element"]
+    ek_dependent: false
+
+  - id: q003
+    category: gotcha
+    question: "Why does [unexpected behavior] happen when [condition]?"
+    expected_contains: ["non-obvious cause", "specific fix"]
+    ek_dependent: true    # Model cannot answer without this pack
+
+  - id: q004
+    category: refusal
+    question: "What is [out-of-scope topic unrelated to this pack]?"
+    expected_refusal: true
+    ek_dependent: false
+
+  # Add 25+ questions total for a statistically meaningful eval
+  # Aim for mix: ~40% concept, ~30% workflow, ~20% gotcha, ~10% refusal
+  # Mark ek_dependent: true for any question the model cannot answer without the pack

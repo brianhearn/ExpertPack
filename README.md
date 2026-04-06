@@ -6,7 +6,7 @@ Esoteric knowledge (EK) is knowledge not found in the weights of frontier LLMs �
 
 Every pack is measured by its **EK ratio** — the proportion of content that frontier models cannot correctly produce on their own. During hydration, every fact is triaged: esoteric knowledge gets maximum treatment, general knowledge gets compressed to scaffolding. The result is dense, high-value context that makes your AI genuinely expert — not just articulate.
 
-**[🌐 expertpack.ai](https://expertpack.ai)** · **[📦 Free Packs](#free-community-packs)** · **[📖 Schemas](#schemas)** · **[🧪 Evaluation](#evaluation)** · **[💎 Obsidian Compatible](#obsidian-compatibility)**
+**[🌐 expertpack.ai](https://expertpack.ai)** · **[📦 Free Packs](#free-community-packs)** · **[📖 Schemas](#schemas)** · **[🧪 Evaluation](#evaluation)** · **[💎 Obsidian Compatible](#obsidian-compatibility)** · **[🗂️ Vault Template](template/)**
 
 ---
 
@@ -26,6 +26,8 @@ Every content file includes YAML frontmatter (`title`, `type`, `tags`, `pack`, `
 1. Copy the `.obsidian/` folder from the repo root into your pack directory
 2. Open that directory as a vault in Obsidian
 3. Install Dataview + Templater from Community Plugins
+
+**Starting a new pack from scratch?** Use the **[Obsidian Vault Template](template/)** — pre-configured folder structure, Templater templates for every content type, and a live Dataview dashboard.
 
 Link format is standard relative Markdown — packs render correctly on GitHub, in any Markdown reader, and in Obsidian simultaneously.
 
