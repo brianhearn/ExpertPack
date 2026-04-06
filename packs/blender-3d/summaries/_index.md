@@ -16,8 +16,8 @@ Section-level summaries for quick orientation and dense-coverage retrieval. Each
 
 | File | Coverage | Approximate Size |
 |------|----------|-----------------|
-| [concepts-overview.md](./concepts-overview.md) | All 10 concept files | ~10KB |
-| [workflows-overview.md](./workflows-overview.md) | All 5 workflow files | ~7KB |
+| ./concepts-overview.md | All 10 concept files | ~10KB |
+| ./workflows-overview.md | All 5 workflow files | ~7KB |
 
 ---
 

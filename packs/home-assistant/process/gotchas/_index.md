@@ -12,7 +12,7 @@ Common mistakes and traps in Home Assistant setups. Reading this before you star
 
 | File | Contents |
 |------|----------|
-| [common-mistakes.md](common-mistakes.md) | The 12 most costly mistakes in HA setups — SD cards, protocol choices, automation modes, backups, security, and entity naming |
+| common-mistakes.md | The 12 most costly mistakes in HA setups — SD cards, protocol choices, automation modes, backups, security, and entity naming |
 
 **Top 5 by cost (time or money):**
 
@@ -22,4 +22,4 @@ Common mistakes and traps in Home Assistant setups. Reading this before you star
 4. **Wrong automation mode** — motion lights need `mode: restart`
 5. **Exposing port 8123 to the internet** — use Nabu Casa or Cloudflare Tunnel instead
 
-→ For diagnostic help when things go wrong, see the [product troubleshooting guide](../../product/troubleshooting/_index.md).
+→ For diagnostic help when things go wrong, see the ../../product/troubleshooting/_index.md.

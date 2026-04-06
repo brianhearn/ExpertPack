@@ -12,9 +12,9 @@ Three major decision frameworks for residential solar projects. Make these decis
 
 | File | Decision | Core Tradeoff |
 |------|----------|--------------|
-| [diy-vs-contractor.md](diy-vs-contractor.md) | DIY or hire a contractor? | Cost vs. complexity, warranty access, and permitted risk |
-| [inverter-topology.md](inverter-topology.md) | String, optimizer, or microinverter? | Cost vs. shading tolerance, monitoring, and future flexibility |
-| [grid-tied-vs-hybrid.md](grid-tied-vs-hybrid.md) | Grid-tied, hybrid with battery, or off-grid? | Simplicity vs. backup capability vs. energy independence |
+| diy-vs-contractor.md | DIY or hire a contractor? | Cost vs. complexity, warranty access, and permitted risk |
+| inverter-topology.md | String, optimizer, or microinverter? | Cost vs. shading tolerance, monitoring, and future flexibility |
+| grid-tied-vs-hybrid.md | Grid-tied, hybrid with battery, or off-grid? | Simplicity vs. backup capability vs. energy independence |
 
 ## Decision Order
 

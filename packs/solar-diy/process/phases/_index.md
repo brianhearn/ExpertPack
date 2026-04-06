@@ -12,13 +12,13 @@ Seven sequential phases of a residential solar installation project.
 
 | File | Phase | Description |
 |------|-------|-------------|
-| [01-site-assessment.md](01-site-assessment.md) | Site Assessment | Roof evaluation, shading analysis, structural check, utility research |
-| [02-system-design.md](02-system-design.md) | System Design | Load calculation, system sizing, string design, battery sizing, layout |
-| [03-component-selection.md](03-component-selection.md) | Component Selection | Choosing panels, inverter, batteries, racking, BOS hardware |
-| [04-permitting.md](04-permitting.md) | Permitting & Utility | Building permit, interconnection application, HOA approvals |
-| [05-installation.md](05-installation.md) | Installation | Racking, panel mounting, wiring, inverter/battery installation, grounding |
-| [06-inspection-commissioning.md](06-inspection-commissioning.md) | Inspection & Commissioning | Electrical inspection, utility meter swap, system activation, monitoring |
-| [07-operations-maintenance.md](07-operations-maintenance.md) | Operations & Maintenance | Monitoring, cleaning, degradation tracking, warranty management |
+| 01-site-assessment.md | Site Assessment | Roof evaluation, shading analysis, structural check, utility research |
+| 02-system-design.md | System Design | Load calculation, system sizing, string design, battery sizing, layout |
+| 03-component-selection.md | Component Selection | Choosing panels, inverter, batteries, racking, BOS hardware |
+| 04-permitting.md | Permitting & Utility | Building permit, interconnection application, HOA approvals |
+| 05-installation.md | Installation | Racking, panel mounting, wiring, inverter/battery installation, grounding |
+| 06-inspection-commissioning.md | Inspection & Commissioning | Electrical inspection, utility meter swap, system activation, monitoring |
+| 07-operations-maintenance.md | Operations & Maintenance | Monitoring, cleaning, degradation tracking, warranty management |
 
 ## Phase Dependencies
 

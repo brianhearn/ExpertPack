@@ -12,7 +12,7 @@ Common mistakes, surprises, and traps in residential solar projects.
 
 | File | Contents |
 |------|----------|
-| [common-mistakes.md](common-mistakes.md) | Installation errors, permit gotchas, utility surprises, and design mistakes organized by project phase |
+| common-mistakes.md | Installation errors, permit gotchas, utility surprises, and design mistakes organized by project phase |
 
 ## How to Use This Section
 

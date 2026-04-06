@@ -16,9 +16,9 @@ Atomic factual statements extracted from content files for RAG retrieval optimiz
 
 | File | Source | Proposition Count |
 |------|--------|-------------------|
-| [concepts.md](./concepts.md) | All 10 concept files | ~140 propositions |
-| [workflows.md](./workflows.md) | All 5 workflow files | ~75 propositions |
-| [troubleshooting.md](./troubleshooting.md) | troubleshooting/common-mistakes.md | ~28 propositions |
+| ./concepts.md | All 10 concept files | ~140 propositions |
+| ./workflows.md | All 5 workflow files | ~75 propositions |
+| ./troubleshooting.md | troubleshooting/common-mistakes.md | ~28 propositions |
 
 ---
 
