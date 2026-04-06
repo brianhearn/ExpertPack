@@ -1,3 +1,11 @@
+---
+title: "Voice Assistants with Home Assistant Assist"
+type: "concept"
+tags: [automation-fundamentals, concepts, esphome-fundamentals, integrations-guide, voice-assistant]
+pack: "home-assistant-product"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=concepts, topic=voice-assistant, related=esphome-fundamentals,integrations-guide,automation-fundamentals -->
 ---
 sources:

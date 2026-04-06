@@ -1,4 +1,12 @@
 ---
+title: "Climate Control Automation Patterns"
+type: pattern
+tags: [pattern, climate-control, automation, thermostat, home-assistant-process]
+pack: home-assistant-process
+retrieval_strategy: standard
+---
+
+---
 sources:
   - type: documentation
     url: "https://www.home-assistant.io/integrations/generic_thermostat/"

@@ -1,3 +1,11 @@
+---
+title: "YAML Configuration — The Definitive Practitioner Guide"
+type: "concept"
+tags: [automation-fundamentals, concepts, core-architecture, yaml-configuration]
+pack: "home-assistant-product"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=concepts, topic=yaml-configuration, related=core-architecture,automation-fundamentals -->
 ---
 sources:

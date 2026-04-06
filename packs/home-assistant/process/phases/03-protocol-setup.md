@@ -1,3 +1,11 @@
+---
+title: "Phase 3: Protocol Setup"
+type: "phase"
+tags: [03-protocol-setup, phases]
+pack: "home-assistant-process"
+retrieval_strategy: "atomic"
+---
+
 # Phase 3: Protocol Setup
 
 ## Goal

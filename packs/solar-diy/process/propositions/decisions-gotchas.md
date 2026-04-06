@@ -1,3 +1,11 @@
+---
+title: "Propositions — Solar Process Decisions & Gotchas"
+type: "proposition"
+tags: [decisions-gotchas, propositions]
+pack: "solar-diy-process"
+retrieval_strategy: "standard"
+---
+
 # Propositions — Solar Process Decisions & Gotchas
 
 Atomic factual statements from decision and gotcha files.

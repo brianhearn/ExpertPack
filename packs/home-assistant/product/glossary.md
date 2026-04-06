@@ -1,3 +1,11 @@
+---
+title: "Home Assistant — Glossary"
+type: "glossary"
+tags: []
+pack: "home-assistant-product"
+retrieval_strategy: "standard"
+---
+
 # Home Assistant — Glossary
 
 Quick-reference definitions mapping HA terminology to plain language.

@@ -1,3 +1,11 @@
+---
+title: "Propositions — Solar Process Phases"
+type: "proposition"
+tags: [phases, propositions]
+pack: "solar-diy-process"
+retrieval_strategy: "standard"
+---
+
 # Propositions — Solar Process Phases
 
 Atomic factual statements extracted from the seven process phase files.

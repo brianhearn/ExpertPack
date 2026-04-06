@@ -1,3 +1,11 @@
+---
+title: "Common Mistakes in Residential Solar Projects"
+type: "gotcha"
+tags: [common-mistakes, installation, nec-rapid-shutdown, permitting, process, string-sizing, system-design]
+pack: "solar-diy-process"
+retrieval_strategy: "atomic"
+---
+
 # Common Mistakes in Residential Solar Projects
 
 <!-- context: section=process, topic=common-mistakes, related=system-design,permitting,installation,nec-rapid-shutdown,string-sizing -->

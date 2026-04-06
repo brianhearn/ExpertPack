@@ -1,3 +1,11 @@
+---
+title: "Summary — Process Pack Overview"
+type: "summary"
+tags: [process-overview, summaries]
+pack: "home-assistant-process"
+retrieval_strategy: "standard"
+---
+
 # Summary — Process Pack Overview
 
 This summary covers the 7-phase smart home build process and key decision frameworks. For detailed guidance, follow the links to source files.

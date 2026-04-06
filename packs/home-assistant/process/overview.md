@@ -1,3 +1,11 @@
+---
+title: "Building a Smart Home with Home Assistant"
+type: "overview"
+tags: []
+pack: "home-assistant-process"
+retrieval_strategy: "standard"
+---
+
 # Building a Smart Home with Home Assistant
 
 ## What This Process Is

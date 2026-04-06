@@ -1,3 +1,11 @@
+---
+title: "General Solar FAQ"
+type: "faq"
+tags: [battery-systems-2026, diy-vs-contractor, faq-general, grid-tied-vs-hybrid, inverter-types, product, system-design-fundamentals]
+pack: "solar-diy-product"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=product, topic=faq-general, related=system-design-fundamentals,inverter-types,battery-systems-2026,diy-vs-contractor,grid-tied-vs-hybrid -->
 
 > **Lead summary:** Answers to the most common solar questions: costs ($15,000–$35,000 before the 30% federal tax credit), system sizing, battery necessity, DIY feasibility, and how long payback takes (6–12 years typically). The 30% federal ITC is the single biggest financial lever available to solar buyers.

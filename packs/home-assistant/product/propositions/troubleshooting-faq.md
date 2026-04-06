@@ -1,3 +1,11 @@
+---
+title: "Propositions — Troubleshooting & FAQ"
+type: "proposition"
+tags: [propositions, troubleshooting-faq]
+pack: "home-assistant-product"
+retrieval_strategy: "standard"
+---
+
 # Propositions — Troubleshooting & FAQ
 
 Atomic factual statements extracted from the troubleshooting and FAQ files.

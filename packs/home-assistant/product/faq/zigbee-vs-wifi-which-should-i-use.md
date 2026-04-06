@@ -1,3 +1,11 @@
+---
+title: "Zigbee vs WiFi — Which Should I Use for Smart Home Devices?"
+type: "faq"
+tags: [faq, integrations-guide, protocol-selection, protocols]
+pack: "home-assistant-product"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=faq, topic=protocol-selection, related=protocols,integrations-guide -->
 
 # Zigbee vs WiFi — Which Should I Use for Smart Home Devices?

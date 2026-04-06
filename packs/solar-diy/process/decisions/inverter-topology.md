@@ -1,3 +1,11 @@
+---
+title: "Decision: Inverter Topology (String vs Optimizer vs Microinverter)"
+type: "decision"
+tags: [component-selection, decision-inverter-topology, inverter-types, nec-rapid-shutdown, process, system-design]
+pack: "solar-diy-process"
+retrieval_strategy: "standard"
+---
+
 # Decision: Inverter Topology (String vs Optimizer vs Microinverter)
 
 <!-- context: section=process, topic=decision-inverter-topology, related=inverter-types,nec-rapid-shutdown,component-selection,system-design -->

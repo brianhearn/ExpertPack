@@ -1,6 +1,6 @@
 ---
 name: expertpack-eval
-description: "Measure ExpertPack EK (Esoteric Knowledge) ratio and run automated quality evals. Use when: (1) Measuring what percentage of a pack's content frontier LLMs cannot produce on their own, (2) Running automated eval sets against a pack-powered agent with LLM-as-judge scoring. Requires OpenRouter API key (auto-resolved from OpenClaw auth or OPENROUTER_API_KEY env var). Companion to the main expertpack skill. Triggers on: 'EK ratio', 'measure EK', 'blind probe', 'eval expertpack', 'pack quality eval', 'run eval', 'esoteric knowledge ratio'."
+description: "Measure ExpertPack EK (Esoteric Knowledge) ratio and run automated quality evals. Use when: (1) Measuring what percentage of a pack's content frontier LLMs cannot produce on their own, (2) Running automated eval sets against a pack-powered agent with LLM-as-judge scoring. Requires OpenRouter API key (auto-resolved from OpenClaw auth or OPENROUTER_API_KEY env var). Companion to the main expertpack skill. Triggers on: 'EK ratio', 'measure EK', 'blind probe', 'eval expertpack', 'pack quality eval', 'run eval', 'esoteric knowledge ratio'. Note: packs are Obsidian-compatible — eval results (ek_score) can be added to file frontmatter and queried in Obsidian via Dataview."
 metadata:
   openclaw:
     homepage: https://expertpack.ai

@@ -1,5 +1,9 @@
 ---
 title: Community-Sourced Gotchas and Practitioner Knowledge
+type: gotcha
+tags: [gotcha, community, practitioner-knowledge, home-assistant-product, troubleshooting]
+pack: home-assistant-product
+retrieval_strategy: atomic
 description: High-EK gotchas extracted from r/homeassistant, community.home-assistant.io, and GitHub issues. These are real-world surprises that contradict docs or aren't mentioned in official guides.
 mined: 2026-03-12
 sources:

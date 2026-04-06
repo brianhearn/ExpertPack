@@ -1,3 +1,11 @@
+---
+title: "Home Assistant Platform Reference"
+type: "overview"
+tags: []
+pack: "home-assistant-product"
+retrieval_strategy: "standard"
+---
+
 # Home Assistant Platform Reference
 
 ## What Home Assistant Is

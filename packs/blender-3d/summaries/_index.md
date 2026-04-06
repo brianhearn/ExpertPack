@@ -1,3 +1,11 @@
+---
+title: "Summaries Index — Blender 3D ExpertPack"
+type: "index"
+tags: [summaries]
+pack: "blender-3d"
+retrieval_strategy: "standard"
+---
+
 # Summaries Index — Blender 3D ExpertPack
 
 Section-level summaries for quick orientation and dense-coverage retrieval. Each summary covers an entire section's source files with cross-references to detail files.

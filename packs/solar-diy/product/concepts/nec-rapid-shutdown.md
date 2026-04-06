@@ -1,4 +1,12 @@
 ---
+title: "NEC 690.12 — Rapid Shutdown Requirements"
+type: concept
+tags: [concept, nec, rapid-shutdown, code-compliance, solar-diy-product]
+pack: solar-diy-product
+retrieval_strategy: standard
+---
+
+---
 sources:
   - type: documentation
     url: "https://www.solarpowerworldonline.com/2024/01/2023-code-changes-rapid-shutdown-requirements/"

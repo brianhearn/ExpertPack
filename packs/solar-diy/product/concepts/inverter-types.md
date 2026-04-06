@@ -1,3 +1,11 @@
+---
+title: "Inverter Types — Microinverters vs String Inverters vs Optimizers"
+type: "concept"
+tags: [component-selection, inverter-topology, inverter-types, nec-rapid-shutdown, product, system-design-fundamentals]
+pack: "solar-diy-product"
+retrieval_strategy: "standard"
+---
+
 # Inverter Types — Microinverters vs String Inverters vs Optimizers
 
 <!-- context: section=product, topic=inverter-types, related=system-design-fundamentals,nec-rapid-shutdown,inverter-topology,component-selection -->

@@ -1,3 +1,11 @@
+---
+title: "Decision: Smart Home Protocol Selection"
+type: "decision"
+tags: [decisions, protocol-selection]
+pack: "home-assistant-process"
+retrieval_strategy: "standard"
+---
+
 # Decision: Smart Home Protocol Selection
 
 ## The Decision

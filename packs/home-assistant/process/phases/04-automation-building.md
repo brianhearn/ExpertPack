@@ -1,3 +1,11 @@
+---
+title: "Phase 4: Automation Building"
+type: "phase"
+tags: [04-automation-building, phases]
+pack: "home-assistant-process"
+retrieval_strategy: "atomic"
+---
+
 # Phase 4: Automation Building
 
 ## Goal

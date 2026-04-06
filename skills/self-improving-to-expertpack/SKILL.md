@@ -1,6 +1,6 @@
 ---
 name: self-improving-to-expertpack
-description: "Convert Self-Improving Agent learnings into a structured ExpertPack. Migrates the .learnings/ directory (LEARNINGS.md, ERRORS.md, FEATURE_REQUESTS.md) and any promoted content from workspace files into ExpertPack's portable format with multi-layer retrieval, context tiers, and EK measurement. Use when: upgrading from Self-Improving Agent to ExpertPack, backing up agent learnings, exporting accumulated knowledge, or migrating to a new platform. Triggers on: 'self-improving to expertpack', 'convert self-improving', 'export learnings', 'migrate self-improving', 'learnings to expertpack', 'convert learnings to pack'."
+description: "Convert Self-Improving Agent learnings into a structured ExpertPack. Migrates the .learnings/ directory (LEARNINGS.md, ERRORS.md, FEATURE_REQUESTS.md) and any promoted content from workspace files into ExpertPack's portable format with multi-layer retrieval, context tiers, and EK measurement. Output is Obsidian-compatible — includes YAML frontmatter on all content files and can be opened as an Obsidian vault. Use when: upgrading from Self-Improving Agent to ExpertPack, backing up agent learnings, exporting accumulated knowledge, or migrating to a new platform. Triggers on: 'self-improving to expertpack', 'convert self-improving', 'export learnings', 'migrate self-improving', 'learnings to expertpack', 'convert learnings to pack'."
 metadata:
   openclaw:
     homepage: https://expertpack.ai

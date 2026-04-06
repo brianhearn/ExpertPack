@@ -1,5 +1,9 @@
 ---
 title: "Why does my integration break every update?"
+type: faq
+tags: [faq, integration-failures, updates, home-assistant-product, breaking-changes]
+pack: home-assistant-product
+retrieval_strategy: standard
 description: Real-world patterns for HA update-induced integration failures and how to survive them.
 mined: 2026-03-12
 sources:

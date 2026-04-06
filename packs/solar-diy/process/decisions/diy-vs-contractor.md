@@ -1,3 +1,11 @@
+---
+title: "Decision: DIY vs. Contractor"
+type: "decision"
+tags: [decision-diy-vs-contractor, installation, permitting, process, site-assessment]
+pack: "solar-diy-process"
+retrieval_strategy: "standard"
+---
+
 # Decision: DIY vs. Contractor
 
 <!-- context: section=process, topic=decision-diy-vs-contractor, related=permitting,installation,site-assessment -->

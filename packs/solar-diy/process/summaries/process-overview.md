@@ -1,3 +1,11 @@
+---
+title: "Summary — Solar DIY Process Pack Overview"
+type: "summary"
+tags: [process-overview, summaries]
+pack: "solar-diy-process"
+retrieval_strategy: "standard"
+---
+
 # Summary — Solar DIY Process Pack Overview
 
 This summary covers all seven project phases plus decisions and gotchas. Follow links to source files for full detail.

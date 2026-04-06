@@ -1,3 +1,11 @@
+---
+title: "Planning & Installing Residential Solar"
+type: "overview"
+tags: [component-selection, inspection-commissioning, installation, operations-maintenance, permitting, process, process-overview, site-assessment, system-design]
+pack: "solar-diy-process"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=process, topic=process-overview, related=site-assessment,system-design,component-selection,permitting,installation,inspection-commissioning,operations-maintenance -->
 
 # Planning & Installing Residential Solar

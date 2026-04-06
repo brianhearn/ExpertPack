@@ -1,3 +1,11 @@
+---
+title: "Propositions Index — Blender 3D ExpertPack"
+type: "index"
+tags: [propositions]
+pack: "blender-3d"
+retrieval_strategy: "standard"
+---
+
 # Propositions Index — Blender 3D ExpertPack
 
 Atomic factual statements extracted from content files for RAG retrieval optimization. Each proposition is self-contained and captures exactly one fact.

@@ -1,3 +1,11 @@
+---
+title: "Scene Optimization Workflow"
+type: "workflow"
+tags: [scene-optimization, workflows]
+pack: "blender-3d"
+retrieval_strategy: "atomic"
+---
+
 <!-- context: blender-3d/workflows/scene-optimization -->
 
 # Scene Optimization Workflow

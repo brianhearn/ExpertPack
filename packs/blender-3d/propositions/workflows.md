@@ -1,3 +1,11 @@
+---
+title: "Propositions — Workflows"
+type: "proposition"
+tags: [propositions, workflows]
+pack: "blender-3d"
+retrieval_strategy: "standard"
+---
+
 # Propositions — Workflows
 
 Atomic factual statements extracted from the workflow files.

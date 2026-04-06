@@ -1,4 +1,12 @@
 ---
+title: "Home Security Monitoring with Home Assistant"
+type: pattern
+tags: [pattern, security, monitoring, automation, home-assistant-process]
+pack: home-assistant-process
+retrieval_strategy: standard
+---
+
+---
 sources:
   - type: documentation
     url: "https://www.home-assistant.io/integrations/alarmo/"

@@ -1,3 +1,11 @@
+---
+title: "Phases Index"
+type: "index"
+tags: [phases]
+pack: "solar-diy-process"
+retrieval_strategy: "standard"
+---
+
 # Phases Index
 
 Seven sequential phases of a residential solar installation project.

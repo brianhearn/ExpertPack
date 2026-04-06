@@ -1,4 +1,12 @@
 ---
+title: "Home Battery Storage — 2026 Comparison"
+type: specification
+tags: [specification, battery-storage, powerwall, enphase, solar-diy-product]
+pack: solar-diy-product
+retrieval_strategy: standard
+---
+
+---
 sources:
   - type: documentation
     url: "https://powerlutions.com/battery-storage/2026-battery-guide-comparing-powerwall-3-enphase-iq-and-franklinwh/"

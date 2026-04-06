@@ -1,3 +1,11 @@
+---
+title: "FAQ"
+type: "index"
+tags: [faq]
+pack: "home-assistant-product"
+retrieval_strategy: "standard"
+---
+
 # FAQ
 
 Practitioner-level answers to the questions that come up repeatedly in the HA community. Honest tradeoffs, community consensus, no filler.

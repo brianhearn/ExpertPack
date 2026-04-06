@@ -1,4 +1,12 @@
 ---
+title: "Solar Panel Landscape — 2026"
+type: specification
+tags: [specification, solar-panels, efficiency, manufacturers, solar-diy-product]
+pack: solar-diy-product
+retrieval_strategy: standard
+---
+
+---
 sources:
   - type: documentation
     url: "https://www.cleanenergyreviews.info/blog/most-efficient-solar-panels"

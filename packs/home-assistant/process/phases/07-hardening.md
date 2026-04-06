@@ -1,3 +1,11 @@
+---
+title: "Phase 7: Hardening"
+type: "phase"
+tags: [07-hardening, phases]
+pack: "home-assistant-process"
+retrieval_strategy: "atomic"
+---
+
 # Phase 7: Hardening
 
 ## Goal

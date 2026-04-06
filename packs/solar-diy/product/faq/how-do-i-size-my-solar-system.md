@@ -1,3 +1,11 @@
+---
+title: "How Do I Size My Solar System?"
+type: "faq"
+tags: [faq-system-sizing, product, pvwatts, solar-panels-2026, system-design-fundamentals, system-design-phase]
+pack: "solar-diy-product"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=product, topic=faq-system-sizing, related=system-design-fundamentals,solar-panels-2026,system-design-phase,pvwatts -->
 
 > **Lead summary:** System sizing starts with your annual kWh consumption, local peak sun hours (from NREL PVWatts), a 75–85% derate factor, and any future loads like an EV. Most US homes need 6–12 kW DC to cover 100% of consumption. Size for your 5-year future load, not today's bills.

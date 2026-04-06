@@ -1,6 +1,6 @@
 ---
 name: expertpack-export
-description: Export an OpenClaw instance's accumulated knowledge into a structured ExpertPack composite. Use when backing up an agent's identity, exporting for migration, or creating a portable knowledge snapshot. Handles auto-discovery (scanning workspace state to identify constituent packs), distillation (compressing raw state into structured EP files), and packaging (writing EP-compliant packs + composite manifest). NOT for importing/hydrating from an existing EP.
+description: Export an OpenClaw instance's accumulated knowledge into a structured ExpertPack composite. Use when backing up an agent's identity, exporting for migration, or creating a portable knowledge snapshot. Handles auto-discovery (scanning workspace state to identify constituent packs), distillation (compressing raw state into structured EP files), and packaging (writing EP-compliant packs + composite manifest). Output is Obsidian-compatible — includes YAML frontmatter on all content files and can be opened as an Obsidian vault. NOT for importing/hydrating from an existing EP.
 metadata:
   openclaw:
     homepage: https://expertpack.ai

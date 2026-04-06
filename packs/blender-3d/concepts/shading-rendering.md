@@ -1,3 +1,11 @@
+---
+title: "Shading and Rendering"
+type: "concept"
+tags: [compositing, concepts, geometry-nodes, modeling-fundamentals, shading-rendering]
+pack: "blender-3d"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=concepts, topic=shading-rendering, related=modeling-fundamentals,compositing,geometry-nodes -->
 
 # Shading and Rendering

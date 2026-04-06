@@ -1,3 +1,11 @@
+---
+title: "Home Assistant Smart Home Guide"
+type: "overview"
+tags: []
+pack: "home-assistant"
+retrieval_strategy: "standard"
+---
+
 # Home Assistant Smart Home Guide
 
 ## What This Is

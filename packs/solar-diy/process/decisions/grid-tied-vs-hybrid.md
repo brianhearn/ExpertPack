@@ -1,3 +1,11 @@
+---
+title: "Decision: Grid-Tied vs Hybrid vs Off-Grid"
+type: "decision"
+tags: [battery-systems-2026, component-selection, decision-grid-tied-vs-hybrid, inverter-types, process, system-design]
+pack: "solar-diy-process"
+retrieval_strategy: "standard"
+---
+
 # Decision: Grid-Tied vs Hybrid vs Off-Grid
 
 <!-- context: section=process, topic=decision-grid-tied-vs-hybrid, related=battery-systems-2026,inverter-types,system-design,component-selection -->

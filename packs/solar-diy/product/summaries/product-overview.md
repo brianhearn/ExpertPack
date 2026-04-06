@@ -1,3 +1,11 @@
+---
+title: "Summary — Solar DIY Product Pack Overview"
+type: "summary"
+tags: [product-overview, summaries]
+pack: "solar-diy-product"
+retrieval_strategy: "standard"
+---
+
 # Summary — Solar DIY Product Pack Overview
 
 This summary covers all technology reference content in the Solar DIY product pack. Follow links to source files for full detail.

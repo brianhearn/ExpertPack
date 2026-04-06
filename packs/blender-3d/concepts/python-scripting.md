@@ -1,3 +1,11 @@
+---
+title: "Python Scripting (bpy)"
+type: "concept"
+tags: [concepts, python-scripting]
+pack: "blender-3d"
+retrieval_strategy: "standard"
+---
+
 <!-- context: blender-3d/concepts/python-scripting -->
 
 # Python Scripting (bpy)

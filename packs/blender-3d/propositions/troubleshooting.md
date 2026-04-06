@@ -1,3 +1,11 @@
+---
+title: "Propositions — Troubleshooting"
+type: "proposition"
+tags: [propositions, troubleshooting]
+pack: "blender-3d"
+retrieval_strategy: "standard"
+---
+
 # Propositions — Troubleshooting
 
 Atomic factual statements extracted from troubleshooting/common-mistakes.md.

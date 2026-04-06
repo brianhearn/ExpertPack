@@ -1,3 +1,11 @@
+---
+title: "Common Mistakes in Home Assistant"
+type: "gotcha"
+tags: [common-mistakes, gotchas]
+pack: "home-assistant-process"
+retrieval_strategy: "atomic"
+---
+
 # Common Mistakes in Home Assistant
 
 These are the mistakes that cost people the most time and frustration. Learn them before you start.

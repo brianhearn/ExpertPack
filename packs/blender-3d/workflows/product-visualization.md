@@ -1,3 +1,11 @@
+---
+title: "Product Visualization Workflow"
+type: "workflow"
+tags: [product-visualization, workflows]
+pack: "blender-3d"
+retrieval_strategy: "atomic"
+---
+
 <!-- context: blender-3d/workflows/product-visualization -->
 
 # Product Visualization Workflow

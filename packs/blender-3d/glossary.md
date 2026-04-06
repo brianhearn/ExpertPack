@@ -1,3 +1,11 @@
+---
+title: "Blender Glossary"
+type: "glossary"
+tags: []
+pack: "blender-3d"
+retrieval_strategy: "standard"
+---
+
 # Blender Glossary
 
 Key terminology that confuses newcomers and intermediate users alike. Terms are grouped thematically rather than alphabetically for easier learning.

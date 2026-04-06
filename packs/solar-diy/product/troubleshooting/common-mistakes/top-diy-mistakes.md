@@ -1,3 +1,11 @@
+---
+title: "Top DIY Solar Installation Mistakes"
+type: "troubleshooting"
+tags: [common-mistakes, inspection-commissioning, installation, permitting, product, system-design-fundamentals, troubleshooting-mistakes]
+pack: "solar-diy-product"
+retrieval_strategy: "atomic"
+---
+
 <!-- context: section=product, topic=troubleshooting-mistakes, related=system-design-fundamentals,installation,permitting,inspection-commissioning,common-mistakes -->
 
 > **Lead summary:** The most costly DIY solar mistakes occur during string sizing (Phase 2), permitting (Phase 4), and service panel work (Phase 5). Wrong string sizing can damage inverters; skipping proper permitting creates legal liability; incorrect service panel connections are a fire hazard. This guide documents symptoms, causes, and fixes.

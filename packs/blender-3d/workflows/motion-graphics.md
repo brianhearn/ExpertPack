@@ -1,3 +1,11 @@
+---
+title: "Motion Graphics Workflow"
+type: "workflow"
+tags: [motion-graphics, workflows]
+pack: "blender-3d"
+retrieval_strategy: "atomic"
+---
+
 <!-- context: blender-3d/workflows/motion-graphics -->
 
 # Motion Graphics Workflow

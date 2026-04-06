@@ -1,3 +1,11 @@
+---
+title: "Freshness Guide — Solar DIY Pack"
+type: "volatile"
+tags: []
+pack: "solar-diy-product"
+retrieval_strategy: "standard"
+---
+
 # Freshness Guide — Solar DIY Pack
 
 *How to keep this pack current. Lists all time-variant data points, their expected decay rate, and how to obtain current values.*

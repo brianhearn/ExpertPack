@@ -1,3 +1,11 @@
+---
+title: "Decisions Index"
+type: "index"
+tags: [decisions]
+pack: "solar-diy-process"
+retrieval_strategy: "standard"
+---
+
 # Decisions Index
 
 Three major decision frameworks for residential solar projects. Make these decisions before Phase 3 (Component Selection) — they affect your entire system design.

@@ -1,5 +1,9 @@
 ---
 title: "Zigbee2MQTT 2.0 Migration: What Broke and How to Fix It"
+type: faq
+tags: [faq, zigbee2mqtt, migration, zigbee, home-assistant-product, breaking-changes]
+pack: home-assistant-product
+retrieval_strategy: standard
 description: Comprehensive community-sourced guide to Z2M 1.x → 2.0 migration gotchas and fixes.
 mined: 2026-03-12
 sources:

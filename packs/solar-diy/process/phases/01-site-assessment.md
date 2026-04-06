@@ -1,3 +1,11 @@
+---
+title: "Phase 1: Site Assessment"
+type: "phase"
+tags: [diy-vs-contractor, permitting, phase-1-site-assessment, process, shading-analysis, system-design]
+pack: "solar-diy-process"
+retrieval_strategy: "atomic"
+---
+
 # Phase 1: Site Assessment
 
 <!-- context: section=process, topic=phase-1-site-assessment, related=system-design,diy-vs-contractor,permitting,shading-analysis -->

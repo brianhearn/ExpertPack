@@ -1,3 +1,11 @@
+---
+title: "Network Architecture for Smart Homes"
+type: "concept"
+tags: [backup-migration, concepts, integrations-guide, network-architecture, protocols]
+pack: "home-assistant-product"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=concepts, topic=network-architecture, related=protocols,integrations-guide,backup-migration -->
 ---
 sources:

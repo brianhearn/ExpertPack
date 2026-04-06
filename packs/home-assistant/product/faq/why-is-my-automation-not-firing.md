@@ -1,3 +1,11 @@
+---
+title: "Why Is My Automation Not Firing?"
+type: "faq"
+tags: [automation-debugging, automation-fundamentals, diagnostic-guide, faq]
+pack: "home-assistant-product"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=faq, topic=automation-debugging, related=automation-fundamentals,diagnostic-guide -->
 
 # Why Is My Automation Not Firing?

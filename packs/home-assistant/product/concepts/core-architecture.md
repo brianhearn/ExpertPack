@@ -1,3 +1,11 @@
+---
+title: "Core Architecture — The HA Mental Model"
+type: "concept"
+tags: [automation-fundamentals, concepts, core-architecture, integrations-guide, protocols]
+pack: "home-assistant-product"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=concepts, topic=core-architecture, related=automation-fundamentals,protocols,integrations-guide -->
 ---
 sources:

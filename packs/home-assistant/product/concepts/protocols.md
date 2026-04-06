@@ -1,3 +1,11 @@
+---
+title: "Smart Home Protocols — Decision Framework"
+type: "concept"
+tags: [concepts, core-architecture, esphome-fundamentals, network-architecture, protocols]
+pack: "home-assistant-product"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=concepts, topic=protocols, related=core-architecture,esphome-fundamentals,network-architecture -->
 ---
 sources:

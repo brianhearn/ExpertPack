@@ -1,3 +1,11 @@
+---
+title: "Presence Detection — The Hardest Problem in Home Automation"
+type: "concept"
+tags: [automation-fundamentals, concepts, esphome-fundamentals, presence-detection]
+pack: "home-assistant-product"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=concepts, topic=presence-detection, related=esphome-fundamentals,automation-fundamentals -->
 ---
 sources:

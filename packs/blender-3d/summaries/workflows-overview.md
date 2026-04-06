@@ -1,3 +1,11 @@
+---
+title: "Summary — Workflows Overview"
+type: "summary"
+tags: [summaries, workflows-overview]
+pack: "blender-3d"
+retrieval_strategy: "standard"
+---
+
 # Summary — Workflows Overview
 
 This summary covers all 5 workflow files in the Blender 3D pack. For detailed information, follow the links to source files.

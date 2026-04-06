@@ -1,3 +1,11 @@
+---
+title: "Dashboard Design — Practical Patterns for Useful UIs"
+type: "concept"
+tags: [concepts, core-architecture, dashboard-design, integrations-guide]
+pack: "home-assistant-product"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=concepts, topic=dashboard-design, related=core-architecture,integrations-guide -->
 ---
 sources:

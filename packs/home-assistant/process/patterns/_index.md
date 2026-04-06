@@ -1,3 +1,11 @@
+---
+title: "Patterns Index"
+type: "index"
+tags: [patterns]
+pack: "home-assistant-process"
+retrieval_strategy: "standard"
+---
+
 # Patterns Index
 
 Battle-tested automation patterns for Home Assistant. These are implementations refined across many real-world setups — use them as starting points and adapt to your home.

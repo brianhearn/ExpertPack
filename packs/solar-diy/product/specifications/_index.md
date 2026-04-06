@@ -1,3 +1,11 @@
+---
+title: "Specifications"
+type: "index"
+tags: [specifications]
+pack: "solar-diy-product"
+retrieval_strategy: "standard"
+---
+
 # Specifications
 
 Product landscape comparisons with current specs, pricing, and selection guidance.

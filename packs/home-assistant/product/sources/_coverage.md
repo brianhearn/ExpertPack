@@ -1,3 +1,11 @@
+---
+title: "Research Coverage — Home Assistant Ecosystem"
+type: "source"
+tags: [-coverage, sources]
+pack: "home-assistant-product"
+retrieval_strategy: "standard"
+---
+
 # Research Coverage — Home Assistant Ecosystem
 
 Pack version: (not yet built)

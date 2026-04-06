@@ -1,3 +1,11 @@
+---
+title: "Sculpting"
+type: "concept"
+tags: [concepts, sculpting]
+pack: "blender-3d"
+retrieval_strategy: "standard"
+---
+
 <!-- context: blender-3d/concepts/sculpting -->
 
 # Sculpting

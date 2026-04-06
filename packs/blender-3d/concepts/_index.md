@@ -1,3 +1,11 @@
+---
+title: "Concepts"
+type: "index"
+tags: [concepts]
+pack: "blender-3d"
+retrieval_strategy: "standard"
+---
+
 # Concepts
 
 Core knowledge concepts for Blender — the underlying principles and mental models required to work effectively with the software.

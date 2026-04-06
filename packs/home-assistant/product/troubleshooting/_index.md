@@ -1,3 +1,11 @@
+---
+title: "Troubleshooting"
+type: "index"
+tags: [troubleshooting]
+pack: "home-assistant-product"
+retrieval_strategy: "standard"
+---
+
 # Troubleshooting
 
 Problem resolution for Home Assistant.

@@ -1,3 +1,11 @@
+---
+title: "Propositions — Concepts"
+type: "proposition"
+tags: [concepts, propositions]
+pack: "blender-3d"
+retrieval_strategy: "standard"
+---
+
 # Propositions — Concepts
 
 Atomic factual statements extracted from the concepts files.

@@ -1,3 +1,11 @@
+---
+title: "Energy Management in Home Assistant"
+type: "concept"
+tags: [concepts, core-architecture, energy-management, integrations-guide, yaml-configuration]
+pack: "home-assistant-product"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=concepts, topic=energy-management, related=core-architecture,integrations-guide,yaml-configuration -->
 ---
 sources:

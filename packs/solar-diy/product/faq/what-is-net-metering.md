@@ -1,3 +1,11 @@
+---
+title: "What Is Net Metering?"
+type: "faq"
+tags: [faq-net-metering, general-faq, grid-tied-vs-hybrid, inspection-commissioning, product]
+pack: "solar-diy-product"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=product, topic=faq-net-metering, related=grid-tied-vs-hybrid,inspection-commissioning,general-faq -->
 
 > **Lead summary:** Net metering credits your electric bill for excess solar power you send to the grid. Most US states have some form of net metering policy, but rates and rules vary widely — and some states (notably California with NEM 3.0) have significantly reduced export credits, shifting the economics toward battery storage. Confirm your local net metering tariff before finalizing system size.

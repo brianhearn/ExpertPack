@@ -10,6 +10,27 @@ Schema versions use the format `core.X.Y` for core schema and `type.X.Y` for typ
 
 ---
 
+## [Core 2.8] — 2026-04-06 — Obsidian Compatibility
+
+### Added
+- **Per-file YAML frontmatter standard** — all content files now require `title`, `type`, `tags`, `pack` fields; `retrieval_strategy` and `ek_score` recommended
+- **Type taxonomy** — 25 defined `type` values mapped to directory conventions with default `retrieval_strategy` per type
+- **`.obsidian/` reference folder** — pre-configured Obsidian vault settings in repo root; includes Dataview + Templater plugin config and setup guide with example queries
+- **Obsidian Compatibility section** in `schemas/core.md` — full spec for frontmatter fields, type reference table, link format policy, and what Obsidian adds
+- Migrated all content files in community packs (blender-3d, home-assistant, solar-diy) and private packs (brian-gpt, ezt-designer) to include frontmatter
+
+### Changed
+- `retrieval_strategy` frontmatter key (flat) replaces legacy `retrieval.strategy` (nested); both accepted by current tooling
+- Core Principles table in `ARCHITECTURE.md` — added **Obsidian-Native** principle
+
+### Design Notes
+- Link format remains standard relative Markdown (`[text](file.md)`) — not wikilinks — preserving GitHub rendering and all existing tooling
+- The `.obsidian/` folder is a *reference config*: copy it into any pack directory to make that pack an Obsidian-ready vault
+- Frontmatter is additive and backwards-compatible; existing consumers (RAG chunker, eval runner) are unaffected
+- Obsidian adoption is zero-friction: open any EP pack folder as an Obsidian vault
+
+---
+
 ## [2026-04-02] — Tooling: Public Eval Runner + Benchmark Pack
 
 ### Added

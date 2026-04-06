@@ -1,3 +1,11 @@
+---
+title: "Propositions — Product Concepts"
+type: "proposition"
+tags: [concepts, propositions]
+pack: "home-assistant-product"
+retrieval_strategy: "standard"
+---
+
 # Propositions — Product Concepts
 
 Atomic factual statements extracted from the product concepts files.

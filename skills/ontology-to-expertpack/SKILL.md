@@ -1,6 +1,6 @@
 ---
 name: ontology-to-expertpack
-description: "Convert an Ontology skill knowledge graph into a structured ExpertPack. Use when migrating from the Ontology skill's entity/relation graph (memory/ontology/graph.jsonl) to ExpertPack's richer format with multi-layer retrieval, EK measurement, and portable deployment. Triggers on: 'ontology to expertpack', 'convert ontology', 'export ontology', 'migrate ontology', 'ontology graph to pack', 'upgrade ontology'. Requires the Ontology skill's graph.jsonl and optionally schema.yaml."
+description: "Convert an Ontology skill knowledge graph into a structured ExpertPack. Use when migrating from the Ontology skill's entity/relation graph (memory/ontology/graph.jsonl) to ExpertPack's richer format with multi-layer retrieval, EK measurement, and portable deployment. Output is Obsidian-compatible — includes YAML frontmatter on all content files and can be opened as an Obsidian vault. Triggers on: 'ontology to expertpack', 'convert ontology', 'export ontology', 'migrate ontology', 'ontology graph to pack', 'upgrade ontology'. Requires the Ontology skill's graph.jsonl and optionally schema.yaml."
 metadata:
   openclaw:
     homepage: https://expertpack.ai

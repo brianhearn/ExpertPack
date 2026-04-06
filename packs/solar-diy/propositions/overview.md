@@ -1,3 +1,11 @@
+---
+title: "Propositions — Solar DIY Pack Overview"
+type: "overview"
+tags: [propositions]
+pack: "solar-diy"
+retrieval_strategy: "standard"
+---
+
 # Propositions — Solar DIY Pack Overview
 
 Atomic factual statements representing the most important cross-cutting knowledge from this composite pack.

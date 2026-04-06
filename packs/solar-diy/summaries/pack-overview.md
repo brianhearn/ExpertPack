@@ -1,3 +1,11 @@
+---
+title: "Summary — Solar DIY Composite Pack Overview"
+type: "summary"
+tags: [pack-overview, summaries]
+pack: "solar-diy"
+retrieval_strategy: "standard"
+---
+
 # Summary — Solar DIY Composite Pack Overview
 
 This is a high-level entry point for the Solar DIY ExpertPack. It combines two sub-packs into a single residential solar guide.

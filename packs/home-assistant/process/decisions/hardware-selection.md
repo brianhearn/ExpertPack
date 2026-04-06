@@ -1,3 +1,11 @@
+---
+title: "Decision: Hardware Selection"
+type: "decision"
+tags: [decisions, hardware-selection]
+pack: "home-assistant-process"
+retrieval_strategy: "standard"
+---
+
 # Decision: Hardware Selection
 
 ## The Decision

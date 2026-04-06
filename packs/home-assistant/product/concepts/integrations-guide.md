@@ -1,3 +1,11 @@
+---
+title: "Integrations Guide — Evaluating, Choosing, and Managing HA Integrations"
+type: "concept"
+tags: [concepts, core-architecture, esphome-fundamentals, integrations-guide, protocols]
+pack: "home-assistant-product"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=concepts, topic=integrations-guide, related=core-architecture,protocols,esphome-fundamentals -->
 ---
 sources:

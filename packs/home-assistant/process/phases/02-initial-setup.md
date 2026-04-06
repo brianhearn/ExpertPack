@@ -1,3 +1,11 @@
+---
+title: "Phase 2: Initial Setup"
+type: "phase"
+tags: [02-initial-setup, phases]
+pack: "home-assistant-process"
+retrieval_strategy: "atomic"
+---
+
 # Phase 2: Initial Setup
 
 ## Goal

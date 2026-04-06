@@ -1,4 +1,12 @@
 ---
+title: "System Design Fundamentals"
+type: concept
+tags: [concept, system-design, solar-fundamentals, solar-diy-product]
+pack: solar-diy-product
+retrieval_strategy: standard
+---
+
+---
 sources:
   - type: documentation
     url: "https://www.mayfield.energy/technical-articles/2023-update-how-to-calculate-pv-string-size/"

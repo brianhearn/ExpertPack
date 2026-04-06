@@ -1,3 +1,11 @@
+---
+title: "Gotchas Index"
+type: "index"
+tags: [gotchas]
+pack: "home-assistant-process"
+retrieval_strategy: "standard"
+---
+
 # Gotchas Index
 
 Common mistakes and traps in Home Assistant setups. Reading this before you start saves hours of debugging.

@@ -1,3 +1,11 @@
+---
+title: "Physics and Simulation"
+type: "concept"
+tags: [concepts, physics-simulation]
+pack: "blender-3d"
+retrieval_strategy: "standard"
+---
+
 <!-- context: blender-3d/concepts/physics-simulation -->
 
 # Physics and Simulation

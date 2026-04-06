@@ -1,3 +1,11 @@
+---
+title: "Blender Core Architecture"
+type: "concept"
+tags: [animation-rigging, concepts, core-architecture, modeling-fundamentals, python-scripting]
+pack: "blender-3d"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=concepts, topic=core-architecture, related=modeling-fundamentals,python-scripting,animation-rigging -->
 
 # Blender Core Architecture

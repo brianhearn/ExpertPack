@@ -1,3 +1,11 @@
+---
+title: "Blender Community Mining — 2026-03-13"
+type: "source"
+tags: [community-mining, blender-community]
+pack: "blender-3d"
+retrieval_strategy: "standard"
+---
+
 # Blender Community Mining — 2026-03-13
 
 Sources: Blender Stack Exchange, Blender Developer Blog, Blender Projects tracker, Polycount, community forums.

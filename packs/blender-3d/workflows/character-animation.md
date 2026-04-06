@@ -1,3 +1,11 @@
+---
+title: "Character Animation Workflow"
+type: "workflow"
+tags: [character-animation, workflows]
+pack: "blender-3d"
+retrieval_strategy: "atomic"
+---
+
 <!-- context: blender-3d/workflows/character-animation -->
 
 # Character Animation Workflow

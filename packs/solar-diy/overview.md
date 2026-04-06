@@ -1,3 +1,11 @@
+---
+title: "Residential Solar & Battery DIY Guide"
+type: "overview"
+tags: [inverter-types, overview, pack-index, process-overview, product-overview, system-design-fundamentals]
+pack: "solar-diy"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=overview, topic=pack-index, related=product-overview,process-overview,system-design-fundamentals,inverter-types -->
 
 # Residential Solar & Battery DIY Guide

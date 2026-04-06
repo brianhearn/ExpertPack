@@ -1,3 +1,11 @@
+---
+title: "Blender 3D — Open-Source 3D Modeling, Animation & Rendering Suite"
+type: "overview"
+tags: []
+pack: "blender-3d"
+retrieval_strategy: "standard"
+---
+
 # Blender 3D — Open-Source 3D Modeling, Animation & Rendering Suite
 
 > **Lead summary:** [Blender](https://www.blender.org) is a free, open-source **3D computer graphics software application** used by millions of artists, game developers, visual effects studios, architects, and hobbyists worldwide. It covers the *entire* 3D pipeline in a single application: polygon modeling, digital sculpting, rigging, character animation, physics simulation, photorealistic rendering (Cycles ray tracer and EEVEE real-time engine), node-based compositing, motion tracking, video editing, and the powerful procedural Geometry Nodes system. This ExpertPack focuses on practitioner-level knowledge — decision frameworks, workflow patterns, keyboard shortcuts, and the tribal wisdom that takes years to accumulate. It complements the [official manual](https://docs.blender.org/manual/en/latest/) rather than restating it.

@@ -1,3 +1,11 @@
+---
+title: "Decisions Index"
+type: "index"
+tags: [decisions]
+pack: "home-assistant-process"
+retrieval_strategy: "standard"
+---
+
 # Decisions Index
 
 Three key decisions to make before buying hardware. Getting these right upfront saves significant time and money.

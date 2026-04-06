@@ -1,3 +1,11 @@
+---
+title: "Blender 3D — FAQ"
+type: "index"
+tags: [faq]
+pack: "blender-3d"
+retrieval_strategy: "standard"
+---
+
 # Blender 3D — FAQ
 
 Common questions asked by Blender practitioners, using the vocabulary people actually search with.

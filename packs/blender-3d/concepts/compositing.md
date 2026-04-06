@@ -1,3 +1,11 @@
+---
+title: "Compositing"
+type: "concept"
+tags: [compositing, concepts]
+pack: "blender-3d"
+retrieval_strategy: "standard"
+---
+
 <!-- context: blender-3d/concepts/compositing -->
 
 # Compositing

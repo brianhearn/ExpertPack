@@ -1,3 +1,11 @@
+---
+title: "Troubleshooting"
+type: "index"
+tags: [troubleshooting]
+pack: "solar-diy-product"
+retrieval_strategy: "standard"
+---
+
 # Troubleshooting
 
 Problem resolution for residential solar installations.

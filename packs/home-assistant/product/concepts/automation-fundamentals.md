@@ -1,3 +1,11 @@
+---
+title: "Automation Fundamentals"
+type: "concept"
+tags: [automation-fundamentals, concepts, core-architecture, protocols, yaml-configuration]
+pack: "home-assistant-product"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=concepts, topic=automation-fundamentals, related=core-architecture,yaml-configuration,protocols -->
 ---
 sources:

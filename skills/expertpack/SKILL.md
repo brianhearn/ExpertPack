@@ -1,6 +1,6 @@
 ---
 name: expertpack
-description: "Work with ExpertPacks — structured knowledge packs for AI agents. Use when: (1) Loading/consuming an ExpertPack as agent context, (2) Creating or hydrating a new ExpertPack from scratch, (3) Chunking a pack for RAG deployment, (4) Backing up/exporting an OpenClaw agent's workspace into an ExpertPack. Triggers on: 'expertpack', 'expert pack', 'esoteric knowledge', 'knowledge pack', 'pack hydration', 'backup to expertpack', 'export agent knowledge'. For EK ratio measurement and quality evals, install the separate expertpack-eval skill."
+description: "Work with ExpertPacks — structured knowledge packs for AI agents. Obsidian-compatible: every pack is a valid Obsidian vault with Dataview support. Use when: (1) Loading/consuming an ExpertPack as agent context, (2) Creating or hydrating a new ExpertPack from scratch, (3) Chunking a pack for RAG deployment, (4) Backing up/exporting an OpenClaw agent's workspace into an ExpertPack, (5) Opening or authoring a pack in Obsidian. Triggers on: 'expertpack', 'expert pack', 'esoteric knowledge', 'knowledge pack', 'pack hydration', 'backup to expertpack', 'export agent knowledge', 'obsidian vault', 'obsidian pack'. For EK ratio measurement and quality evals, install the separate expertpack-eval skill."
 metadata:
   openclaw:
     homepage: https://expertpack.ai
@@ -25,7 +25,9 @@ metadata:
 
 Structured knowledge packs for AI agents. Maximize the knowledge your AI is missing.
 
-**Learn more:** [expertpack.ai](https://expertpack.ai) · [GitHub](https://github.com/brianhearn/ExpertPack) · [Schema docs](https://expertpack.ai/#schemas)
+**Learn more:** [expertpack.ai](https://expertpack.ai) · [GitHub](https://github.com/brianhearn/ExpertPack) · [Schema docs](https://expertpack.ai/#schemas) · [Obsidian compatible](https://expertpack.ai/#obsidian)
+
+> **💎 Obsidian compatible:** Every ExpertPack is a valid Obsidian vault. Copy the `.obsidian/` folder from the repo root into any pack directory, open it in Obsidian, and install Dataview + Templater. You get live queries by content type, EK score, and tags; graph view; and full-text search. Standard relative Markdown links are used throughout — packs render correctly on GitHub and in Obsidian simultaneously.
 
 > **Data & privacy:** The export scripts (scan/distill/compose/validate) read your workspace files locally and write output to a directory you specify — no content is sent externally. The RAG config snippet is optional and local. EK ratio measurement and quality evals require the separate `expertpack-eval` skill, which *does* send pack-derived propositions to LLM APIs (OpenRouter) for blind probing — install it only if you need that feature.
 

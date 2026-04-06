@@ -1,3 +1,11 @@
+---
+title: "Summary — Concepts Overview"
+type: "summary"
+tags: [concepts-overview, summaries]
+pack: "blender-3d"
+retrieval_strategy: "standard"
+---
+
 # Summary — Concepts Overview
 
 This summary covers all 10 concept files in the Blender 3D pack. For detailed information, follow the links to source files.

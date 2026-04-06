@@ -1,3 +1,11 @@
+---
+title: "Backup, Migration, and Hardware Upgrades"
+type: "concept"
+tags: [backup-migration, concepts, core-architecture, network-architecture]
+pack: "home-assistant-product"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=concepts, topic=backup-migration, related=core-architecture,network-architecture -->
 ---
 sources:

@@ -1,3 +1,11 @@
+---
+title: "Phase 2: System Design"
+type: "phase"
+tags: [battery-systems-2026, component-selection, inverter-types, phase-2-system-design, process, site-assessment, string-sizing, system-design-fundamentals]
+pack: "solar-diy-process"
+retrieval_strategy: "atomic"
+---
+
 # Phase 2: System Design
 
 <!-- context: section=process, topic=phase-2-system-design, related=system-design-fundamentals,inverter-types,battery-systems-2026,site-assessment,component-selection,string-sizing -->

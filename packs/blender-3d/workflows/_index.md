@@ -1,3 +1,11 @@
+---
+title: "Workflows"
+type: "index"
+tags: [workflows]
+pack: "blender-3d"
+retrieval_strategy: "standard"
+---
+
 # Workflows
 
 Step-by-step workflows for specific Blender tasks — practical guides that bridge the gap between knowing tools and knowing how to use them together.

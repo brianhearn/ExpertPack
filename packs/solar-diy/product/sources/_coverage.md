@@ -1,3 +1,11 @@
+---
+title: "Research Coverage — Solar DIY Pack"
+type: "source"
+tags: [-coverage, sources]
+pack: "solar-diy-product"
+retrieval_strategy: "standard"
+---
+
 # Research Coverage — Solar DIY Pack
 
 Pack version: 1.0.0

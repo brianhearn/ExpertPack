@@ -1,3 +1,11 @@
+---
+title: "Why Is My Render Noisy?"
+type: "faq"
+tags: [compositing, faq, render-noise, shading-rendering, troubleshooting/common-mistakes]
+pack: "blender-3d"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=faq, topic=render-noise, related=shading-rendering,compositing,troubleshooting/common-mistakes -->
 
 # Why Is My Render Noisy?

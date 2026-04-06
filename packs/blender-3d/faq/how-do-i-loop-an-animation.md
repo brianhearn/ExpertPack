@@ -1,3 +1,11 @@
+---
+title: "How Do I Loop an Animation?"
+type: "faq"
+tags: [animation-looping, animation-rigging, character-animation, faq, motion-graphics]
+pack: "blender-3d"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=faq, topic=animation-looping, related=animation-rigging,character-animation,motion-graphics -->
 
 # How Do I Loop an Animation?

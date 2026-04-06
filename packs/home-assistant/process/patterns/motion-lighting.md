@@ -1,4 +1,12 @@
 ---
+title: "Motion-Activated Lighting — The Definitive Pattern"
+type: pattern
+tags: [pattern, motion-lighting, automation, home-assistant-process]
+pack: home-assistant-process
+retrieval_strategy: standard
+---
+
+---
 sources:
   - type: documentation
     url: "https://www.home-assistant.io/docs/automation/"

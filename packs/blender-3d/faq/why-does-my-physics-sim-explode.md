@@ -1,3 +1,11 @@
+---
+title: "Why Does My Physics Simulation Explode?"
+type: "faq"
+tags: [common-mistakes, faq, physics-simulation, physics-troubleshooting]
+pack: "blender-3d"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=faq, topic=physics-troubleshooting, related=physics-simulation,common-mistakes -->
 
 # Why Does My Physics Simulation Explode?

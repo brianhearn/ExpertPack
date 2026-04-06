@@ -1,3 +1,11 @@
+---
+title: "Diagnostic Guide — Systematic Home Assistant Troubleshooting"
+type: "troubleshooting"
+tags: [core-architecture, diagnostic-guide, integrations-guide, troubleshooting, yaml-configuration]
+pack: "home-assistant-product"
+retrieval_strategy: "atomic"
+---
+
 <!-- context: section=troubleshooting, topic=diagnostic-guide, related=core-architecture,yaml-configuration,integrations-guide -->
 ---
 sources:

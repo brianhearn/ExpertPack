@@ -1,3 +1,11 @@
+---
+title: "Concepts"
+type: "index"
+tags: [concepts]
+pack: "solar-diy-product"
+retrieval_strategy: "standard"
+---
+
 # Concepts
 
 Core mental models and technical knowledge for residential solar and battery systems.

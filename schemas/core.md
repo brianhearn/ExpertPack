@@ -1199,8 +1199,101 @@ These principles apply to every ExpertPack, regardless of type:
 | EK ratio | Measure and maximize esoteric knowledge ratio; declare in manifest; guide hydration priority; see [Esoteric Knowledge Ratio](#esoteric-knowledge-ek-ratio) |
 | Conflict resolution | Never overwrite — flag and ask the human |
 | Version control | Git-native, semantic versioning |
+| Obsidian compatibility | Per-file YAML frontmatter (`title`, `type`, `tags`, `pack`, `retrieval_strategy`) on all content files; `.obsidian/` reference config in repo root; standard relative Markdown links (not wikilinks); see [Obsidian Compatibility](#obsidian-compatibility) |
 
 ---
 
-*Schema version: 2.7*
-*Last updated: 2026-04-01*
+## Obsidian Compatibility
+
+ExpertPacks are valid [Obsidian](https://obsidian.md) vaults. Any EP pack directory can be opened directly in Obsidian with full Dataview query support, graph navigation, and template-based authoring.
+
+### Per-File YAML Frontmatter
+
+All content files must include YAML frontmatter. Required fields:
+
+```yaml
+---
+title: "Human-readable title (matches # H1 heading)"
+type: "concept|workflow|troubleshooting|faq|proposition|summary|source|glossary|overview|index|decision|phase|gotcha|pattern|specification|volatile|fact|mind|relationship|presentation|verbatim|training|meta|timeline|commercial|customer|interface"
+tags: [kebab-case-tags, derived-from-section-topic-and-related]
+pack: "pack-slug"
+retrieval_strategy: "standard|atomic"
+---
+```
+
+**Required:** `title`, `type`, `tags`, `pack`
+**Recommended:** `retrieval_strategy` (defaults to `standard` if omitted)
+**Optional:** `ek_score` (float 0.0–1.0, from blind probing)
+
+**Type reference:**
+
+| Directory / File | `type` value | `retrieval_strategy` |
+|---|---|---|
+| `concepts/` | `concept` | `standard` |
+| `workflows/` | `workflow` | `atomic` |
+| `troubleshooting/` | `troubleshooting` | `atomic` |
+| `faq/` | `faq` | `standard` |
+| `propositions/` | `proposition` | `standard` |
+| `summaries/` | `summary` | `standard` |
+| `sources/` | `source` | `standard` |
+| `glossary*.md` | `glossary` | `standard` |
+| `overview.md` | `overview` | `standard` |
+| `_index.md` | `index` | `standard` |
+| `decisions/` | `decision` | `standard` |
+| `phases/` | `phase` | `atomic` |
+| `gotchas/`, `common-mistakes/` | `gotcha` | `atomic` |
+| `patterns/` | `pattern` | `standard` |
+| `specifications/` | `specification` | `standard` |
+| `volatile/`, `freshness.md` | `volatile` | `standard` |
+| `facts/` | `fact` | `standard` |
+| `mind/` | `mind` | `standard` |
+| `relationships/` | `relationship` | `standard` |
+| `verbatim/` | `verbatim` | `standard` |
+| `commercial/` | `commercial` | `standard` |
+| `customers/` | `customer` | `standard` |
+| `interfaces/` | `interface` | `standard` |
+
+**Frontmatter position:** Always the first thing in the file, before any `<!-- context: ... -->` annotations:
+
+```
+---
+frontmatter
+---
+
+<!-- context: section=X, topic=Y, related=A,B -->
+
+# Title
+...
+```
+
+**Note on `retrieval_strategy`:** This replaces the older `retrieval.strategy` nested key. Both are accepted by current tooling; new files should use the flat `retrieval_strategy` key.
+
+### Link Format
+
+ExpertPacks use **standard relative Markdown links** (`[text](../other-file.md)`), not Obsidian wikilinks (`[[other-file]]`). This preserves compatibility with GitHub rendering, standard Markdown processors, and all EP tooling.
+
+The `.obsidian/` reference config sets Obsidian's link format to `relative` to match — Obsidian will create new links in standard format by default.
+
+### The `.obsidian/` Reference Folder
+
+The repo root contains a `.obsidian/` folder with pre-configured settings:
+- `app.json` — link format, attachment folder, sensible defaults
+- `community-plugins.json` — Dataview + Templater enabled
+- `plugins/dataview/data.json` — Dataview settings
+- `OBSIDIAN-SETUP.md` — setup guide + useful Dataview queries
+
+To use a pack as an Obsidian vault: copy the `.obsidian/` folder into the pack directory, then open that directory as a vault in Obsidian.
+
+### What Obsidian Adds
+
+With frontmatter in place, Obsidian users get:
+- **Dataview queries** — live tables filtering by `type`, `pack`, `ek_score`, `retrieval_strategy`, tags
+- **Graph view** — visual map of file relationships via markdown links
+- **Tag pane** — browse all content by type and domain tag
+- **Templater templates** — create new EP-schema-compliant files from templates
+- **Search** — full-text + frontmatter field search across the pack
+
+---
+
+*Schema version: 2.8*
+*Last updated: 2026-04-06*

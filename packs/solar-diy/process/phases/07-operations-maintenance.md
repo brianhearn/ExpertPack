@@ -1,3 +1,11 @@
+---
+title: "Phase 7: Operations & Maintenance"
+type: "phase"
+tags: [battery-systems-2026, inspection-commissioning, monitoring, phase-7-operations-maintenance, process, solar-panels-2026]
+pack: "solar-diy-process"
+retrieval_strategy: "atomic"
+---
+
 # Phase 7: Operations & Maintenance
 
 <!-- context: section=process, topic=phase-7-operations-maintenance, related=inspection-commissioning,battery-systems-2026,solar-panels-2026,monitoring -->

@@ -1,3 +1,11 @@
+---
+title: "Geometry Nodes"
+type: "concept"
+tags: [animation-rigging, concepts, geometry-nodes, physics-simulation, python-scripting]
+pack: "blender-3d"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=concepts, topic=geometry-nodes, related=python-scripting,physics-simulation,animation-rigging -->
 
 # Geometry Nodes

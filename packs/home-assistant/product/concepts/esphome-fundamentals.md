@@ -1,3 +1,11 @@
+---
+title: "ESPHome Fundamentals — Custom Hardware at Minimal Cost"
+type: "concept"
+tags: [concepts, esphome-fundamentals, integrations-guide, presence-detection, protocols]
+pack: "home-assistant-product"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=concepts, topic=esphome-fundamentals, related=protocols,integrations-guide,presence-detection -->
 ---
 sources:

@@ -1,3 +1,11 @@
+---
+title: "Summary — Home Assistant ExpertPack (Composite)"
+type: "summary"
+tags: [pack-overview, summaries]
+pack: "home-assistant"
+retrieval_strategy: "standard"
+---
+
 # Summary — Home Assistant ExpertPack (Composite)
 
 This is a composite ExpertPack combining a **product pack** (reference knowledge about the HA platform) and a **process pack** (practical 7-phase guide to building a smart home).

@@ -1,3 +1,11 @@
+---
+title: "How Do I Reduce Render Time?"
+type: "faq"
+tags: [compositing, faq, render-performance, scene-optimization, shading-rendering]
+pack: "blender-3d"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=faq, topic=render-performance, related=shading-rendering,scene-optimization,compositing -->
 
 # How Do I Reduce Render Time?

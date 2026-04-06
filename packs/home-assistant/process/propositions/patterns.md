@@ -1,3 +1,11 @@
+---
+title: "Propositions — Process Patterns"
+type: "proposition"
+tags: [patterns, propositions]
+pack: "home-assistant-process"
+retrieval_strategy: "standard"
+---
+
 # Propositions — Process Patterns
 
 Atomic factual statements extracted from the process patterns files.

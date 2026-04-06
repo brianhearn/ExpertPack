@@ -1,6 +1,6 @@
 ---
 name: elite-to-expertpack
-description: "Convert Elite Longterm Memory data into a structured ExpertPack. Migrates the 5-layer memory system (SESSION-STATE hot RAM, LanceDB warm store, Git-Notes cold store, MEMORY.md curated archive, and daily journals) into ExpertPack's portable format with multi-layer retrieval, context tiers, and EK measurement. Use when: upgrading from Elite Longterm Memory to ExpertPack, backing up agent knowledge, or migrating to a new platform. Triggers on: 'elite to expertpack', 'convert elite memory', 'export elite memory', 'migrate elite longterm', 'upgrade memory to expertpack', 'elite memory export'."
+description: "Convert Elite Longterm Memory data into a structured ExpertPack. Migrates the 5-layer memory system (SESSION-STATE hot RAM, LanceDB warm store, Git-Notes cold store, MEMORY.md curated archive, and daily journals) into ExpertPack's portable format with multi-layer retrieval, context tiers, and EK measurement. Output is Obsidian-compatible — includes YAML frontmatter on all content files and can be opened as an Obsidian vault. Use when: upgrading from Elite Longterm Memory to ExpertPack, backing up agent knowledge, or migrating to a new platform. Triggers on: 'elite to expertpack', 'convert elite memory', 'export elite memory', 'migrate elite longterm', 'upgrade memory to expertpack', 'elite memory export'."
 metadata:
   openclaw:
     homepage: https://expertpack.ai

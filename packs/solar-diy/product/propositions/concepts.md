@@ -1,3 +1,11 @@
+---
+title: "Propositions — Solar Product Concepts"
+type: "proposition"
+tags: [concepts, propositions]
+pack: "solar-diy-product"
+retrieval_strategy: "standard"
+---
+
 # Propositions — Solar Product Concepts
 
 Atomic factual statements extracted from product concept and specification files.

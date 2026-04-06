@@ -1,3 +1,11 @@
+---
+title: "Propositions — Home Assistant Pack Overview"
+type: "overview"
+tags: [propositions]
+pack: "home-assistant"
+retrieval_strategy: "standard"
+---
+
 # Propositions — Home Assistant Pack Overview
 
 Atomic factual statements extracted from the top-level overview files.

@@ -1,3 +1,11 @@
+---
+title: "Do I Need a Battery with Solar?"
+type: "faq"
+tags: [battery-systems-2026, faq-battery-decision, grid-tied-vs-hybrid, product, system-design-fundamentals]
+pack: "solar-diy-product"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=product, topic=faq-battery-decision, related=battery-systems-2026,grid-tied-vs-hybrid,system-design-fundamentals -->
 
 > **Lead summary:** A battery is not required for solar to work — grid-tied systems function without one. A battery is needed if you want backup power during outages, or if you want to shift solar production to high-rate evening hours (time-of-use arbitrage). Battery costs dropped significantly in 2023–2026; the 30% federal ITC now applies to battery storage, making economics more favorable.

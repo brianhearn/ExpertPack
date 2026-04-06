@@ -1,3 +1,11 @@
+---
+title: "What Hardware Should I Run Home Assistant On?"
+type: "faq"
+tags: [backup-migration, faq, hardware-selection, network-architecture]
+pack: "home-assistant-product"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=faq, topic=hardware-selection, related=backup-migration,network-architecture -->
 
 # What Hardware Should I Run Home Assistant On?

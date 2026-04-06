@@ -1,3 +1,11 @@
+---
+title: "Hard Surface Modeling Workflow"
+type: "workflow"
+tags: [hard-surface-modeling, modeling-fundamentals, scene-optimization, shading-rendering, workflows]
+pack: "blender-3d"
+retrieval_strategy: "atomic"
+---
+
 <!-- context: section=workflows, topic=hard-surface-modeling, related=modeling-fundamentals,shading-rendering,scene-optimization -->
 
 # Hard Surface Modeling Workflow

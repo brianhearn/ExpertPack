@@ -1,3 +1,11 @@
+---
+title: "Solar Technology Reference"
+type: "overview"
+tags: [battery-systems-2026, inverter-types, nec-rapid-shutdown, product, product-overview, solar-panels-2026, system-design-fundamentals]
+pack: "solar-diy-product"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=product, topic=product-overview, related=system-design-fundamentals,inverter-types,solar-panels-2026,battery-systems-2026,nec-rapid-shutdown -->
 
 # Solar Technology Reference

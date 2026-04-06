@@ -1,3 +1,11 @@
+---
+title: "Propositions — Process Phases & Decisions"
+type: "proposition"
+tags: [phases-decisions, propositions]
+pack: "home-assistant-process"
+retrieval_strategy: "standard"
+---
+
 # Propositions — Process Phases & Decisions
 
 Atomic factual statements extracted from the process phases and decision files.

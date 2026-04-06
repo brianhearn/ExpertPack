@@ -1,3 +1,11 @@
+---
+title: "Frequently Asked Questions"
+type: "faq"
+tags: [backup-migration, common-questions, core-architecture, faq, protocols]
+pack: "home-assistant-product"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=faq, topic=common-questions, related=core-architecture,protocols,backup-migration -->
 ---
 sources:

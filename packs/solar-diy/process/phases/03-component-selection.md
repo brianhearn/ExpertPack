@@ -1,3 +1,11 @@
+---
+title: "Phase 3: Component Selection"
+type: "phase"
+tags: [battery-systems-2026, inverter-types, permitting, phase-3-component-selection, process, solar-panels-2026, system-design]
+pack: "solar-diy-process"
+retrieval_strategy: "atomic"
+---
+
 # Phase 3: Component Selection
 
 <!-- context: section=process, topic=phase-3-component-selection, related=solar-panels-2026,battery-systems-2026,inverter-types,system-design,permitting -->

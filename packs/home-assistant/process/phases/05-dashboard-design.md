@@ -1,3 +1,11 @@
+---
+title: "Phase 5: Dashboard Design"
+type: "phase"
+tags: [05-dashboard-design, phases]
+pack: "home-assistant-process"
+retrieval_strategy: "atomic"
+---
+
 # Phase 5: Dashboard Design
 
 ## Goal

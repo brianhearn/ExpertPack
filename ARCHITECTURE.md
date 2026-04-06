@@ -44,6 +44,7 @@ These apply to every ExpertPack. See [schemas/core.md](schemas/core.md) for the 
 | **Layered Loading** | Three-tier context: always → searchable → on-demand |
 | **Source-Tracked** | Provenance frontmatter traces content back to its origin |
 | **Cross-Referenced** | Relative markdown links between related files |
+| **Obsidian-Native** | Per-file YAML frontmatter on all content files; valid Obsidian vault out of the box |
 | **Schema-Versioned** | Type schemas carry semantic versions; packs declare their target |
 | **Eval-Driven** | Measurable quality with standardized eval sets and automated scoring |
 | **Git-Native** | Version controlled, diffable, collaborative |
@@ -55,7 +56,7 @@ These apply to every ExpertPack. See [schemas/core.md](schemas/core.md) for the 
 
 The schema system has two layers:
 
-### Core Schema ([schemas/core.md](schemas/core.md)) — v2.7
+### Core Schema ([schemas/core.md](schemas/core.md)) — v2.8
 Shared principles and conventions that apply to every ExpertPack:
 - The MD-canonical principle
 - Required files (`manifest.yaml`, `overview.md`)

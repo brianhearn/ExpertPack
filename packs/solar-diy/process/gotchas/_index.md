@@ -1,3 +1,11 @@
+---
+title: "Gotchas Index"
+type: "index"
+tags: [gotchas]
+pack: "solar-diy-process"
+retrieval_strategy: "standard"
+---
+
 # Gotchas Index
 
 Common mistakes, surprises, and traps in residential solar projects.

@@ -1,3 +1,11 @@
+---
+title: "Decision: Installation Method"
+type: "decision"
+tags: [decisions, installation-method]
+pack: "home-assistant-process"
+retrieval_strategy: "standard"
+---
+
 # Decision: Installation Method
 
 ## The Decision

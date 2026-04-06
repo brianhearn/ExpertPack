@@ -1,3 +1,11 @@
+---
+title: "Solar & Battery — Glossary"
+type: "glossary"
+tags: [battery-systems-2026, glossary, inverter-types, nec-rapid-shutdown, product, system-design-fundamentals]
+pack: "solar-diy-product"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=product, topic=glossary, related=system-design-fundamentals,inverter-types,nec-rapid-shutdown,battery-systems-2026 -->
 
 # Solar & Battery — Glossary

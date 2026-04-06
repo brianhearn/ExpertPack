@@ -1,3 +1,11 @@
+---
+title: "Phase 1: Planning"
+type: "phase"
+tags: [01-planning, phases]
+pack: "home-assistant-process"
+retrieval_strategy: "atomic"
+---
+
 # Phase 1: Planning
 
 ## Goal

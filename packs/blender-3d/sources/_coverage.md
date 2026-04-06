@@ -1,3 +1,11 @@
+---
+title: "Blender Knowledge Sources — Coverage Map"
+type: "source"
+tags: [-coverage, sources]
+pack: "blender-3d"
+retrieval_strategy: "standard"
+---
+
 # Blender Knowledge Sources — Coverage Map
 
 Source discovery document for the Blender ExpertPack. Lists all major knowledge sources, their content type, quality, and coverage gaps.

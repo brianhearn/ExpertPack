@@ -1,3 +1,11 @@
+---
+title: "Phase 5: Installation"
+type: "phase"
+tags: [common-mistakes, dc-wiring, inspection-commissioning, nec-rapid-shutdown, permitting, phase-5-installation, process, racking]
+pack: "solar-diy-process"
+retrieval_strategy: "atomic"
+---
+
 # Phase 5: Installation
 
 <!-- context: section=process, topic=phase-5-installation, related=nec-rapid-shutdown,permitting,inspection-commissioning,common-mistakes,racking,dc-wiring -->

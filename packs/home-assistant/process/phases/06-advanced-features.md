@@ -1,3 +1,11 @@
+---
+title: "Phase 6: Advanced Features"
+type: "phase"
+tags: [06-advanced-features, phases]
+pack: "home-assistant-process"
+retrieval_strategy: "atomic"
+---
+
 # Phase 6: Advanced Features
 
 ## Goal

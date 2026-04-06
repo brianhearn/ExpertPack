@@ -1,3 +1,11 @@
+---
+title: "FAQ"
+type: "index"
+tags: [faq]
+pack: "solar-diy-product"
+retrieval_strategy: "standard"
+---
+
 # FAQ
 
 Common questions about residential solar and battery storage.

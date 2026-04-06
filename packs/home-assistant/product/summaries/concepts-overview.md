@@ -1,3 +1,11 @@
+---
+title: "Summary — Product Concepts Overview"
+type: "summary"
+tags: [concepts-overview, summaries]
+pack: "home-assistant-product"
+retrieval_strategy: "standard"
+---
+
 # Summary — Product Concepts Overview
 
 This summary covers all concept files in the Home Assistant product pack. For detailed information, follow the links to source files.

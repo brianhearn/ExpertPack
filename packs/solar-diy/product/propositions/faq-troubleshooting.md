@@ -1,3 +1,11 @@
+---
+title: "Propositions — Solar Product FAQ & Troubleshooting"
+type: "proposition"
+tags: [faq-troubleshooting, propositions]
+pack: "solar-diy-product"
+retrieval_strategy: "standard"
+---
+
 # Propositions — Solar Product FAQ & Troubleshooting
 
 Atomic factual statements extracted from FAQ and troubleshooting files.

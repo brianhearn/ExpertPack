@@ -6,7 +6,28 @@ Esoteric knowledge (EK) is knowledge not found in the weights of frontier LLMs �
 
 Every pack is measured by its **EK ratio** — the proportion of content that frontier models cannot correctly produce on their own. During hydration, every fact is triaged: esoteric knowledge gets maximum treatment, general knowledge gets compressed to scaffolding. The result is dense, high-value context that makes your AI genuinely expert — not just articulate.
 
-**[🌐 expertpack.ai](https://expertpack.ai)** · **[📦 Free Packs](#free-community-packs)** · **[📖 Schemas](#schemas)** · **[🧪 Evaluation](#evaluation)**
+**[🌐 expertpack.ai](https://expertpack.ai)** · **[📦 Free Packs](#free-community-packs)** · **[📖 Schemas](#schemas)** · **[🧪 Evaluation](#evaluation)** · **[💎 Obsidian Compatible](#obsidian-compatibility)**
+
+---
+
+## Obsidian Compatibility
+
+ExpertPacks are valid [Obsidian](https://obsidian.md) vaults — open any pack directory directly in Obsidian and get:
+
+- **Dataview queries** — live tables filtering by content type, EK score, retrieval strategy, tags
+- **Graph view** — visual map of how pack files relate to each other
+- **Tag pane** — browse all content by type and domain tag
+- **Full-text search** — across all pack content and frontmatter fields
+- **Templater** — create new EP-schema-compliant files from templates
+
+Every content file includes YAML frontmatter (`title`, `type`, `tags`, `pack`, `retrieval_strategy`). The repo includes a `.obsidian/` reference config with Dataview pre-configured and example queries.
+
+**To use a pack in Obsidian:**
+1. Copy the `.obsidian/` folder from the repo root into your pack directory
+2. Open that directory as a vault in Obsidian
+3. Install Dataview + Templater from Community Plugins
+
+Link format is standard relative Markdown — packs render correctly on GitHub, in any Markdown reader, and in Obsidian simultaneously.
 
 ---
 

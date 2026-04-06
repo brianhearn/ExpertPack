@@ -1,3 +1,11 @@
+---
+title: "How Do I Access Home Assistant Remotely?"
+type: "faq"
+tags: [backup-migration, faq, network-architecture, remote-access]
+pack: "home-assistant-product"
+retrieval_strategy: "standard"
+---
+
 <!-- context: section=faq, topic=remote-access, related=network-architecture,backup-migration -->
 
 # How Do I Access Home Assistant Remotely?
