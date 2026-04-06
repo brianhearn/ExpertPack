@@ -7,6 +7,18 @@ metadata:
     requires:
       bins:
         - python3
+    data_access:
+      - label: Workspace files
+        description: "Export scripts (scan.py, distill.py, compose.py, validate.py) read workspace files (SOUL.md, MEMORY.md, memory/*.md, etc.) to build export packs. All processing is local — no content is transmitted externally by these scripts."
+        scope: local
+      - label: OpenClaw config (RAG setup)
+        description: "The RAG configuration snippet modifies openclaw.json to point the memory search engine at pack directories. This is optional and user-initiated."
+        scope: local
+    external_services:
+      - label: OpenRouter (via expertpack-eval companion)
+        description: "EK ratio measurement and quality evals (in the separate expertpack-eval skill) send pack-derived content (propositions/facts) to LLM APIs via OpenRouter for blind probing. This skill itself does NOT make external API calls — install expertpack-eval only if you need EK measurement."
+        optional: true
+        skill: expertpack-eval
 ---
 
 # ExpertPack
@@ -14,6 +26,8 @@ metadata:
 Structured knowledge packs for AI agents. Maximize the knowledge your AI is missing.
 
 **Learn more:** [expertpack.ai](https://expertpack.ai) · [GitHub](https://github.com/brianhearn/ExpertPack) · [Schema docs](https://expertpack.ai/#schemas)
+
+> **Data & privacy:** The export scripts (scan/distill/compose/validate) read your workspace files locally and write output to a directory you specify — no content is sent externally. The RAG config snippet is optional and local. EK ratio measurement and quality evals require the separate `expertpack-eval` skill, which *does* send pack-derived propositions to LLM APIs (OpenRouter) for blind probing — install it only if you need that feature.
 
 **Full schemas:** `/path/to/ExpertPack/schemas/` in the repo (core.md, person.md, product.md, process.md, composite.md, eval.md)
 
