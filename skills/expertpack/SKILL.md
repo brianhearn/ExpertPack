@@ -4,18 +4,6 @@ description: "Work with ExpertPacks — structured knowledge packs for AI agents
 metadata:
   openclaw:
     homepage: https://expertpack.ai
-    requires:
-      bins:
-        - python3
-    data_access:
-      - label: OpenClaw config (RAG setup)
-        description: "The RAG configuration snippet modifies openclaw.json to point the memory search engine at pack directories. This is optional and user-initiated."
-        scope: local
-    external_services:
-      - label: OpenRouter (via expertpack-eval companion)
-        description: "EK ratio measurement and quality evals (in the separate expertpack-eval skill) send pack-derived content to LLM APIs via OpenRouter for blind probing. This skill itself makes NO external API calls."
-        optional: true
-        skill: expertpack-eval
 ---
 
 # ExpertPack
@@ -26,7 +14,7 @@ Structured knowledge packs for AI agents. Maximize the knowledge your AI is miss
 
 > **💎 Obsidian compatible:** Every ExpertPack is a valid Obsidian vault. Copy the `.obsidian/` folder from the repo root into any pack directory, open it in Obsidian, and install Dataview + Templater. You get live queries by content type, EK score, and tags; graph view; and full-text search. Standard relative Markdown links — packs render correctly on GitHub and in Obsidian simultaneously.
 
-> **Companion skills:** This skill covers consumption, hydration, and RAG setup only. For EK measurement and quality evals use `expertpack-eval`. For exporting an OpenClaw agent's workspace as an ExpertPack use `expertpack-export`.
+> **Companion skills:** This skill covers consumption and hydration guidance only. For EK measurement and quality evals use `expertpack-eval`. For exporting an OpenClaw agent's workspace as an ExpertPack use `expertpack-export`.
 
 **Full schemas:** `/path/to/ExpertPack/schemas/` in the repo (core.md, person.md, product.md, process.md, composite.md, eval.md)
 
@@ -44,7 +32,7 @@ Default directory: `~/expertpacks/`. Check there first, fall back to current wor
 4. For queries: search Tier 2 (searchable) files via RAG or `_index.md` navigation
 5. Load Tier 3 (on-demand) only on explicit request (verbatim transcripts, training data)
 
-**OpenClaw RAG config** — add to `openclaw.json`:
+**OpenClaw RAG config** — add to `openclaw.json` to point the memory search engine at the pack directory:
 
 ```json
 {
@@ -75,22 +63,21 @@ For detailed platform integration (Cursor, Claude Code, custom APIs, direct cont
 3. Scaffold the directory structure per the type schema
 4. Create `manifest.yaml` and `overview.md` (both required)
 5. Populate content using EK-aware hydration:
-   - Blind-probe each extracted fact before filing
-   - Full treatment for EK content (the model can't produce it)
-   - Compressed scaffolding for GK content (the model already knows it)
+   - Focus on esoteric knowledge — content the model cannot produce on its own
+   - Full treatment for EK content; compressed scaffolding for general knowledge
    - Skip content with zero EK value
 6. Add retrieval layers: `_index.md` per directory, `summaries/`, `propositions/`, `glossary.md`
 7. Add `sources/_coverage.md` documenting what was researched
 
-For full hydration methodology, EK triage process, and source prioritization: read `{skill_dir}/references/hydration.md`.
+For full hydration methodology and source prioritization: read `{skill_dir}/references/hydration.md`.
 
 ### 3. Configure RAG
 
-Point OpenClaw RAG at the pack directly. The 400–800 token file-size constraint makes files retrieval-ready by design — no external chunking tool needed.
+Point OpenClaw RAG at the pack directory using the config snippet above. Files are authored at 400–800 tokens each — retrieval-ready by design, no external chunking tool needed.
 
 ### 4. Measure EK Ratio & Run Quality Evals
 
-Install the companion skill:
+Install the companion skill — it handles all LLM API calls for blind probing and eval scoring:
 
 ```
 clawhub install expertpack-eval
@@ -98,7 +85,7 @@ clawhub install expertpack-eval
 
 ### 5. Export an OpenClaw Agent as an ExpertPack
 
-Install the companion skill:
+Install the companion skill — it handles workspace scanning, distillation, and packaging:
 
 ```
 clawhub install expertpack-export
