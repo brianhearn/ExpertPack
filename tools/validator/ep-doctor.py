@@ -279,9 +279,9 @@ class Doctor:
             fm = self.fm[rel]
             body = self.bodies[rel]
             added = []
-            # title from H1
+            # title from first H1 anywhere in body
             if 'title' not in fm:
-                m = re.match(r'^#\s+(.+)', body)
+                m = re.search(r'^#\s+(.+)', body, re.MULTILINE)
                 if m:
                     fm['title'] = m.group(1).strip()
                     added.append('title')
@@ -374,7 +374,7 @@ def main():
 
     # Run validator before
     print("\n--- BEFORE ---")
-    os.system(f'python3 /root/.openclaw/workspace/scripts/ep-validate-v2.py "{args.pack}" 2>&1 | tail -4')
+    os.system(f'python3 /root/.openclaw/workspace/scripts/ep-validate.py "{args.pack}" 2>&1 | tail -4')
 
     # Run doctor
     doc = Doctor(args.pack, apply=args.apply, fix_scope=args.fix)
@@ -384,7 +384,7 @@ def main():
     # Run validator after (only if we applied changes)
     if args.apply and doc.changes:
         print("\n--- AFTER ---")
-        os.system(f'python3 /root/.openclaw/workspace/scripts/ep-validate-v2.py "{args.pack}" 2>&1 | tail -4')
+        os.system(f'python3 /root/.openclaw/workspace/scripts/ep-validate.py "{args.pack}" 2>&1 | tail -4')
 
 
 if __name__ == '__main__':
