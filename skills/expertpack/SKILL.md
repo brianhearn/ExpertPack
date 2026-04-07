@@ -1,6 +1,6 @@
 ---
 name: expertpack
-description: "Work with ExpertPacks — structured knowledge packs for AI agents. Obsidian-compatible: every pack is a valid Obsidian vault with Dataview support. Use when: (1) Loading/consuming an ExpertPack as agent context, (2) Creating or hydrating a new ExpertPack from scratch, (3) Configuring RAG for a pack, (4) Opening or authoring a pack in Obsidian. Triggers on: 'expertpack', 'expert pack', 'esoteric knowledge', 'knowledge pack', 'pack hydration', 'obsidian vault', 'obsidian pack'. For EK ratio measurement and quality evals install expertpack-eval. For exporting an OpenClaw agent as an ExpertPack install expertpack-export."
+description: "Work with ExpertPacks — structured knowledge packs for AI agents. Obsidian-compatible: every pack is a valid Obsidian vault with Dataview support. Use when: (1) Loading/consuming an ExpertPack as agent context, (2) Creating or hydrating a new ExpertPack from scratch, (3) Configuring RAG for a pack, (4) Validating or fixing a pack with the CLI tools, (5) Opening or authoring a pack in Obsidian. Triggers on: 'expertpack', 'expert pack', 'esoteric knowledge', 'knowledge pack', 'pack hydration', 'validate pack', 'ep-validate', 'ep-doctor', 'obsidian vault', 'obsidian pack'. For EK ratio measurement and quality evals install expertpack-eval. For exporting an OpenClaw agent as an ExpertPack install expertpack-export."
 metadata:
   openclaw:
     homepage: https://expertpack.ai
@@ -88,7 +88,45 @@ Install the companion skill — it handles all LLM API calls for blind probing a
 clawhub install expertpack-eval
 ```
 
-### 5. Export an OpenClaw Agent as an ExpertPack
+### 5. Validate & Fix a Pack
+
+Run the CLI validator to check compliance (16 checks covering manifest, frontmatter, wikilinks, cross-links, file prefixes, orphans, and file size):
+
+```bash
+python3 /path/to/ExpertPack/tools/validator/ep-validate.py /path/to/pack [--verbose] [--json]
+```
+
+**Must pass with 0 errors before committing.** Warnings are advisory.
+
+Auto-fix common issues with the doctor (dry-run by default):
+
+```bash
+# Dry-run — see what would change
+python3 /path/to/ExpertPack/tools/validator/ep-doctor.py /path/to/pack
+
+# Apply all fixes
+python3 /path/to/ExpertPack/tools/validator/ep-doctor.py /path/to/pack --apply
+
+# Apply specific fix category: links | fm | prefix
+python3 /path/to/ExpertPack/tools/validator/ep-doctor.py /path/to/pack --fix links --apply
+```
+
+Fix operations:
+- **links** — convert path-based `related:` to bare filenames, markdown links → wikilinks, add missing verbatim↔summary cross-links, enforce bidirectional `related:`
+- **fm** — add missing frontmatter fields (title, type, tags, pack), fix `canonical_verbatim` paths
+- **prefix** — rename files to content-type prefixes for vault-wide uniqueness (`sum-`, `vbt-`, `facts-`, `meta-`, `mind-`, `prop-`, `rel-`, `pres-`)
+
+Remove broken wikilinks pointing to non-existent files (safe for cross-sub-pack references in composites):
+
+```bash
+python3 /path/to/ExpertPack/tools/validator/ep-fix-broken-wikilinks.py /path/to/pack [--apply]
+```
+
+**Recommended workflow:** `ep-doctor --apply` → `ep-validate` → commit.
+
+All tools are in `ExpertPack/tools/validator/` in the public repo.
+
+### 6. Export an OpenClaw Agent as an ExpertPack
 
 Install the companion skill — it handles workspace scanning, distillation, and packaging:
 
