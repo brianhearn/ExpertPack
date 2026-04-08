@@ -11,7 +11,10 @@ import re
 import shutil
 import sys
 import yaml
-from datetime import datetime
+from datetime import datetime, timezone
+
+def utcnow():
+    return datetime.now(timezone.utc)
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
@@ -72,6 +75,9 @@ PREFIX_MAP = {
     'proposition': 'prop-',
 }
 
+# Directories excluded from markdown walk (content processing).
+# Note: .obsidian is excluded here to prevent processing its JSON files as content,
+# but it IS copied separately at the end via shutil.copytree to preserve Obsidian config.
 IGNORED_DIRS = {'.obsidian', '.trash', '.git', '__pycache__'}
 IGNORED_FILES = {'.DS_Store', 'Thumbs.db'}
 
@@ -163,7 +169,7 @@ def build_manifest(pack_slug, pack_name, pack_type, dirs):
         'name': pack_name,
         'type': pack_type,
         'version': '1.0.0',
-        'created': datetime.utcnow().strftime('%Y-%m-%d'),
+        'created': utcnow().strftime('%Y-%m-%d'),
         'description': f'ExpertPack converted from Obsidian Vault: {pack_name}',
         'context_tiers': {
             'tier1_always': ['manifest.yaml', 'overview.md', 'glossary.md'],
@@ -182,7 +188,7 @@ def build_overview(pack_name, pack_type, stats, warnings):
     lines = [
         f'# {pack_name}',
         '',
-        f'> Converted from Obsidian Vault on {datetime.utcnow().strftime("%Y-%m-%d")}.',
+        f'> Converted from Obsidian Vault on {utcnow().strftime("%Y-%m-%d")}.',
         '',
         '## Pack Summary',
         '',
@@ -279,7 +285,7 @@ def convert_file(src_path, dest_path, pack_slug, content_type, stats, warnings):
     fm['tags'] = all_tags
     fm['pack'] = pack_slug
     if 'created' not in fm:
-        fm['created'] = datetime.utcnow().strftime('%Y-%m-%d')
+        fm['created'] = utcnow().strftime('%Y-%m-%d')
 
     # Clean up Obsidian-specific frontmatter keys we don't need
     for key in ['cssclass', 'cssclasses', 'banner', 'banner_x', 'banner_y']:
@@ -395,7 +401,9 @@ def main():
             encoding='utf-8'
         )
 
-        # Copy .obsidian config if present
+        # Copy .obsidian config directory as-is (not processed as markdown content above).
+        # This gives the output pack immediate Obsidian compatibility — open the output
+        # folder in Obsidian and it inherits all plugins, themes, and Dataview settings.
         obsidian_src = vault_path / '.obsidian'
         if obsidian_src.exists():
             shutil.copytree(obsidian_src, output_path / '.obsidian')
