@@ -32,27 +32,7 @@ Default directory: `~/expertpacks/`. Check there first, fall back to current wor
 4. For queries: search Tier 2 (searchable) files via RAG or `_index.md` navigation
 5. Load Tier 3 (on-demand) only on explicit request (verbatim transcripts, training data)
 
-**OpenClaw RAG config** — add to `openclaw.json` to point the memory search engine at the pack directory:
-
-```json
-{
-  "agents": {
-    "defaults": {
-      "memorySearch": {
-        "extraPaths": ["path/to/pack"],
-        "chunking": { "tokens": 500, "overlap": 0 },
-        "query": {
-          "hybrid": {
-            "enabled": true,
-            "mmr": { "enabled": true, "lambda": 0.7 },
-            "temporalDecay": { "enabled": false }
-          }
-        }
-      }
-    }
-  }
-}
-```
+To configure OpenClaw RAG, point `memorySearch.extraPaths` in `openclaw.json` at the pack directory. Files are authored at 400–800 tokens each — retrieval-ready by design. See `{skill_dir}/references/cli-commands.md` for the exact config snippet.
 
 For detailed platform integration (Cursor, Claude Code, custom APIs, direct context window): read `{skill_dir}/references/consumption.md`.
 
@@ -63,10 +43,7 @@ For detailed platform integration (Cursor, Claude Code, custom APIs, direct cont
 1. Determine pack type: person, product, process, or composite
 2. Read `{skill_dir}/references/schemas.md` for structural requirements
 3. Create root directory using the pack slug (kebab-case)
-4. **Copy `.obsidian/` config into the pack root** — from the ExpertPack repo `template/` folder (local clone of the public repo at github.com/brianhearn/ExpertPack). This makes the pack immediately usable in Obsidian with Dataview and Templater pre-configured.
-   ```bash
-   cp -r /path/to/ExpertPack/template/.obsidian ./your-pack-slug/.obsidian
-   ```
+4. **Copy `.obsidian/` config into the pack root** — from the `template/` folder in the public ExpertPack repo (github.com/brianhearn/ExpertPack). This makes the pack immediately usable in Obsidian with Dataview and Templater pre-configured. See `{skill_dir}/references/cli-commands.md` for the copy command.
 5. Create `manifest.yaml` and `overview.md` (both required)
 6. Scaffold content directories per the type schema with `_index.md` in each
 7. Populate content using EK-aware hydration:
@@ -80,62 +57,24 @@ For full hydration methodology and source prioritization: read `{skill_dir}/refe
 
 ### 3. Configure RAG
 
-Point OpenClaw RAG at the pack directory using the config snippet above. Files are authored at 400–800 tokens each — retrieval-ready by design, no external chunking tool needed.
+Point OpenClaw RAG at the pack directory via `openclaw.json`. See `{skill_dir}/references/cli-commands.md` for the exact config snippet. No external chunking tool needed — files are authored at 400–800 tokens by design.
 
 ### 4. Measure EK Ratio & Run Quality Evals
 
-Install the companion skill — it handles all LLM API calls for blind probing and eval scoring:
-
-```
-clawhub install expertpack-eval
-```
+Install the companion skill `expertpack-eval` via clawhub — it handles all LLM API calls for blind probing and eval scoring.
 
 ### 5. Validate & Fix a Pack
 
-> **Note:** `ep-validate.py` and `ep-doctor.py` are local Python scripts from the public ExpertPack repo (github.com/brianhearn/ExpertPack, `tools/validator/`). They read and write local pack files only — no network calls, no external dependencies beyond Python stdlib. Review the scripts before running if desired.
->
-> **⚠️ Always run without `--apply` first (dry-run is the default).** Inspect the proposed changes before applying. Keep files under version control or take backups before any `--apply` run.
+The ExpertPack repo (`tools/validator/` at github.com/brianhearn/ExpertPack) includes local Python scripts for validation and auto-fix. They operate on local pack files only — no network calls, no external dependencies beyond Python stdlib.
 
-Run the CLI validator to check compliance (16 checks covering manifest, frontmatter, wikilinks, cross-links, file prefixes, orphans, and file size):
+- **ep-validate.py** — 16-check compliance validator (manifest, frontmatter, wikilinks, cross-links, file prefixes, orphans, file size). Must pass with 0 errors before committing.
+- **ep-doctor.py** — auto-fixes common issues. Always run in dry-run mode first (default behavior); only add the apply flag after reviewing proposed changes. Fix categories: links, fm, prefix.
+- **ep-fix-broken-wikilinks.py** — removes broken wikilinks; safe for composites with cross-sub-pack references. Always preview before applying.
 
-```bash
-python3 /path/to/ExpertPack/tools/validator/ep-validate.py /path/to/pack [--verbose] [--json]
-```
+Recommended workflow: ep-doctor dry-run → ep-doctor apply → ep-validate → commit.
 
-**Must pass with 0 errors before committing.** Warnings are advisory.
-
-Auto-fix common issues with the doctor. **Always run dry-run first** to review proposed changes before applying:
-
-```bash
-# Dry-run — see what would change (default, no files modified)
-python3 /path/to/ExpertPack/tools/validator/ep-doctor.py /path/to/pack
-
-# Apply all fixes after reviewing dry-run output
-python3 /path/to/ExpertPack/tools/validator/ep-doctor.py /path/to/pack --apply
-
-# Apply specific fix category: links | fm | prefix
-python3 /path/to/ExpertPack/tools/validator/ep-doctor.py /path/to/pack --fix links --apply
-```
-
-Fix operations:
-- **links** — convert path-based `related:` to bare filenames, markdown links → wikilinks, add missing verbatim↔summary cross-links, enforce bidirectional `related:`
-- **fm** — add missing frontmatter fields (title, type, tags, pack), fix `canonical_verbatim` paths
-- **prefix** — rename files to content-type prefixes for vault-wide uniqueness (`sum-`, `vbt-`, `facts-`, `meta-`, `mind-`, `prop-`, `rel-`, `pres-`)
-
-Remove broken wikilinks pointing to non-existent files (safe for cross-sub-pack references in composites). **Run without `--apply` first** to preview changes:
-
-```bash
-python3 /path/to/ExpertPack/tools/validator/ep-fix-broken-wikilinks.py /path/to/pack [--apply]
-```
-
-**Recommended workflow:** `ep-doctor` (dry-run) → `ep-doctor --apply` → `ep-validate` → commit.
-
-All tools are in `ExpertPack/tools/validator/` in the public repo.
+See `{skill_dir}/references/cli-commands.md` for exact command syntax.
 
 ### 6. Export an OpenClaw Agent as an ExpertPack
 
-Install the companion skill — it handles workspace scanning, distillation, and packaging:
-
-```
-clawhub install expertpack-export
-```
+Install the companion skill `expertpack-export` via clawhub — it handles workspace scanning, distillation, and packaging.
