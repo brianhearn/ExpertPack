@@ -48,6 +48,14 @@ author: "Who created this pack"
 created: "YYYY-MM-DD"
 updated: "YYYY-MM-DD"
 
+# Freshness tracking (recommended — see Provenance Metadata section)
+freshness:
+  refresh_cycle: "P90D"          # ISO 8601 duration — expected review cadence
+  last_full_review: "YYYY-MM-DD"
+  verified_file_count: 0         # How many content files have verified_at set
+  total_file_count: 0            # Total content files in pack
+  coverage_pct: 0                # Computed: verified_file_count / total_file_count * 100
+
 # Context strategy (recommended for packs with 15+ files)
 # See "Context Strategy" section for full documentation
 context:
@@ -629,6 +637,88 @@ When general knowledge *must* be present for completeness (e.g., a glossary term
 Example — **Good:** `**Zigbee** — Low-power mesh protocol (2.4 GHz, 65K nodes). See [protocols.md](concepts/protocols.md) for HA-specific coordinator firmware quirks and pairing gotchas.`
 
 Example — **Bad:** Three paragraphs explaining what Zigbee is, its history, how mesh networking works, and a comparison with Wi-Fi — all of which the model can produce perfectly without the pack.
+
+---
+
+## Provenance Metadata
+
+ExpertPack files support two complementary provenance layers: **content provenance** (where knowledge came from) and **freshness provenance** (when it was last verified and whether it has changed). Together they enable citation-quality retrieval — agents can return not just content but auditable references.
+
+### File-Level Provenance Frontmatter
+
+Every content file should include provenance fields alongside standard frontmatter:
+
+```yaml
+---
+title: "Feature X — Concept"
+type: concept
+tags: [concept, feature-x]
+pack: "my-pack"
+retrieval_strategy: standard
+
+# Stable citation ID — never changes even if file is renamed/moved
+id: "my-pack/concepts/feature-x"
+
+# Freshness provenance
+content_hash: "sha256:a3f1c..."   # SHA-256 of file body (below closing ---)
+verified_at: "2026-04-10"         # When content was last confirmed accurate
+verified_by: "agent"              # "agent" or "human"
+---
+```
+
+#### `id` — Stable Citation Key
+
+A stable, cross-version identifier for the file. Format: `{pack-slug}/{relative-path-without-extension}`. Assigned at creation and **never changed**, even if the file is renamed or reorganized. This is the retrieval citation key — external references to this file use `id`, not the file path.
+
+- For new packs: generate at file creation time
+- For existing packs: backfill by deriving from current path; document the derivation date in `meta/`
+- `id` values must be unique within a pack
+
+#### `content_hash` — Drift Detection
+
+SHA-256 hash of the file body (everything below the closing `---` of the frontmatter block). Enables consumers to detect whether a cited file has changed since the citation was made — without re-reading the content.
+
+- Compute and write at authoring/update time
+- Recompute whenever file body changes
+- A mismatch between stored hash and actual hash is a `W-PROV-02` validator warning
+
+#### `verified_at` — Freshness Signal
+
+ISO date when the content was last confirmed accurate. This is NOT the same as the git commit date — a file can be committed without being reviewed. Agents should caveat answers from files where `verified_at` is older than the pack's `manifest.yaml freshness.refresh_cycle`.
+
+- `verified_by: "human"` — an SME or pack owner reviewed the content
+- `verified_by: "agent"` — an agent performed a structured review pass
+
+**Consumer behavior:** At session start, check `manifest.yaml freshness.coverage_pct`. If below 70%, the consuming agent should note that provenance coverage is incomplete and caveat time-sensitive answers accordingly.
+
+### Citation Response Contract
+
+When an agent retrieves content from an ExpertPack, the retrieval response SHOULD include:
+
+```
+file        — relative path to source file
+id          — stable frontmatter id (if present)
+content_hash — from frontmatter (if present)
+verified_at  — from frontmatter (if present)
+excerpt     — the specific passage retrieved
+```
+
+This gives downstream consumers everything needed to build auditable, citable answers — without requiring the agent to re-read files.
+
+### Pack-Level Freshness (manifest.yaml)
+
+Maintain a `freshness` block in `manifest.yaml` (see manifest spec above). Update `verified_file_count`, `total_file_count`, and `coverage_pct` after each review pass. This is a manually maintained summary — it gives consuming agents a single-glance freshness signal without scanning every file.
+
+### Validator Warnings for Provenance
+
+| Code | Condition | Severity |
+|------|-----------|----------|
+| `W-PROV-01` | Content file missing `verified_at` | Warning |
+| `W-PROV-02` | `content_hash` present but doesn't match actual file hash | Warning |
+| `W-PROV-03` | `verified_at` older than `manifest.yaml freshness.refresh_cycle` | Warning |
+| `W-PROV-04` | Content file missing `id` field | Info |
+
+Provenance warnings do not break the zero-error requirement — they are surfaced separately as quality indicators.
 
 ---
 
@@ -1461,5 +1551,5 @@ With frontmatter in place, Obsidian users get:
 
 ---
 
-*Schema version: 2.9*
-*Last updated: 2026-04-07*
+*Schema version: 3.0*
+*Last updated: 2026-04-10*

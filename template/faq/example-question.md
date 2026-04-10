@@ -4,6 +4,9 @@ type: faq
 tags: [faq, example-question, pack-name]
 pack: your-pack-slug
 retrieval_strategy: standard
+id: "your-pack-slug/faq/example-question"
+verified_at: "YYYY-MM-DD"
+verified_by: "agent"
 ---
 
 # Why does X happen?

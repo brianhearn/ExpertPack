@@ -4,6 +4,9 @@ type: workflow
 tags: [workflow, example-workflow, pack-name]
 pack: your-pack-slug
 retrieval_strategy: atomic
+id: "your-pack-slug/workflows/example-workflow"
+verified_at: "YYYY-MM-DD"
+verified_by: "agent"
 ---
 
 <!-- context: section=workflows, topic=example-workflow, related=example-concept -->

@@ -4,6 +4,9 @@ type: concept
 tags: [concept, example-concept, pack-name]
 pack: your-pack-slug
 retrieval_strategy: standard
+id: "your-pack-slug/concepts/example-concept"
+verified_at: "YYYY-MM-DD"
+verified_by: "agent"
 ---
 
 <!-- context: section=concepts, topic=example-concept, related=other-concept,workflow-name -->

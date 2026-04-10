@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """ExpertPack Validator v2 — comprehensive pack compliance checker.
 
-Usage: python3 ep-validate-v2.py /path/to/pack [--verbose] [--json]
+Usage: python3 ep-validate-v2.py /path/to/pack [--verbose] [--json] [--provenance]
 
-Checks (15):
+Checks (19):
   1. manifest.yaml exists and has required fields
   2. manifest.yaml field validation (type, slug format, entry_point exists)
   3. Duplicate basenames across the vault
@@ -20,10 +20,16 @@ Checks (15):
  14. Bidirectional related: check (A->B but not B->A)
  15. Orphaned files (no related: and no incoming links)
  16. File size check (>6000 chars warning)
+ 17. W-PROV-01: content file missing verified_at (provenance) [--provenance]
+ 18. W-PROV-02: content_hash present but doesn't match actual file body [--provenance]
+ 19. W-PROV-04: content file missing id field (provenance) [--provenance]
+
+Provenance checks (17-19) are opt-in via --provenance flag.
 """
 
-import os, re, sys, yaml, json
+import os, re, sys, yaml, json, hashlib
 from collections import Counter, defaultdict
+from datetime import date, timedelta
 
 SKIP_DIRS = {'.obsidian', '.git', 'node_modules', 'eval', '__pycache__', '.venv'}
 SKIP_BASENAMES = {'_index.md', '_access.json', '_index.json'}
@@ -84,10 +90,11 @@ def get_md_links(body):
 
 
 class Validator:
-    def __init__(self, pack_path, verbose=False):
+    def __init__(self, pack_path, verbose=False, check_provenance=False):
         self.pack_path = os.path.abspath(pack_path)
         self.pack_name = os.path.basename(self.pack_path)
         self.verbose = verbose
+        self.check_provenance = check_provenance
         self.manifest = {}
         self.pack_type = 'unknown'
         self.pack_slug = ''
@@ -441,6 +448,67 @@ class Validator:
                 self._add('WARN', 'file-too-large', rel,
                            f"{chars} chars (ceiling: {CHAR_CEILING}) — consider splitting")
 
+
+    # -- Checks 17-19: provenance (opt-in via --provenance) ----------------
+    def check_provenance_fields(self):
+        """W-PROV-01: missing verified_at; W-PROV-02: hash mismatch;
+        W-PROV-03: stale content; W-PROV-04: missing id."""
+        refresh_cycle_days = None
+        freshness = self.manifest.get('freshness') or {}
+        rc = freshness.get('refresh_cycle', '')
+        if rc and isinstance(rc, str):
+            m = re.match(r'^P(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)D)?$', rc)
+            if m:
+                y = int(m.group(1) or 0)
+                mo = int(m.group(2) or 0)
+                d = int(m.group(3) or 0)
+                refresh_cycle_days = y * 365 + mo * 30 + d
+
+        today = date.today()
+        PROV_SKIP_TYPES = {'index', 'source', 'proposition', 'summary', 'training'}
+
+        for rel, fm in self.fm.items():
+            rel_dir = os.path.dirname(rel)
+            if not rel_dir:
+                continue  # root-level structural files exempt
+            file_type = fm.get('type', '')
+            if file_type in PROV_SKIP_TYPES:
+                continue
+
+            # W-PROV-04: missing id
+            if not fm.get('id'):
+                self._add('WARN', 'W-PROV-04', rel,
+                           'Missing id field -- add a stable citation ID '
+                           '(format: pack-slug/relative-path-no-ext)')
+
+            # W-PROV-01: missing verified_at
+            verified_at = fm.get('verified_at')
+            if not verified_at:
+                self._add('WARN', 'W-PROV-01', rel,
+                           'Missing verified_at -- provenance coverage incomplete')
+            elif refresh_cycle_days:
+                # W-PROV-03: stale content
+                try:
+                    va_date = date.fromisoformat(str(verified_at))
+                    age_days = (today - va_date).days
+                    if age_days > refresh_cycle_days:
+                        self._add('WARN', 'W-PROV-03', rel,
+                                   f'verified_at {verified_at} is {age_days}d old '
+                                   f'(refresh_cycle {rc} = {refresh_cycle_days}d)')
+                except (ValueError, TypeError):
+                    self._add('WARN', 'W-PROV-01', rel,
+                               f'verified_at cannot be parsed as a date: {verified_at!r}')
+
+            # W-PROV-02: content_hash mismatch
+            stored_hash = fm.get('content_hash', '')
+            if stored_hash and isinstance(stored_hash, str):
+                body = self.bodies.get(rel, '')
+                actual = 'sha256:' + hashlib.sha256(body.encode()).hexdigest()
+                if stored_hash != actual:
+                    self._add('WARN', 'W-PROV-02', rel,
+                               f'content_hash mismatch -- body changed since last hash '
+                               f'(stored: {stored_hash[:26]}... actual: {actual[:26]}...)')
+
     # ── Run all checks ───────────────────────────────────────────────────
     def validate(self):
         self.load_manifest()
@@ -461,6 +529,8 @@ class Validator:
         self.check_bidirectional_related()
         self.check_orphaned()
         self.check_file_size()
+        if self.check_provenance:
+            self.check_provenance_fields()
         return self.issues
 
     def report(self, as_json=False):
@@ -535,6 +605,9 @@ def main():
                         help='Show all issues (default: max 5 per category)')
     parser.add_argument('--json', action='store_true',
                         help='Output as JSON')
+    parser.add_argument('--provenance', action='store_true',
+                        help='Enable provenance checks (W-PROV-01 to W-PROV-04): '
+                             'missing id, missing verified_at, stale content, hash mismatch')
     args = parser.parse_args()
 
     if not os.path.isdir(args.pack):
@@ -563,13 +636,13 @@ def main():
             print("  WARNING: No sub-packs found with manifest.yaml")
             sys.exit(1)
         for sub in subs:
-            v = Validator(sub, verbose=args.verbose)
+            v = Validator(sub, verbose=args.verbose, check_provenance=args.provenance)
             v.validate()
             rc = v.report(as_json=args.json)
             if rc > exit_code:
                 exit_code = rc
     else:
-        v = Validator(pack_path, verbose=args.verbose)
+        v = Validator(pack_path, verbose=args.verbose, check_provenance=args.provenance)
         v.validate()
         exit_code = v.report(as_json=args.json)
 

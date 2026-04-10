@@ -12,7 +12,7 @@ slug: "your-pack-slug"           # kebab-case, no spaces
 type: "product"
 
 version: "1.0.0"
-schema_version: "2.8"
+schema_version: "3.0"
 description: "One paragraph describing what this pack covers and who it's for."
 entry_point: "overview.md"
 
@@ -20,6 +20,15 @@ entry_point: "overview.md"
 author: "Your Name"
 created: "YYYY-MM-DD"
 updated: "YYYY-MM-DD"
+
+# ── Freshness tracking ────────────────────────────────────────────────────────
+# Update after each review pass. coverage_pct = verified_file_count / total_file_count * 100
+freshness:
+  refresh_cycle: "P90D"          # How often content should be reviewed (ISO 8601)
+  last_full_review: "YYYY-MM-DD"
+  verified_file_count: 0
+  total_file_count: 0
+  coverage_pct: 0
 
 # ── Product-specific fields (remove if type != product) ───────────────────────
 product_version: "x.x"
@@ -31,7 +40,7 @@ documentation: "https://docs.example.com"
 # ek_ratio:
 #   value: 0.00
 #   measured: "YYYY-MM-DD"
-#   models: ["gpt-4.1", "claude-sonnet-4-6", "gemini-2.0-flash"]
+#   models: ["gpt-5", "claude-sonnet-4-6", "gemini-2.5-flash"]
 #   propositions_tested: 0
 
 # ── Context strategy ──────────────────────────────────────────────────────────
