@@ -40,6 +40,8 @@ OpenClaw auto-indexes all `.md` files in the specified paths. Packs authored to 
 
 **Recommended RAG settings:**
 
+Minimal working config:
+
 ```json
 {
   "memorySearch": {
@@ -57,9 +59,35 @@ OpenClaw auto-indexes all `.md` files in the specified paths. Packs authored to 
 }
 ```
 
+Full tuned config (validated on real product packs):
+
+```json
+{
+  "memorySearch": {
+    "extraPaths": ["path/to/pack"],
+    "chunking": { "tokens": 1000, "overlap": 0 },
+    "query": {
+      "maxResults": 10,
+      "minScore": 0.35,
+      "hybrid": {
+        "enabled": true,
+        "vectorWeight": 0.7,
+        "textWeight": 0.3,
+        "candidateMultiplier": 4,
+        "mmr": { "enabled": true, "lambda": 0.7 },
+        "temporalDecay": { "enabled": false }
+      }
+    }
+  }
+}
+```
+
 - **tokens: 1000** — comfortably above the pack's 800-token file ceiling; ensures no file is split
 - **overlap: 0** — pack files are self-contained retrieval units; overlap duplicates content
 - **maxResults: 10** — small, focused files benefit from more retrieval slots (adjust for pack size)
+- **minScore: 0.35** — filters low-confidence results; prevents noise from unrelated files in large packs
+- **vectorWeight: 0.7 / textWeight: 0.3** — semantic search dominates, keyword matching assists; good balance for structured prose with precise terminology
+- **candidateMultiplier: 4** — retrieves 4× the result count before MMR re-ranking, giving the ranker more to work with
 - **MMR enabled (λ=0.7)** — prevents near-duplicate proposition/summary/content files from crowding results
 - **Temporal decay off** — pack knowledge doesn't expire based on file modification time
 

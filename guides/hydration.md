@@ -731,15 +731,20 @@ These results come from 6 controlled experiments on a real product pack (EZT Des
 
 For Schema 2.5+ packs, point your RAG system at the pack root. Author files to the 400–800 token target so they remain intact during indexing.
 
-```bash
-# Configure OpenClaw to index the pack directly
-# In openclaw.json:
+```json
+// In openclaw.json:
 {
   "memorySearch": {
     "extraPaths": ["path/to/pack"],
     "chunking": { "tokens": 1000, "overlap": 0 },
     "query": {
+      "maxResults": 10,
+      "minScore": 0.35,
       "hybrid": {
+        "enabled": true,
+        "vectorWeight": 0.7,
+        "textWeight": 0.3,
+        "candidateMultiplier": 4,
         "mmr": { "enabled": true, "lambda": 0.7 },
         "temporalDecay": { "enabled": false }
       }
@@ -749,7 +754,10 @@ For Schema 2.5+ packs, point your RAG system at the pack root. Author files to t
 ```
 
 - **Overlap 0** — chunks are already semantically complete
-- **MMR enabled** — prevents near-duplicate proposition/summary/content chunks from crowding results
+- **minScore: 0.35** — filters low-confidence results; prevents noise from unrelated files in large packs
+- **vectorWeight: 0.7 / textWeight: 0.3** — semantic search dominates, keyword matching assists
+- **candidateMultiplier: 4** — retrieves 4× candidates before MMR re-ranking for better diversity
+- **MMR enabled (λ=0.7)** — prevents near-duplicate proposition/summary/content chunks from crowding results
 - **Temporal decay off** — pack knowledge doesn't expire by file modification date
 
 ### The Three-Layer System
