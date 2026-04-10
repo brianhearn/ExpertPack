@@ -38,7 +38,7 @@ Reduce latency and token consumption for pack-powered interactions.
 
 ### 3. Response Quality & Accuracy
 Reduce hallucinations and improve answer completeness.
-- [ ] **Grounding citations** — require agents to cite specific pack files in answers
+- [x] **Grounding citations** — Citation Response Contract (schema v3.0); provenance `id` + `verified_at` fields enable auditable citations
 - [ ] **Confidence tagging** — content-level confidence (expert-verified, crawled, inferred)
 - [ ] **Contradiction detection** — surface conflicting chunks at runtime instead of guessing
 - [x] **Hallucination measurement** — automated detection via LLM-as-judge against pack content
@@ -46,7 +46,7 @@ Reduce hallucinations and improve answer completeness.
 ### 4. Pack Creation & Training
 Make it easier to build and maintain packs.
 - [ ] **Pack scaffolding CLI** — `expertpack init --type product --name "Acme"`
-- [ ] **Validation tool** — `expertpack validate ./my-pack/` checks conformance
+- [x] **Validation tool** — `ep-validate.py` (19 checks) + `ep-doctor.py` (auto-fix) + `ep-fix-broken-wikilinks.py`. Ships in `tools/validator/`.
 - [ ] **Guided interview mode** — agent-driven structured knowledge capture
 - [ ] **Population playbooks** — interactive recipes per source type
 
@@ -58,6 +58,11 @@ Keep the framework current as LLMs advance.
 - [ ] **Entity cross-reference indexes** — use entities.json as canonical registry with aliases for term normalization (evaluate whether current RAG actually benefits)
 - [ ] **File size flexibility** — revisit 1-3KB for large-context models; maybe a "dense mode"
 - [x] **Chunking strategy review** — We built and validated a schema-aware chunker that respected structural elements like headers, lead summaries, proposition groups, and glossary tables. This produced +9.4% correctness and -52% tokens on EZT Designer eval (2026-03-13). The core insight led directly to Schema 2.5: files authored as self-contained 400–800 token retrieval units require no preprocessing — the schema itself became the chunking strategy.
+- [x] **Volatile data isolation** — Schema 2.7 (2026-04-01): `volatile/` subdirectory with TTL frontmatter fields (`refresh`, `source`, `fetched_at`, `expires_at`); excluded from EK ratio measurement.
+- [x] **Obsidian compatibility** — Schema 2.8 (2026-04-06): per-file YAML frontmatter standard, 25-type taxonomy, `.obsidian/` vault config, Dataview + Templater templates. Every pack is a valid Obsidian vault.
+- [x] **Provenance metadata** — Schema 3.0 (2026-04-10): per-file `id`, `content_hash`, `verified_at`, `verified_by`; manifest `freshness` block; Citation Response Contract; `--provenance` validator flag (W-PROV-01..04). All 7 packs backfilled (537 files total).
+- [x] **Graph export** — Schema 3.1 (2026-04-10): `_graph.yaml` adjacency file; `ep-graph-export.py` parses wikilinks + `related:` frontmatter + context hints into typed edges. GraphRAG-compatible.
+- [x] **Deploy-prep tooling** — `ep-strip-frontmatter.py` (2026-04-10): strips frontmatter before RAG deploy to prevent provenance metadata diluting embeddings. Source files unchanged.
 - [ ] **Agentic RAG patterns** — multi-step retrieval, query refinement
 - [ ] **Minimum capability declarations** — manifest field for required model capabilities
 - [ ] **Regular schema review cadence** — triggered by major model releases
@@ -100,9 +105,27 @@ Stay current with developments that could improve the framework.
 - Refactored `tools/eval-runner/run_eval.py` to be fully pack-agnostic (accepts --pack + --eval flags, loads pack files as context)
 - Created `packs/blender-3d/eval/benchmark.yaml` with 24 questions across concept/workflow/troubleshooting/refusal/gotcha (grounded in actual pack files read during creation)
 - Updated `tools/eval-runner/README.md` with new usage, deps (requests+pyyaml), metrics explanation
-- Updated ROADMAP.md status log
 - Design decision: kept simple (no heavy deps, direct OpenRouter calls, no live eval run per constraints)
-- Ready for validation runs (do not run live per task instructions)
+
+### 2026-04-06 — Obsidian compatibility + validator tooling
+- **Schema 2.8** — per-file YAML frontmatter standard; 25-type taxonomy; `.obsidian/` vault config; Dataview + Templater templates
+- **Schema 2.9** — `related:` frontmatter field; `.obsidian/graph.json` pre-configured with type color groups and `_index.md` exclusion filter
+- `ep-validate.py` — 16-check compliance validator; `ep-doctor.py` — auto-fix (links, frontmatter, prefixes); `ep-fix-broken-wikilinks.py` — safe wikilink cleanup
+- All community packs (blender-3d, home-assistant, solar-diy) Obsidian-ready with bundled `.obsidian/`
+- `template/` vault template — full scaffolding with 5 Templater templates and 7 live Dataview queries
+- `obsidian-to-expertpack` skill published to ClawHub (v1.0.1)
+
+### 2026-04-10 — Provenance metadata, graph export, eval baseline, deploy-prep
+- **Schema 3.0 — Provenance Metadata:** per-file `id`, `content_hash`, `verified_at`, `verified_by`; manifest `freshness` block; Citation Response Contract
+  - `ep-validate.py` extended to 19 checks; `--provenance` flag adds W-PROV-01..04
+  - All 7 packs backfilled: ezt-designer (290), brian-gpt (119), blender-3d (35), home-assistant/product (31), home-assistant/process (23), solar-diy/product (21), solar-diy/process (18) — 537 files total
+- **Schema 3.1 — Graph Export:** `_graph.yaml` adjacency file spec; `ep-graph-export.py`; wikilinks + `related:` + context hints → typed edges; GraphRAG-compatible
+  - ezt-designer: 288 nodes, 152 edges | brian-gpt: 119 nodes, 5 edges
+- **Tuned RAG config locked:** chunking 1000t / overlap 0 / hybrid BM25+vector / MMR λ=0.7 / maxResults 10 / minScore 0.35; documented in `guides/consumption.md` v2.2 and `guides/hydration.md`
+- **Deploy-prep:** `tools/deploy-prep/ep-strip-frontmatter.py` — strips frontmatter before RAG deploy; source files unchanged
+- **Eval discipline rules:** fixed 20-question benchmark set, canonical RAG config, one variable at a time (documented in guides)
+- **Eval Run 11 (EZT Designer):** 81.9% correctness, 3.8/5 completeness, 4.3% hallucination, 66.7% refusal — schema v3.1, tuned RAG, GPT-5.3 Chat (23 questions with frontmatter; Run 12 will be first controlled baseline)
+- **`expertpack` skill v2.0.5** on ClawHub — updated for schema v3.1 (provenance spec, graph export, 19-check validator, deploy-prep tools)
 
 ---
 
