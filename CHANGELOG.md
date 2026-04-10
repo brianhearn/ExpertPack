@@ -10,6 +10,54 @@ Schema versions use the format `core.X.Y` for core schema and `type.X.Y` for typ
 
 ---
 
+## [Core 3.1] — 2026-04-10 — Graph Export
+
+### Added
+- **Graph Export section** in `schemas/core.md` — `_graph.yaml` adjacency file spec
+  - Format: nodes (file path + title + type) and edges (source → target + kind)
+  - Edge kinds: `wikilink`, `related`, `context_hint`
+  - Generation rules: derive from wikilinks, `related:` frontmatter, and `<!-- context: -->` comments
+  - GraphRAG compatibility notes
+- `tools/graph-export/ep-graph-export.py` — generates `_graph.yaml` from pack files
+  - Parses wikilinks, `related:` frontmatter arrays, context hint comments
+  - Outputs adjacency file with node metadata and typed edges
+
+### Changed
+- `guides/consumption.md` — v2.2: added "Deploy Prep: Strip Frontmatter Before Indexing" section and "Eval Discipline" section; strip-frontmatter step added to quick-start checklist
+- Version bump: 3.0 → 3.1
+
+---
+
+## [Core 3.0] — 2026-04-10 — Provenance Metadata
+
+### Added
+- **Provenance Metadata section** in `schemas/core.md` — per-file frontmatter fields:
+  - `id` — stable pack-relative path identifier (e.g. `pack-name/dir/filename`)
+  - `content_hash` — SHA-256 of file body for change detection
+  - `verified_at` — ISO 8601 date of last human or agent verification
+  - `verified_by` — `human` or `agent`
+- **Freshness block** in `manifest.yaml` spec — `refresh_cycle`, `coverage_pct`, `last_sweep`
+- **Citation Response Contract** — retrieval responses should include `(file, id, hash, excerpt)` for auditable citations
+- `tools/validator/ep-validate.py` — 4 new provenance checks behind `--provenance` flag:
+  - `W-PROV-01` missing `id`, `W-PROV-02` missing `content_hash`, `W-PROV-03` missing `verified_at`, `W-PROV-04` missing `verified_by`
+- `tools/deploy-prep/ep-strip-frontmatter.py` — strips YAML frontmatter from `.md` files before deploying to RAG platforms
+  - Provenance metadata serves tooling, not retrieval; embedding it dilutes semantic similarity
+  - Source files unchanged; deploy artifacts are ephemeral
+  - Supports `--dry-run`, `--force`; prints per-file summary
+- `tools/deploy-prep/README.md` — usage and recommended deploy pattern
+
+### Changed
+- `guides/consumption.md` — added full tuned RAG config block (`vectorWeight`, `textWeight`, `candidateMultiplier`, `minScore`) alongside minimal config
+- `guides/hydration.md` — same full tuned RAG config block added
+- Version bump: 2.9 → 3.0
+
+### Design Notes
+- Provenance is opt-in via `--provenance` validator flag; no regressions on existing packs
+- `id` is the stable identifier for graph edges and citation references — stable across renames when updated consistently
+- Strip frontmatter at deploy time (not authoring time) to keep source files as the single source of truth
+
+---
+
 ## [Core 2.9] — 2026-04-06 — Graph View: Clean Topology
 
 ### Added
