@@ -154,20 +154,7 @@ retrieval_strategy: standard
 
 ### _access.json Files
 
-Access control metadata at the directory level. Defines who can see content in that directory. Used primarily in person-type packs where privacy tiers matter, but available to any pack type.
-
-```json
-{
-  "default_access": "public",
-  "overrides": {
-    "private-file.md": "self"
-  }
-}
-```
-
-Access tiers (from most to least open): `public`, `friends`, `family`, `self`.
-
-Type-specific schemas may define additional access semantics — see [person.md](person.md) for the full access tier model including posthumous rules.
+Access control metadata at the directory level (person packs). See [person.md](person.md) for the full access tier model, format, and posthumous rules.
 
 ---
 
@@ -406,20 +393,7 @@ The three-layer approach (split files + summaries + propositions) consistently o
 
 ### Chunking Strategy
 
-ExpertPack files are designed to be **retrieval-ready by default**. When authored to the file-size guidelines above (400–800 tokens, hard ceiling 1,500 tokens for standard content), each file passes through any RAG platform's chunker as a single unit — no external preprocessing needed. The schema IS the chunking strategy.
-
-This eliminates the need for a schema-aware chunking tool in the standard workflow. The intelligence that was previously in a post-processing tool now lives in the authoring rules: every file is a self-contained retrieval unit by design.
-
-#### Why This Works
-
-RAG chunkers split files when they exceed a token/character budget. If every file is under the budget, the chunker has nothing to split. The result:
-- Lead summaries stay with their titles
-- Proposition groups stay intact
-- Glossary tables stay together
-- `<!-- refresh -->` metadata stays with its content
-- No lost context, no orphaned fragments
-
-This was validated empirically: pre-sized files (~222 tokens average) pass through intact at any chunker budget from 400 to 2,500+ tokens. The schema-aware chunker we previously recommended showed a +9.4% correctness improvement — but its entire value came from preventing dumb splits of oversized files. When files are correctly sized at authoring time, there's nothing left for a chunking tool to fix.
+ExpertPack files are **retrieval-ready by default**. When authored to the 400–800 token target (1,500 token ceiling for standard content), each file passes through any RAG chunker intact — no external preprocessing needed. The schema IS the chunking strategy.
 
 #### Atomic vs. Sectioned Content
 
@@ -459,60 +433,10 @@ The `part X of Y` tells the agent this is one piece of a larger topic. The `sequ
 
 #### Pack–Consumer Coordination Contract
 
-The pack author and the consuming agent configuration form a two-party contract:
+- **Pack author commits:** Standard files ≤ 1,500 tokens. Atomic files (workflows, troubleshooting) may exceed the ceiling but must be retrieved whole.
+- **Consumer configures:** Set `chunking.tokens` ≥ 1,000 (the recommended minimum). The invariant: `chunking.tokens` > pack's hard ceiling for non-atomic files.
 
-- **Pack author commits:** "No standard content file exceeds 1,500 tokens (the hard ceiling). Atomic files (workflows, troubleshooting) may be larger but must be retrieved whole."
-- **Consumer configures:** Set `chunking.tokens` (or equivalent) to **≥ the pack's hard ceiling** — 1,000 is the recommended minimum for well-authored packs — so no file is ever split.
-
-The invariant is: **`chunking.tokens` > pack's hard ceiling for non-atomic files.** As long as this holds, every file passes through the chunker intact. If a pack deviates from the size target (e.g., during early hydration or with legacy content), the consumer config needs a proportional adjustment.
-
-This is a convention, not an enforced spec. Both sides need to uphold it. If you're consuming a pack you didn't author, verify the file sizes before assuming the default 1,000-token budget is sufficient.
-
-#### Platform Configuration
-
-The pack's file-size constraints interact with three RAG platform knobs. Configure them as a system:
-
-**1. Indexing granularity (`chunking.tokens` or equivalent)**
-Set this high enough that pack files pass through whole. For packs authored to spec (400–800 token files), a budget of 800–1,000 tokens ensures no file gets split. Higher budgets (1,500–2,500) are safe but provide no additional benefit for well-sized packs.
-
-**2. Retrieval count (`maxResults` or `top_k`)**
-Packs with many small, focused files benefit from retrieving more chunks. Where a pack with 10 large files might need `maxResults: 5`, a well-chunked pack with 100+ small files should use `maxResults: 8–15` to capture enough relevant context.
-
-**3. System prompt overhead**
-Every token in your system prompt (SOUL.md, workspace files, platform overhead) competes with retrieved pack content for context window space. In our experiments, static context consumed 72% of every query's input tokens — dwarfing the retrieved pack content. **Minimize your system prompt. Treat it like a Tier 1 file — every token must earn its place.**
-
-**OpenClaw example configuration:**
-
-```json
-{
-  "agents": {
-    "defaults": {
-      "memorySearch": {
-        "extraPaths": ["path/to/pack"],
-        "chunking": { "tokens": 1000, "overlap": 0 },
-        "query": {
-          "maxResults": 10,
-          "hybrid": {
-            "enabled": true,
-            "mmr": { "enabled": true, "lambda": 0.7 },
-            "temporalDecay": { "enabled": false }
-          }
-        }
-      }
-    }
-  }
-}
-```
-
-- **tokens: 1000** — comfortably above the 800-token file ceiling; no file gets split
-- **overlap: 0** — files are self-contained; overlap would duplicate content
-- **maxResults: 10** — more slots for small, precise files (adjust based on pack size)
-- **MMR enabled (λ=0.7)** — prevents near-duplicate proposition/summary/content files from crowding results
-- **Temporal decay off** — pack knowledge doesn't expire by file modification time
-
-#### Legacy Packs
-
-Packs authored before these file-size guidelines may contain oversized files. Refactor oversized files into focused sub-files following the guidelines above. This is a one-time investment that makes the pack permanently retrieval-ready.
+See [guides/consumption.md](../guides/consumption.md) for the recommended RAG configuration.
 
 ---
 
@@ -530,15 +454,7 @@ Based on eval experiments, avoid these common mistakes:
 
 ### Eval-Driven Improvement
 
-Retrieval quality is measurable — don't optimize blind.
-
-**Build an eval set.** After building a pack, write 10–20 test questions covering the pack's key topics. Include questions that should be answered, questions that should be refused (out-of-scope), and questions requiring synthesis across multiple files.
-
-**Track metrics.** For each eval question measure: correctness (did the agent answer accurately?), completeness (did it cover the full answer?), hallucination rate (did it invent facts not in the pack?), and refusal accuracy (did it correctly decline out-of-scope questions?).
-
-**Use results to guide optimization.** A low completeness score on broad questions suggests missing summaries. High hallucination rate on specific facts suggests missing or poorly structured propositions. Incorrect answers on specific topics point to content gaps or ambiguous source files.
-
-**Model capability matters.** The same pack can produce substantially different quality on different models. Run evals on your target model, not just the best available model. Optimizations that help a weaker model may be unnecessary for a stronger one — and vice versa.
+For eval methodology, metrics, and tooling, see [guides/consumption.md](../guides/consumption.md).
 
 ---
 
@@ -640,11 +556,11 @@ Example — **Bad:** Three paragraphs explaining what Zigbee is, its history, ho
 
 ---
 
-## Provenance Metadata
+## Provenance
 
-ExpertPack files support two complementary provenance layers: **content provenance** (where knowledge came from) and **freshness provenance** (when it was last verified and whether it has changed). Together they enable citation-quality retrieval — agents can return not just content but auditable references.
+Two complementary layers: **freshness provenance** (when content was last verified) and **source provenance** (where knowledge came from). Together they enable citation-quality retrieval.
 
-### File-Level Provenance Frontmatter
+### Freshness Provenance (File-Level Frontmatter)
 
 Every content file should include provenance fields alongside standard frontmatter:
 
@@ -722,11 +638,11 @@ Provenance warnings do not break the zero-error requirement — they are surface
 
 ---
 
-## Source Provenance
+### Source Provenance
 
-Every content file should track where its information came from. This is especially important for packs built from multiple sources (documentation, videos, interviews, support tickets) where an agent may later need to verify, update, or trace content back to its origin.
+Track where knowledge came from — especially for packs built from multiple sources (docs, videos, interviews, support tickets).
 
-### Frontmatter Convention
+#### Frontmatter Convention
 
 Add a `sources` block at the top of any content file derived from a specific external source:
 
@@ -742,7 +658,7 @@ sources:
 ---
 ```
 
-### Source Types
+#### Source Types
 
 | Type | Fields | Use Case |
 |------|--------|----------|
@@ -1022,104 +938,9 @@ For structured navigation beyond what `_index.md` provides, packs can include JS
 
 JSON indexes answer the question "where should I look?" Markdown files answer "what do I need to know?"
 
-### Entity Relation Graph (relations.yaml)
+### Entity Relation Graph
 
-Optional file at the pack root (or composite root) that declares typed, directional relationships between named entities across the pack. While markdown links connect *files*, a relation graph connects *concepts* — enabling agents to traverse knowledge by meaning rather than file structure.
-
-**When to use:** Packs with 20+ entities that reference each other across multiple files. Product packs with complex entity models (e.g., "Territory contains Accounts, Account has assigned Rep, Rep belongs to Team"). Composite packs where entities span constituent packs. Person packs with rich relationship networks.
-
-**When to skip:** Small packs where markdown links and `_index.md` provide sufficient navigation. If an agent can find everything via RAG search, a relation graph adds overhead without value.
-
-**Format:**
-
-```yaml
-# relations.yaml — Entity Relation Graph
-# Typed, directional relationships between named entities.
-
-entities:
-  - id: territory
-    type: concept
-    label: "Territory"
-    file: concepts/territories.md
-
-  - id: account
-    type: concept
-    label: "Account"
-    file: concepts/accounts.md
-
-  - id: rep
-    type: concept
-    label: "Sales Rep"
-    file: concepts/reps.md
-
-  - id: optimizer
-    type: workflow
-    label: "Route Optimizer"
-    file: workflows/route-optimization.md
-
-relations:
-  - from: territory
-    rel: contains
-    to: account
-    properties:
-      cardinality: one_to_many
-
-  - from: account
-    rel: assigned_to
-    to: rep
-    properties:
-      cardinality: many_to_one
-
-  - from: optimizer
-    rel: operates_on
-    to: territory
-```
-
-**Entity fields:**
-
-| Field | Required | Description |
-|-------|----------|-------------|
-| `id` | Yes | Unique kebab-case identifier within the pack |
-| `type` | Yes | Entity category: `concept`, `workflow`, `interface`, `person`, `tool`, `phase`, `decision` |
-| `label` | Yes | Human-readable display name |
-| `file` | Recommended | Relative path to the canonical content file for this entity |
-| `pack` | Composites only | Slug of the constituent pack this entity belongs to |
-
-**Relation fields:**
-
-| Field | Required | Description |
-|-------|----------|-------------|
-| `from` | Yes | Source entity id |
-| `rel` | Yes | Relationship type (verb phrase, snake_case) |
-| `to` | Yes | Target entity id |
-| `properties` | No | Optional metadata: `cardinality` (one_to_one, one_to_many, many_to_one, many_to_many), `bidirectional` (bool), `conditional` (string describing when the relation applies) |
-
-**Common relation types:**
-
-| Relation | Typical Usage |
-|----------|--------------|
-| `contains` | Parent-child hierarchy (Territory contains Accounts) |
-| `assigned_to` | Ownership or responsibility (Account assigned to Rep) |
-| `depends_on` | Prerequisite or dependency (Phase 3 depends on Phase 2) |
-| `operates_on` | Tool/workflow acts on an entity (Optimizer operates on Territory) |
-| `extends` | Specialization (AgentPack extends PersonPack) |
-| `configured_by` | Settings relationship (Feature configured by Config File) |
-| `resolves` | Troubleshooting (Workaround resolves Error) |
-| `part_of` | Composition (Chapter part of Process) |
-
-**Rules:**
-- `relations.yaml` is a navigation aid, not content — the same rule as JSON indexes. If it disagrees with a Markdown file, the Markdown file wins.
-- Entity ids must be unique within the file. In composites, prefix with pack slug to avoid collisions (e.g., `product-a.territory`), or use the `pack` field.
-- Keep the graph focused on high-value relationships an agent would actually traverse. A 200-relation graph is noise. Aim for the 15–30 relationships that matter most for navigation and reasoning.
-- The graph is optional and additive. Packs without `relations.yaml` work exactly as before — markdown links and `_index.md` handle navigation.
-
-**Agent consumption patterns:**
-- **"What depends on X?"** → traverse `depends_on` relations from entity X
-- **"What does the Optimizer touch?"** → follow `operates_on` from optimizer entity
-- **"Show me everything about Territories"** → find territory entity, follow all outbound relations, load referenced files
-- **Cross-pack reasoning** (composites) → "How does the founder's sales philosophy connect to the CRM product?" → traverse relations across pack boundaries
-
-**Context tier:** Tier 2 (Searchable). The relation graph is small and useful for navigation but doesn't need to load every session. Agents query it when they need to traverse entity relationships.
+As of Schema 3.1, the recommended entity relation graph format is `_graph.yaml`, generated automatically by `ep-graph-export.py` from wikilinks, `related:` frontmatter, and context hints. See the [Graph Export](#graph-export-_graphyaml) section. The legacy `relations.yaml` format is superseded.
 
 ---
 
@@ -1348,7 +1169,7 @@ These principles apply to every ExpertPack, regardless of type:
 | Section headers | `##` headers at natural topic breaks for RAG chunking |
 | Naming | kebab-case for files, directories, and slugs |
 | Cross-references | Relative markdown links between related files |
-| Entity relations | Optional `relations.yaml` for typed entity graphs; navigation aid, not content |
+| Entity relations | `_graph.yaml` generated by `ep-graph-export.py` (Schema 3.1); see [Graph Export](#graph-export-_graphyaml) |
 | Directory indexes | `_index.md` in every content directory |
 | Context strategy | Three tiers: always → searchable → on-demand, declared in manifest |
 | Retrieval optimization | Summaries (broad), propositions (precise), file splitting, lead summaries (front-loaded answers), and glossary (vocabulary bridging) — use together; see [Retrieval Optimization](#retrieval-optimization) |

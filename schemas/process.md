@@ -465,5 +465,5 @@ Prioritize practitioner interviews for decisions and gotchas. Use authoritative 
 
 ---
 
-*Schema version: 1.4*
-*Last updated: 2026-03-06*
+*Schema version: 3.1*
+*Last updated: 2026-04-10*

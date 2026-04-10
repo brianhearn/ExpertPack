@@ -701,62 +701,7 @@ Wins, case studies, and reference customers. Concrete evidence that the product 
 
 ## Reference Tables: Interfaces
 
-Standardized vocabularies for interface documentation. Use these in the `Region`, `Type`, and `Location` fields of interface element tables. Consistent terminology across all interface files enables reliable agent navigation and cross-referencing.
-
-### Region Taxonomy
-
-Standardized region names for spatial attribution across all interface documents:
-
-| Region ID | Name | Typical Location |
-|-----------|------|-----------------|
-| `header` | Header Bar | Top of screen, full width |
-| `toolbar` | Toolbar | Below header, or within a panel |
-| `panel-left` | Left Panel | Left side, collapsible |
-| `panel-right` | Right Panel | Right side, collapsible |
-| `panel-bottom` | Bottom Panel | Bottom of screen, collapsible |
-| `canvas` | Canvas / Main Area | Center, behind panels |
-| `overlay` | Overlay / Dialog | Centered modal or popup |
-| `statusbar` | Status Bar | Bottom of screen, full width |
-| `callout` | Callout / Tooltip | Floating, anchored to element |
-| `context-menu` | Context Menu | Floating, anchored to click |
-
-For sub-regions within panels, use hierarchical naming: `panel-left > shapes`, `panel-right > stats`.
-
-### Element Type Vocabulary
-
-Standardized types for the `Type` column in element tables:
-
-| Type | Description |
-|------|-------------|
-| `icon-button` | Clickable icon (no visible text label) |
-| `text-button` | Clickable button with text label |
-| `link` | Text hyperlink |
-| `icon-link` | Icon that behaves as a link |
-| `dropdown` | Select/combo box |
-| `text-field` | Text input |
-| `search-field` | Text input with search behavior |
-| `checkbox` | Toggle checkbox |
-| `radio` | Radio button |
-| `toggle` | Binary toggle (on/off) |
-| `slider` | Range slider |
-| `color-swatch` | Color picker/display |
-| `label` | Static text label |
-| `indicator` | Visual state indicator (highlight, underline, color change) |
-| `drag-handle` | Draggable reorder control |
-| `tab` | Tab switcher |
-| `list-item` | Row in a list (often with its own action icons) |
-| `table` | Data grid/table |
-| `panel-control` | Panel expand/collapse/resize control |
-
-### Spatial Descriptors
-
-Use consistent language for the `Location` column within a region:
-
-**Horizontal:** `left`, `center`, `right`, `1st`, `2nd`, `3rd` (for icon rows)
-**Vertical:** `top`, `middle`, `bottom`, `below {element}`, `above {element}`
-**Relative:** `next to {element}`, `inside {group}`, `per-row` (for list items)
-
-For ordered icon/button rows, use ordinal position: "1st icon", "2nd icon", etc. — combined with the element name for clarity.
+See [references/interface-vocabulary.md](references/interface-vocabulary.md) for standardized region names, element types, and spatial descriptors to use in interface element tables.
 
 ---
 
@@ -1060,54 +1005,14 @@ The guide covers each method's pipeline, strengths, limitations, and applicabili
 
 ## Creating a New Product Pack
 
-This section is a playbook for an AI agent creating and maintaining a product pack. Read the schema and use it as your filing map; read the [Hydration Guide](../guides/hydration.md) for how to execute each ingestion method.
+For the full agent-first creation playbook (initialization, population methods, entities.json, customer layer, history, decision records, retrieval layers), see [guides/hydration.md](../guides/hydration.md).
 
-Agent-first step-by-step
+Key principles:
+- Use the schema as the filing map. Decide where content belongs by content type (concepts, workflows, troubleshooting, etc.).
+- Build `entities.json` as the knowledge graph emerges — it makes targeted updates fast.
+- Record provenance for every file. Never overwrite expert-verified content without reconfirmation.
+- Prioritize troubleshooting/ and interfaces/ early for support readiness.
 
-1. **Read the schema and product blueprint** — Load this file and core.md. Treat the schema as the authoritative filing map for content.
 
-2. **Read the [Hydration Guide](../guides/hydration.md)** — Understand the available methods and the recommended combining order for product packs.
-
-3. **Initialize the pack** — Create `packs/{product-slug}/` with required files: `manifest.yaml` (type: product), `overview.md`. Create directories: `concepts/`, `workflows/`, `interfaces/`, `troubleshooting/`, `faq/`, `commercial/`, and a placeholder `entities.json`.
-
-4. **Populate using available methods** — Apply population methods in priority order based on available sources. For product packs, the recommended order is:
-   1. Documentation ingestion → bootstrap concepts, workflows, specifications
-   2. Technical artifact analysis → add depth, discover undocumented behavior
-   3. Visual ingestion → build interface docs from screenshots or product images
-   4. Expert walkthroughs → fill gaps, validate findings, capture "why"
-   5. Observation & testing → quality gate, find remaining gaps
-   6. Feedback mining → populate troubleshooting and customer reality (ongoing)
-
-   Not all methods will be available for every product. Use what you have access to.
-
-5. **Build entities.json as the knowledge graph emerges** — As concepts, workflows, or interfaces are added, create entity entries with id, name, type, description, related entities, and file references. Use entities.json for targeted updates when new information arrives.
-
-6. **Build the customer reality layer** — From support tickets, sales conversations, and customer interviews, populate `customers/` with segments, honest feedback (don't sanitize), and success stories with quantified outcomes.
-
-7. **Build product history** — Populate `facts/timeline.md` with event history and `facts/releases.md` with significant releases including what changed, why, impact, and unintended consequences.
-
-8. **Capture decision records** — Interview the domain expert about key past decisions. Create `decisions/{YYYY-MM-DD}-{slug}.md` for each with context, options, rationale, and consequences. Add retrospective outcomes when known.
-
-9. **Compile FAQ and commercial content** — Derive FAQ from common questions. Populate `commercial/` including `limitations.md` (be honest about weaknesses) and `landscape.md` (market positioning, competitors — date entries).
-
-10. **Generate retrieval layers** — After populating content sections, generate `summaries/` and `propositions/` per the [Retrieval Optimization](core.md#retrieval-optimization) guidelines in core.md. Add both directories to the manifest's `searchable` context tier. Also:
-    - **Add lead summaries** to the ~15 highest-traffic content files (blockquote at top with direct answer + anti-hallucination facts + gotchas). Focus on files that address common support questions.
-    - **Create `glossary.md`** at pack root mapping technical terms to common user language. Add to manifest's `always` context tier. Include a "Common User Language" column so RAG can match user vocabulary to pack terminology.
-    These layers significantly improve RAG retrieval precision and reduce hallucination.
-
-11. **Identify gaps and report** — Run gaps analysis comparing expected sections to inventory. Cross-reference `sources/` indexes against pack content. Produce a prioritized gap report for the domain expert.
-
-12. **Maintain cross-references** — Keep `entities.json` and `_index.md` files current whenever files are added or updated. Regenerate summaries and propositions when content changes significantly.
-
-13. **Commit, document provenance, and report** — Commit with descriptive messages. Maintain a changelog. Periodically generate status summaries.
-
-Notes and principles
-
-- The schema is your filing guide — decide where content belongs; create new directories when needed.
-- Record provenance for every file (see [Hydration Guide](../guides/hydration.md#source-provenance)) and never overwrite expert-verified content without reconfirmation.
-- Prioritize building troubleshooting/ and interfaces/ early for support readiness.
-
----
-
-*Schema version: 1.8*
-*Last updated: 2026-03-07*
+*Schema version: 3.1*
+*Last updated: 2026-04-10*

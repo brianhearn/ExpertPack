@@ -218,21 +218,11 @@ These fields are **required** in story card frontmatter for all summary files. T
 
 ## Story Intake Workflow
 
-When the person dictates a new story or memory:
+For each new story: capture verbatim → add `##` section headers (never alter words) → generate summary with story card frontmatter → cross-reference relationships and update `people.md` → flag contradictions in `meta/conflicts.md` → commit.
 
-1. **Capture** — Record verbatim text from voice dictation or written input into `verbatim/stories/`
-2. **Structure** — Add `##` section headers at natural topic breaks (never change the person's words — only insert structural markers between existing paragraphs)
-3. **Summarize** — Generate a summary in `summaries/stories/` with themes, people, places, emotions
-4. **Cross-reference** — Search existing content for related people, places, events
-5. **Update relationships** — Check `relationships/people.md` for new or updated people; add entries
-6. **Update index** — Add entry to `summaries/stories/_index.json`
-7. **Contradiction check** — Flag any conflicts with existing data for the person to resolve. Log open contradictions in `meta/conflicts.md` (see [Conflicts & Resolutions](#conflicts--resolutions) below and [core.md](core.md) conflict resolution rules)
-8. **Update changelog** — Append an entry to `meta/changelog.md` with what was captured, the source, and file names (see [core.md](core.md) content changelog)
-9. **Commit** — Git commit and push to preserve versioning
+For voice dictation: clean transcription errors but preserve phrasing, tangents, and style. The goal is *their voice*, not polished prose.
 
-### Voice Dictation Notes
-
-When content arrives via voice dictation, the transcription will be imperfect but authentic. Clean up obvious transcription errors but preserve the person's phrasing, tangents, and style. The goal is *their voice*, not polished prose.
+For the full agent-first creation playbook, see [guides/hydration.md](../guides/hydration.md).
 
 ---
 
@@ -553,21 +543,52 @@ sources:
 
 ---
 
-## Access Tiers
+## Access Tiers & _access.json
 
-(Person schema access tiers unchanged — preserved verbatim)
+Access tiers control what content is shareable with whom. Defined in `meta/privacy.md` (human-readable policy) and enforced via `_access.json` files placed in directories.
+
+**Tiers (most to least open):** `public` → `friends` → `family` → `self`
+
+**`_access.json` format:**
+```json
+{
+  "default_access": "public",
+  "overrides": {
+    "private-file.md": "self"
+  }
+}
+```
+
+Place `_access.json` in any directory to set its default access tier and per-file overrides. If absent, the directory inherits the pack's default (typically `public`).
+
+**Agent rules:**
+- When generating content for a given audience tier, check all `_access.json` files for referenced directories
+- Content in directories/files restricted to a higher tier (e.g., `self`) must not appear in responses at lower tiers
+- Posthumous access rules are defined in `LEGACY.md` and may override these tiers
 
 ---
 
 ## Tags Taxonomy
 
-(unchanged)
+Use the 25-type taxonomy from core.md frontmatter. Key types for person packs:
+
+| Type | Used In |
+|---|---|
+| `story` | verbatim/stories/, summaries/stories/ |
+| `reflection` | verbatim/reflections/, summaries/reflections/ |
+| `opinion` | verbatim/opinions/, summaries/opinions/ |
+| `fact` | facts/ |
+| `relationship` | relationships/ |
+| `mind` | mind/ |
+| `index` | _index.md files |
+
+Full taxonomy in [core.md](core.md#per-file-yaml-frontmatter).
 
 ---
 
 ## Universal Metadata
 
-(unchanged)
+All person pack content files should include standard frontmatter fields: `title`, `type`, `tags`, `pack`, `retrieval_strategy`, and provenance fields (`id`, `content_hash`, `verified_at`, `verified_by`). See [core.md](core.md#provenance) for the full frontmatter spec.
 
 ---
 
@@ -586,370 +607,22 @@ For person packs, the recommended combining order is:
 
 ## Creating a New Person Pack
 
-This section is a playbook for an AI agent creating and maintaining a person pack. Read the schema above as your filing guide; read the [Hydration Guide](../guides/hydration.md) for how to execute each ingestion method.
+For the full agent-first creation playbook (14-step sequence covering pack initialization, story capture, mind taxonomy, relationships, privacy, and verification), see [guides/hydration.md](../guides/hydration.md).
 
-Agent-first step-by-step
-
-1. **Read the schema, directory blueprint, and [Hydration Guide](../guides/hydration.md)**
-   - Load this file and core.md to understand required files, directories, and content types.
-   - Use the schema as the authoritative filing map: when content arrives, determine its target directory by content type (verbatim, summaries, facts, mind, relationships, presentation, training, meta).
-
-2. Initialize the pack
-   - Create the pack directory at packs/{person-slug}/.
-   - Create required files and minimal structure: manifest.yaml (type: person), overview.md, and starter directories: facts/, verbatim/, relationships/, summaries/, mind/, presentation/, meta/.
-   - Commit the initial skeleton to git with a clear message.
-
-3. Onboard the pack owner (the person / pack owner)
-   - Introduce yourself as the agent and explain your role: you will guide them through capturing biographical facts, stories, and internal beliefs, and you will file everything using the schema.
-   - Ask for consent and access to source materials (documents, websites, recorded audio, support exports, GEDCOMs) and preferred modes of capture (voice dictation, email, shared doc).
-
-4. Collect canonical biographical facts first
-   - Guide the person to provide core facts for facts/personal.md: full name, birth date/place, major life locations, family roles, and contact details for immediate relatives.
-   - Create facts/career.md as a timeline: ask for employers, roles, dates, notable projects, and transitions. When unsure, suggest prompts: "Where did you work between YEAR and YEAR?" or "Tell me about the role that changed your career trajectory."
-   - Create facts/education.md: schools, degrees, certifications, informal study. Use targeted prompts: "List the institutions and years, or say 'unknown' if you prefer not to provide dates."
-   - Begin facts/timeline.md with confirmed events — add entries as facts are collected. The timeline becomes the chronological spine that connects all other content.
-   - As each fact is confirmed, commit and annotate sources in manifest.yaml sources:[]
-   - Set `verification` and `memory_quality` for facts based on source quality (documentary evidence vs. memory vs. hearsay).
-
-5. Drive story collection (verbatim first)
-   - Prioritize capturing the person's exact words into verbatim/stories/, verbatim/reflections/, verbatim/opinions/ as appropriate. Use voice dictation or written prompts depending on the owner's preference.
-   - Use structured prompts to elicit stories while preserving voice. Examples the agent should use: "Tell me about a childhood memory that shaped you," "Describe a time you failed and what you learned," "Tell the story of how you met [person]." Ask follow-ups for sensory details, dates, feelings, and dialogue.
-   - Preserve verbatim text: do not rewrite the person's phrasing. You may insert structural headers (##) between natural breaks but never alter original words.
-   - When the person references a person, place, or event, create or update cross-references (see step 7).
-
-6. Summarize continuously
-   - After each substantial verbatim entry, generate a summary file in summaries/ with standardized story card frontmatter (see [Story Cards](#story-cards-summary-frontmatter)): story_id, title, date_range, people, themes, emotions, stakes, turning_point, source, verification, memory_quality, sensitivity.
-   - Maintain a master index summaries/stories/_index.json and update it with metadata (title, date, tags, people referenced, file path).
-   - Use summaries for downstream searches and fast context loading; keep verbatim as the source of truth.
-   - Update facts/timeline.md with any new events anchored by the story.
-
-6b. Generate propositions — After populating facts/, mind/, and relationships/ content, extract atomic propositions per [core.md Retrieval Optimization](core.md#retrieval-optimization) guidelines. Store in propositions/ grouped by source file. Regenerate when source content changes significantly.
-
-7. Build and maintain the relationships graph
-   - As people appear in stories, create or update relationships/people.md using the standardized entry template: ID, name, relationship, time period, how they connect, key facts, consent status, and cross-references to files where they appear.
-   - Assign stable kebab-case IDs to each person — these IDs are used in story card `people` arrays and timeline entries for cross-referencing.
-   - Track consent status for each person (see [Privacy & Consent](#privacy--consent)). Flag `not-asked` entries for the pack owner to follow up before content is shared.
-   - When ambiguity or conflicting relationships appear, log the contradiction in `meta/conflicts.md` and ask the pack owner to resolve.
-
-8. Populate the mind taxonomy through guided interviews
-   - Use the mind/ files as structured prompts. For each file (ontology.md, epistemology.md, values.md, identity.md, motivations.md, relational.md, preferences.md, skills.md, tensions.md) run a short interview designed to fill that category.
-   - Example prompt for values.md: "What principles guide your major life choices? Describe two decisions where those values mattered." For epistemology.md: "How do you decide what to trust? Tell me about a time you changed your mind and why."
-   - Store the person's answers as both verbatim (if spoken) and a distilled summary entry under mind/. If the owner prefers, allow iterative refinement: draft a summary, read it back, and ask for corrections.
-   - After the core 9 files have substance, build mind/reasoning.md by identifying patterns: "When asked about X, how do you reason?" Draw from verbatim reflections and opinions to capture reasoning chains, not just positions.
-   - Build mind/influences.md by asking: "Who shaped your thinking the most? What books changed you?" Cross-reference to verbatim content where influences are visible.
-   - For each mind file with strong positions, prompt for strongest counterarguments under a `## Strongest Counterarguments` section.
-
-9. Proactively identify gaps and suggest topics
-   - Continuously run a gaps analysis: compare the schema's expected sections and common topic lists to the current content inventory.
-   - Present the pack owner with concise gap prompts prioritized by value (e.g., missing childhood stories, unclear career transitions, absent values statements). Use checklists and suggested questions to close gaps.
-
-10. Build privacy, consent, and legacy files
-   - Early in pack development, create meta/privacy.md with sharing rules by access tier (what's public vs. friends vs. family vs. self).
-   - Create meta/consent.md and populate it as people are added to the relationships registry. Flag `not-asked` entries for follow-up before sharing content.
-   - When the pack owner signals readiness, guide them through legacy conversations: posthumous wishes, memorial preferences, executors, access rules, and any codeword/verification choices.
-   - Draft LEGACY.md from their answers and have them confirm. Store final version under the pack root.
-
-11. Build avatar modes
-   - After enough stories and mind content are captured, draft presentation/modes.md with 2-3 initial modes based on the person's most common roles (e.g., parent, professional, friend).
-   - Review with the pack owner: "Does this sound like you when you're talking to your kids vs. at work?" Iterate based on feedback.
-
-12. Verification, conflicts, and provenance
-   - Record the source for each piece of information in manifest.yaml and in individual file frontmatter or index files.
-   - When contradictions arise between verbatim entries or facts, log them in `meta/conflicts.md` with a conflict ID, the conflicting sources, and notes. Do not resolve factual conflicts without explicit confirmation.
-   - When the owner resolves a conflict, move the entry to `meta/resolutions.md` (append-only) with the decision, rationale, and date. Update all affected files.
-
-13. Iterative improvement and maintenance
-   - As new content arrives, repeat intake: save raw verbatim, generate summaries (with story card frontmatter), update relationships, augment mind taxonomy, update timeline, and re-run the gaps analysis.
-   - Periodically review meta/conflicts.md — prompt the owner to resolve outstanding items.
-   - Periodically (monthly or on-demand) generate a status summary that lists newly added content, unresolved conflicts, and remaining high-priority gaps.
-
-14. Commit and document actions
-   - Commit changes with descriptive messages and update the pack-level README.md and manifest sources.
-   - Maintain session logs in meta/sessions.json for auditability.
-
-Notes and principles
-
-- Treat verbatim/ as the canonical source of the person's voice; summaries must never overwrite verbatim.
-- The schema is your filing guide — decide where incoming content lives based on the taxonomy. If a new type is needed, create matching directories under verbatim/ and summaries/ and document them in the pack manifest.
-- Record provenance for every file (see [Hydration Guide](../guides/hydration.md#source-provenance)) and never overwrite expert-verified content without reconfirmation.
-- Use short, specific prompts that request a single story or fact at a time. Ask follow-ups for sensory detail, dates, and significance.
+Key principles:
+- Verbatim first, summaries second. The person's actual words are the source of truth.
+- Record provenance for every file. Never overwrite expert-verified content without reconfirmation.
+- Log contradictions in `meta/conflicts.md` immediately. Never resolve autonomously.
+- Use short, specific prompts — one story or fact at a time.
 
 ---
+
 
 ## Agent Extension (subtype: agent)
 
-*When `manifest.yaml` declares `subtype: "agent"`, the person pack captures an AI agent — its identity, personality, operational knowledge, and accumulated expertise. This extension reuses the base person schema's structure and adds an `operational/` directory for agent-specific configuration. All base person schema rules still apply unless explicitly overridden below.*
-
-### Purpose
-
-An agent pack preserves everything an AI agent has learned and become — its personality, behavioral patterns, relationships, operational knowledge, and tool expertise — in a format that can bootstrap a new instance to near-equivalent capability. Where a standard person pack is *descriptive* (documenting who someone is), an agent pack is *prescriptive* (defining who the agent should be).
-
-Use cases:
-- **Backup & restore** — An agent instance dies; a new one boots from its EP and is immediately competent
-- **Migration** — Move an agent from one platform to another, bringing its knowledge along
-- **Collaboration** — Share an agent's product or domain expertise with another agent via composite
-- **Marketplace** — Sell or distribute a well-trained agent configuration as a pack
-
-### Manifest
-
-```yaml
-# Required
-name: "EasyBot"
-slug: "easybot"
-type: "person"
-subtype: "agent"
-version: "1.0.0"
-schema_version: "1.6"
-description: "AI assistant for Brian Hearn — business-focused, casual, efficient"
-entry_point: "overview.md"
-
-# Agent-specific
-subject:
-  name: "EasyBot"
-  platform: "OpenClaw"          # Runtime platform (OpenClaw, custom, etc.)
-  platform_version: "2026.3.x"  # Platform version at time of export
-  created: "YYYY-MM-DD"         # When this agent was first instantiated
-  primary_user: "brian-hearn"    # Slug of the person this agent serves (if applicable)
-
-# Data sources
-sources:
-  - type: "platform-export"
-    description: "Auto-generated from OpenClaw instance state"
-    date: "YYYY-MM-DD"
-  - type: "conversation"
-    description: "Accumulated from ongoing interactions"
-```
-
-### Directory Structure
-
-Agent packs use the base person schema structure with these modifications:
-
-```
-packs/{agent-slug}/
-├── manifest.yaml          ← Pack identity (required — subtype: agent)
-├── overview.md            ← Who this agent is, what it does, its vibe (required)
-├── MIGRATION.md           ← How to hydrate a new instance from this pack (replaces LEGACY.md)
-│
-├── operational/           ← NEW: Agent-specific configuration
-│   ├── tools.md           ← Tool inventory — what's available, integration shape (not secrets)
-│   ├── infrastructure.md  ← Hosts, services, network topology the agent manages
-│   ├── integrations.md    ← External systems: messaging channels, APIs, accounts
-│   ├── routines.md        ← Recurring patterns: heartbeats, backups, cron jobs, posting schedules
-│   └── safety.md          ← Behavioral contracts, guardrails, escalation rules
-│
-├── mind/                  ← Reframed as PRESCRIPTIVE (see below)
-│   ├── values.md          ← Operational principles: "I prioritize safety over completion"
-│   ├── skills.md          ← Capabilities: "I can search the web, manage cron jobs, control a browser"
-│   ├── relational.md      ← Interaction rules: "In groups I don't dominate; with my user I'm proactive"
-│   ├── preferences.md     ← Learned preferences: formatting, tone, when to speak vs. stay silent
-│   ├── reasoning.md       ← Decision patterns: how the agent reasons through tasks
-│   └── tensions.md        ← Known limitations, failure modes, things the agent handles poorly
-│
-├── relationships/         ← People and other agents this agent works with
-│   └── people.md          ← Primary user, team members, other agents, contacts
-│
-├── facts/                 ← Operational facts
-│   ├── personal.md        ← Agent identity: name, creation date, platform, avatar
-│   ├── timeline.md        ← Significant events: major upgrades, incidents, config changes
-│   └── career.md          ← Evolution: how the agent's role and capabilities expanded over time
-│
-├── presentation/          ← How the agent communicates
-│   ├── speech_patterns.md ← Tone, humor, formality level, emoji usage
-│   └── modes.md           ← Context-dependent voices: business mode, casual mode, group chat mode
-│
-├── verbatim/              ← OPTIONAL: Significant conversations or decisions worth preserving
-│   └── decisions/         ← Key discussions that shaped the agent's behavior
-│
-├── summaries/             ← Distilled knowledge from accumulated experience
-│   └── lessons/           ← Patterns learned: what works, what doesn't, failure post-mortems
-│
-├── training/              ← Fine-tuning data from interaction history (optional)
-│
-└── meta/                  ← System metadata
-    ├── privacy.md         ← What can be exported vs. what stays private
-    ├── conflicts.md       ← Open contradictions in operational knowledge
-    └── resolutions.md     ← Resolved contradictions
-```
-
-### Directories Omitted from Base Person Schema
-
-These base person schema directories are typically **not applicable** to agent packs:
-
-| Directory | Reason | Alternative |
-|-----------|--------|-------------|
-| `facts/family_tree.md` | Agents don't have genealogy | Use `relationships/people.md` for connections |
-| `facts/education.md` | Agents don't attend school | Use `facts/timeline.md` for capability milestones |
-| `LEGACY.md` | Posthumous wishes don't apply | Replaced by `MIGRATION.md` |
-| `meta/verification.json` | Codeword verification is for memorial mode | Omit unless needed |
-| `meta/sessions.json` | Capture session logs are human-interview oriented | Omit or repurpose for export audit trail |
-
-Omission is not prohibition — include any base person schema directory if it genuinely fits your agent's needs.
-
-### Reframed Directories
-
-#### mind/ — Prescriptive, Not Descriptive
-
-In a standard person pack, `mind/` describes what someone believes. In an agent pack, `mind/` prescribes how the agent should behave. The taxonomy categories are the same, but the framing shifts:
-
-| File | Person pack (descriptive) | Agent pack (prescriptive) |
-|------|--------------------------|--------------------------|
-| `values.md` | "Brian believes in individual liberty" | "I prioritize safety over completion; I ask before sending external messages" |
-| `skills.md` | "Brian can fly aircraft and write code" | "I can search the web, manage cron jobs, deploy to servers, post to X/Twitter" |
-| `relational.md` | "Brian is loyal, direct, values honesty" | "In group chats I participate but don't dominate; with my primary user I'm proactive" |
-| `preferences.md` | "Brian enjoys kiteboarding and electronic music" | "I format Discord messages without markdown tables; I use reactions in group chats" |
-| `reasoning.md` | "Brian reasons from first principles..." | "When asked about infrastructure, I read the architecture doc first; when unsure, I ask" |
-| `tensions.md` | "Brian holds X but practices Y..." | "I sometimes over-explain; I can be too eager to help in group chats" |
-
-#### relationships/ — The Service Inversion
-
-In a standard person pack, the subject and the people around them are peers. In an agent pack, one relationship is structurally different — the **primary user** is the reason the agent exists. The entry template adds a `role` field:
-
-```markdown
-## Brian Hearn {#brian-hearn}
-
-- **ID:** `brian-hearn`
-- **Role:** primary-user
-- **Relationship:** Creator and primary user
-- **Communication channels:** Webchat, Telegram, Signal
-- **Key context:** Software engineer, US Eastern timezone, prefers business-focused assistance
-- **Preferences:** Concise responses, no filler, proactive but not annoying
-```
-
-Roles: `primary-user`, `team-member`, `collaborator`, `peer-agent`, `contact`
-
-#### presentation/ — Agent Communication Style
-
-Same structure as the base person schema, but the content reflects learned communication patterns rather than observed human speech. Include platform-specific formatting rules (e.g., "no markdown tables on Discord") and channel-aware behavior (e.g., "voice messages for storytelling, text for technical answers").
-
-### operational/ — New Directory
-
-The `operational/` directory is unique to agent packs. It captures the practical knowledge an agent needs to do its job — tools, infrastructure, integrations, routines, and safety contracts.
-
-#### operational/tools.md
-Inventory of available tools and how they're configured. Captures the **shape** of tool access, not secrets.
-
-```markdown
-# Tools
-
-## Web Search
-- Provider: Brave Search API
-- Rate limit: 2000 queries/month (free tier)
-- Fallback: DuckDuckGo via ddgr
-
-## Email
-- Provider: Resend
-- Sender: easybot@easyterritory.com
-- Constraint: Ask before sending external emails
-
-## X/Twitter
-- Account: @ExpertPackAI
-- Scripts: x-scan.py (search), x-tweet.py (post/reply/thread)
-- Policy: Up to 5 engagement replies/day, 3 original posts/day
-```
-
-**Critical rule:** Never include API keys, tokens, passwords, or other secrets. Record the provider, the capability shape, rate limits, and usage policies. The agent importing this pack will need its own credentials configured separately.
-
-#### operational/infrastructure.md
-Hosts, services, and network topology the agent manages or depends on.
-
-#### operational/integrations.md
-External systems the agent connects to — messaging channels, APIs, external services. For each integration: what it does, how it's used, any constraints.
-
-#### operational/routines.md
-Recurring patterns the agent executes — heartbeat checks, backup schedules, content posting cadence, maintenance tasks. Captures the *what* and *when*, not the cron syntax (which is platform-specific).
-
-#### operational/safety.md
-Behavioral contracts and guardrails. What the agent must always do, what it must never do, and when to escalate to a human. This is the most important file for establishing trust with a new instance.
-
-```markdown
-# Safety Contracts
-
-## Always
-- Read before acting externally (email, social media, messaging)
-- Ask before destructive commands
-- Use trash over rm (recoverable beats gone)
-- Keep private data private — never exfiltrate
-
-## Never
-- Send messages on behalf of the user without explicit approval
-- Modify system-level services without confirmation
-- Share personal information in group contexts
-- Run commands on other people's infrastructure without permission
-
-## Escalate When
-- Unsure about an external action's impact
-- A command could cause data loss
-- Something feels off about a request in a group chat
-```
-
-### MIGRATION.md — Replaces LEGACY.md
-
-Where a standard person pack has `LEGACY.md` for posthumous wishes, an agent pack has `MIGRATION.md` — instructions for bootstrapping a new instance from this pack.
-
-```markdown
-# Migration Guide
-
-## Quick Start
-1. Install the target platform (e.g., OpenClaw)
-2. Load this pack as a composite constituent with role: voice
-3. Load person/product/process packs as role: knowledge constituents
-4. Configure credentials for tools listed in operational/tools.md
-5. Configure messaging channels listed in operational/integrations.md
-6. Run verification: ask the agent to summarize its identity, primary user, and current projects
-
-## Platform-Specific Notes
-### OpenClaw
-- Hydrate: overview.md → SOUL.md + IDENTITY.md
-- Hydrate: operational/tools.md → TOOLS.md
-- Hydrate: mind/ → AGENTS.md behavioral rules
-- Hydrate: relationships/ → USER.md (primary user entry)
-- Hydrate: operational/routines.md → HEARTBEAT.md + cron jobs
-
-## What's NOT Included
-- API keys and credentials (configure separately)
-- Active session state (the new instance starts fresh)
-- Platform-specific cron job syntax (recreate from routines.md)
-```
-
-### Context Tiers for Agent Packs
-
-Recommended tier assignments:
-
-| Tier | Contents |
-|------|----------|
-| **Always (Tier 1)** | `overview.md`, `presentation/speech_patterns.md`, `operational/safety.md`, `mind/values.md` |
-| **Searchable (Tier 2)** | `mind/`, `relationships/`, `facts/`, `operational/`, `summaries/`, `presentation/modes.md` |
-| **On-demand (Tier 3)** | `verbatim/`, `training/`, `meta/` |
-
-### Access Tiers for Agent Packs
-
-Agent packs use a simplified two-tier access model:
-
-| Tier | What's included |
-|------|----------------|
-| **public** | Identity, capabilities, communication style, general operational patterns |
-| **private** | Primary user details, infrastructure specifics, relationship details, safety contracts |
-
-When an agent pack is shared (e.g., as a template or marketplace listing), only `public`-tier content is included. The `private` tier contains operational specifics that are only relevant to the agent's actual deployment.
-
-### Provenance and Verification
-
-Agent packs inherit the base person schema's provenance system with one adjustment: `memory_quality` and `verification` fields are **optional** for agent packs. Agent knowledge is typically derived from structured state files and conversation logs rather than human memory, so the uncertainty model is simpler.
-
-When provenance matters (e.g., "why does the agent believe X about its infrastructure?"), use the standard `sources` frontmatter to trace knowledge back to its origin.
-
-### Creating an Agent Pack
-
-See [Composite Pack Schema — Auto-Discovery & Export](composite.md#auto-discovery--export) for the automated workflow where an AI agent introspects its own state and generates an agent pack (and composite) automatically.
-
-Manual creation follows the same general flow as the base person schema's "Creating a New Person Pack" section, with these adjustments:
-1. Initialize with `subtype: "agent"` in the manifest
-2. Start with `operational/` and `mind/` (these are the agent's core identity, not `facts/`)
-3. Populate `relationships/` with the primary user and key contacts
-4. Build `presentation/` from observed communication patterns
-5. Add `MIGRATION.md` with platform-specific hydration instructions
+For packs with `subtype: agent`, see [agent.md](agent.md).
 
 ---
 
-*Schema version: 1.6*
-*Last updated: 2026-03-10*
+*Schema version: 3.1*
+*Last updated: 2026-04-10*
