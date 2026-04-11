@@ -141,15 +141,28 @@ The included [eval-ek.py](tools/eval-ek.py) tool measures EK ratio via blind pro
 
 The schema itself is now the chunking strategy. Author content files as self-contained retrieval units **(400–800 tokens, 1,500 token hard ceiling)**. Any RAG chunker will pass these files through intact without splitting, preserving structure, lead summaries, propositions, and metadata.
 
+### Provenance Metadata (Schema 3.0+)
+
+Every content file can carry provenance frontmatter — `id`, `content_hash`, `verified_at`, `verified_by` — enabling auditable citations, change detection, and freshness tracking. The pack manifest includes a `freshness` block for sweep coverage metrics. See the [Citation Response Contract](schemas/core.md) for how retrieval systems should surface provenance.
+
+### Graph Export (Schema 3.1+)
+
+Packs can generate a `_graph.yaml` adjacency file from wikilinks, `related:` frontmatter, and context hint comments. This enables GraphRAG traversal, structural analysis, and cross-pack linking. Generate with [`ep-graph-export.py`](tools/graph-export/ep-graph-export.py).
+
+### ExpertPack MCP Server
+
+The [ExpertPack MCP](https://github.com/brianhearn/ExpertPack_MCP) server exposes any ExpertPack as expertise-as-a-service over the Model Context Protocol. Schema-aware hybrid retrieval (BM25 + vector), frontmatter-aware indexing, provenance metadata extraction, and multi-pack routing — any MCP-compatible agent gets instant access to pack knowledge.
+
 ---
 
 ## Schemas
 
 | Schema | Version | What It Covers |
 |--------|---------|---------------|
-| [core.md](schemas/core.md) | 2.7 | Shared principles: MD-canonical, file structure, retrieval optimization, chunking strategies, EK ratio, context tiers, provenance |
-| [person.md](schemas/person.md) | 1.6 | Person packs: verbatim, mind taxonomy, relationships, presentation, agent subtype |
-| [product.md](schemas/product.md) | 1.8 | Product packs: concepts, workflows, interfaces, troubleshooting, commercial, customers |
+| [core.md](schemas/core.md) | 3.1 | Shared principles: MD-canonical, file structure, retrieval optimization, chunking strategies, EK ratio, context tiers, provenance metadata, graph export |
+| [person.md](schemas/person.md) | 1.6 | Person packs: verbatim, mind taxonomy, relationships, presentation |
+| [agent.md](schemas/agent.md) | 1.0 | Agent extension: persona, capabilities, tool access, behavioral rules |
+| [product.md](schemas/product.md) | 3.1 | Product packs: concepts, workflows, interfaces, troubleshooting, commercial, customers |
 | [process.md](schemas/process.md) | 1.4 | Process packs: phases, decisions, checklists, exceptions, scheduling, regulations |
 | [composite.md](schemas/composite.md) | 1.1 | Composites: multi-pack deployment, role assignments, auto-discovery & export |
 | [eval.md](schemas/eval.md) | 1.2 | Evaluation: EK ratio, correctness, hallucination, retrieval quality, structural health |
@@ -178,33 +191,40 @@ ExpertPack development is guided by [10 axioms](AXIOMS.md):
 ```
 ExpertPack/
 ├── AXIOMS.md                ← 10 guiding axioms for EP development
+├── CHANGELOG.md             ← Framework changelog
+├── ROADMAP.md               ← Development roadmap
 ├── README.md                ← This file
 ├── LICENSE                  ← Apache 2.0
 │
 ├── schemas/                 ← Pack blueprints (the framework)
-│   ├── core.md              ← Shared principles (v2.7)
+│   ├── core.md              ← Shared principles (v3.1)
 │   ├── person.md            ← Person-pack schema (v1.6)
-│   ├── product.md           ← Product-pack schema (v1.8)
+│   ├── agent.md             ← Agent extension schema (v1.0)
+│   ├── product.md           ← Product-pack schema (v3.1)
 │   ├── process.md           ← Process-pack schema (v1.4)
 │   ├── composite.md         ← Composite schema (v1.1)
-│   └── eval.md              ← Evaluation framework (v1.2)
+│   ├── eval.md              ← Evaluation framework (v1.2)
+│   └── references/          ← Extracted reference material
 │
 ├── guides/                  ← Practical guides
-│   ├── hydration.md         ← Complete hydration lifecycle: planning → population → retrieval optimization → validation (v1.0)
-│   └── consumption.md       ← How to deploy and consume packs with AI agents (v1.0)
+│   ├── hydration.md         ← Hydration lifecycle: planning → population → retrieval optimization → validation
+│   └── consumption.md       ← Deploying and consuming packs with AI agents (incl. deploy-prep and eval discipline)
 │
 ├── tools/                   ← Tooling
+│   ├── validator/           ← ep-validate.py — structural + provenance validation (19 checks)
+│   ├── graph-export/        ← ep-graph-export.py — generate _graph.yaml adjacency files
+│   ├── deploy-prep/         ← ep-strip-frontmatter.py — strip provenance metadata before RAG deploy
 │   └── eval-ek.py           ← EK ratio measurement via blind probing
 │
-├── skills/                  ← Agent skills
+├── skills/                  ← OpenClaw agent skills (also on ClawHub)
 │   └── expertpack-export/   ← Auto-discover & export agent → EP
 │
-├── packs/                   ← Pack instances
+├── packs/                   ← Community pack instances
 │   ├── home-assistant/      ← Home automation (composite, EK 54%)
 │   ├── blender-3d/          ← 3D software (product, EK 42%)
-│   ├── solar-diy/           ← Solar & battery DIY (composite, EK 52%)
-│   └── ezt-designer/        ← Territory management (product, private)
+│   └── solar-diy/           ← Solar & battery DIY (composite, EK 52%)
 │
+├── template/                ← Obsidian vault template for new packs
 └── site/                    ← expertpack.ai website source
 ```
 

@@ -10,6 +10,23 @@ Schema versions use the format `core.X.Y` for core schema and `type.X.Y` for typ
 
 ---
 
+## [Core 3.1.1] — 2026-04-10 — Schema REFINE/OPTIMIZE Pass
+
+### Changed
+- `schemas/core.md` — Retired `relations.yaml` section (superseded by `_graph.yaml`); trimmed Chunking Strategy ~60%; consolidated duplicate Provenance sections under single `## Provenance` header; removed inline OpenClaw config JSON (replaced with pointer to guides); collapsed `_access.json` to pointer; replaced Eval-Driven Improvement section with pointer; updated Shared Principles Summary table
+- `schemas/person.md` — Collapsed Story Intake Workflow to 3 lines + pointer; replaced 14-step playbook with key principles + pointer; added full `_access.json` docs + expanded Tags Taxonomy stubs
+- `schemas/product.md` — Extracted Interface Reference Tables to new `schemas/references/interface-vocabulary.md`; replaced 50-line "Creating a New Product Pack" playbook with compact pointer; version bumped to 3.1
+- `schemas/process.md` — Version/date update only (already cleanest schema)
+
+### Added
+- `schemas/agent.md` — New standalone Agent Extension schema (split from person.md)
+- `schemas/references/interface-vocabulary.md` — Extracted interface reference tables from product.md
+
+### Removed
+- ~253 lines of operational/guide content that had accumulated in schema files — playbooks, inline config, and duplicated sections moved to appropriate guides or replaced with pointers
+
+---
+
 ## [Core 3.1] — 2026-04-10 — Graph Export
 
 ### Added
