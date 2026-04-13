@@ -96,6 +96,7 @@ Open-source ExpertPacks built from real documentation, community forums, and sou
 | **Cursor** | Place pack in project. Cursor indexes workspace files for context. |
 | **Claude Code** | Place pack in project. Reference from `CLAUDE.md` or let agent discover it. |
 | **Custom / API** | Feed `.md` files into your vector store or context window. Small-file structure (1–3KB each) is optimized for chunked retrieval. |
+| **MCP Server** | [ExpertPack MCP](https://github.com/brianhearn/ep-mcp) serves any pack over the Model Context Protocol — connect Claude Desktop, Cursor, Windsurf, or any MCP host instantly. |
 
 ---
 
@@ -151,7 +152,7 @@ Packs can generate a `_graph.yaml` adjacency file from wikilinks, `related:` fro
 
 ### ExpertPack MCP Server
 
-The [ExpertPack MCP](https://github.com/brianhearn/ExpertPack_MCP) server exposes any ExpertPack as expertise-as-a-service over the Model Context Protocol. Schema-aware hybrid retrieval (BM25 + vector), frontmatter-aware indexing, provenance metadata extraction, and multi-pack routing — any MCP-compatible agent gets instant access to pack knowledge.
+[ExpertPack MCP](https://github.com/brianhearn/ep-mcp) exposes any ExpertPack as expertise-as-a-service over the Model Context Protocol. Schema-aware hybrid retrieval (BM25 + vector), graph-aware traversal, frontmatter-aware indexing, provenance metadata extraction, and multi-pack routing — any MCP-compatible agent gets instant access to pack knowledge. A live instance serving the `ezt-designer` pack runs at [expertpack.ai/mcp](https://expertpack.ai/mcp).
 
 ---
 
