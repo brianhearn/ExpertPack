@@ -594,6 +594,10 @@ id: "my-pack/concepts/feature-x"
 content_hash: "sha256:a3f1c..."   # SHA-256 of file body (below closing ---)
 verified_at: "2026-04-10"         # When content was last confirmed accurate
 verified_by: "agent"              # "agent" or "human"
+
+# Bi-temporal provenance (Schema 3.4 — optional, add when known)
+recorded_at: "2026-04-10"         # When this file was first added to the pack
+valid_from: "2024-01-15"          # When the described knowledge became true in the world
 ---
 ```
 
@@ -619,6 +623,25 @@ ISO date when the content was last confirmed accurate. This is NOT the same as t
 
 - `verified_by: "human"` — an SME or pack owner reviewed the content
 - `verified_by: "agent"` — an agent performed a structured review pass
+
+#### `recorded_at` — Ingestion Date *(Schema 3.4)*
+
+ISO date when this file was first added to the pack. Set once at creation, never updated. Together with `valid_from`, this creates a bi-temporal record: you can answer both "when was this captured?" and "when was this true in the world?"
+
+#### `valid_from` — World Truth Date *(Schema 3.4)*
+
+ISO date when the described knowledge became true in the real world. For product features, this is when the feature shipped. For policies or processes, when they were adopted. For historical facts, the date they occurred.
+
+`valid_from` may predate `recorded_at` — for example, a feature that shipped in January 2024 but wasn't added to the pack until April 2026 would have `valid_from: 2024-01-15` and `recorded_at: 2026-04-10`.
+
+This enables historical queries: an agent can filter pack content to show only what was true as of a given date. It also supports automated fact invalidation — when a superseding record is added with a newer `valid_from`, the old record can be marked `lifecycle_status: superseded`.
+
+**Both fields are optional.** `valid_from` is most valuable for:
+- Product feature files (set to ship date)
+- Policy/process files (set to adoption date)
+- Volatile/time-sensitive content
+
+For evergreen conceptual content with no clear world-truth date, omit `valid_from`.
 
 **Consumer behavior:** At session start, check `manifest.yaml freshness.coverage_pct`. If below 70%, the consuming agent should note that provenance coverage is incomplete and caveat time-sensitive answers accordingly.
 
@@ -648,6 +671,7 @@ Maintain a `freshness` block in `manifest.yaml` (see manifest spec above). Updat
 | `W-PROV-02` | `content_hash` present but doesn't match actual file hash | Warning |
 | `W-PROV-03` | `verified_at` older than `manifest.yaml freshness.refresh_cycle` | Warning |
 | `W-PROV-04` | Content file missing `id` field | Info |
+| `W-PROV-05` | `valid_from` is later than `verified_at` (world truth can't postdate verification) | Warning |
 
 Provenance warnings do not break the zero-error requirement — they are surfaced separately as quality indicators.
 
@@ -1647,5 +1671,6 @@ The `canonical_statement` is the one field that requires human or LLM authoring 
 
 ---
 
-*Schema version: 3.3*
+*Schema version: 3.4*
 *Last updated: 2026-04-15*
+*Changes in 3.4: bi-temporal provenance fields (`valid_from`, `recorded_at`) added to frontmatter spec; W-PROV-05 validator rule added.*

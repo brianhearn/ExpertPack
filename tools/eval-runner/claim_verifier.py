@@ -54,11 +54,11 @@ except ImportError:
     sys.exit(1)
 
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
-DEFAULT_VERIFIER_MODEL = "openrouter/openai/gpt-4o-mini"
+DEFAULT_VERIFIER_MODEL = "openai/gpt-4o-mini"
 
 # How many characters of pack context to load per verification call.
 # Smaller than the full eval context — we're checking claim support, not answering.
-MAX_SPAN_CHARS = 40_000
+MAX_SPAN_CHARS = 120_000
 
 
 # ---------------------------------------------------------------------------
@@ -185,7 +185,8 @@ def verify_question(
         citation_f1     float  (0.0 – 1.0)
         error           str | None
     """
-    response = question_result.get("response_preview", "")
+    # Support both run_eval.py format (response_preview) and legacy format (response)
+    response = question_result.get("response_preview") or question_result.get("response", "")
     if not response or response.startswith("[ERROR]") or response.startswith("[HTTP_ERROR]"):
         return {
             "claims": [], "supported": [], "unsupported": [],
