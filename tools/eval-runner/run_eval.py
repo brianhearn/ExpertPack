@@ -21,6 +21,16 @@ Usage:
         --pack packs/blender-3d \
         --eval packs/blender-3d/eval/benchmark.yaml \
         --dry-run
+
+Post-processing (claim verification):
+    After a run, add claim_coverage and citation_f1 scores:
+
+    python tools/eval-runner/claim_verifier.py \
+        --result results/blender-3d-2026-04-15-1200.yaml \
+        --pack packs/blender-3d
+
+    This appends claim_coverage and citation_f1 to each question detail
+    and to the aggregate scores block in the result YAML.
 """
 
 import argparse
