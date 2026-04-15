@@ -1,0 +1,145 @@
+# ExpertPack Content Type Registry
+# Version: 1.0.0 (2026-04-15)
+#
+# Canonical list of all declared content types across pack type schemas.
+# Used by micro-record exporters, validators, and search/graph tools.
+# All 25 types from Schema 2.8 (Obsidian compatibility) are listed here.
+#
+# field:  type string (used in frontmatter and micro-records)
+# label:  human-readable display name
+# desc:   one-line description for routing agents
+# packs:  which pack types commonly use this type (* = all)
+
+types:
+
+  # --- Conceptual content ---
+  - type: concept
+    label: Concept
+    desc: Core idea, term, or principle the domain builds on
+    packs: ["*"]
+
+  - type: reference
+    label: Reference
+    desc: Lookup data — specs, tables, parameters, field definitions
+    packs: ["*"]
+
+  - type: glossary
+    label: Glossary
+    desc: Term definitions and vocabulary
+    packs: ["*"]
+
+  # --- Procedural content ---
+  - type: workflow
+    label: Workflow
+    desc: Step-by-step process or procedure
+    packs: ["product", "process"]
+
+  - type: tutorial
+    label: Tutorial
+    desc: Guided learning walkthrough with examples
+    packs: ["product", "process"]
+
+  - type: guide
+    label: Guide
+    desc: Explanatory documentation — how things work, when to use them
+    packs: ["*"]
+
+  # --- Support content ---
+  - type: faq
+    label: FAQ
+    desc: Frequently asked question with a canonical answer
+    packs: ["product", "process"]
+
+  - type: troubleshooting
+    label: Troubleshooting
+    desc: Problem → cause → resolution pattern
+    packs: ["product", "process"]
+
+  - type: known_issue
+    label: Known Issue
+    desc: Documented bug, limitation, or unexpected behavior
+    packs: ["product"]
+
+  # --- Commercial / strategic content ---
+  - type: commercial
+    label: Commercial
+    desc: Pricing, positioning, competitive, deployment information
+    packs: ["product"]
+
+  - type: comparison
+    label: Comparison
+    desc: Side-by-side evaluation of options or alternatives
+    packs: ["product", "process"]
+
+  # --- Personal / identity content (person packs) ---
+  - type: story
+    label: Story
+    desc: First-person narrative with context and meaning
+    packs: ["person"]
+
+  - type: opinion
+    label: Opinion
+    desc: Stated view or position on a topic
+    packs: ["person"]
+
+  - type: reflection
+    label: Reflection
+    desc: Personal analysis or lesson-learned entry
+    packs: ["person"]
+
+  - type: conversation
+    label: Conversation
+    desc: Transcript or summary of a real exchange
+    packs: ["person"]
+
+  - type: creative
+    label: Creative
+    desc: Written creative work (essay, poem, letter)
+    packs: ["person"]
+
+  - type: letter
+    label: Letter
+    desc: Formal or informal communication authored for a specific reader
+    packs: ["person"]
+
+  - type: speech
+    label: Speech
+    desc: Prepared remarks for a formal audience
+    packs: ["person"]
+
+  # --- Facts / profile content ---
+  - type: fact
+    label: Fact
+    desc: Atomic factual statement about a person, entity, or event
+    packs: ["person"]
+
+  - type: profile
+    label: Profile
+    desc: Structured summary of a person, organization, or entity
+    packs: ["*"]
+
+  - type: relationship
+    label: Relationship
+    desc: Documented connection between two entities
+    packs: ["person"]
+
+  # --- Meta / structural content ---
+  - type: overview
+    label: Overview
+    desc: Pack entry point and orientation document
+    packs: ["*"]
+
+  - type: index
+    label: Index
+    desc: Navigation aid — lists files or topics by category
+    packs: ["*"]
+
+  - type: changelog
+    label: Changelog
+    desc: Append-only log of pack content changes
+    packs: ["*"]
+
+  - type: interface
+    label: Interface
+    desc: UI element, dialog, or screen description
+    packs: ["product"]

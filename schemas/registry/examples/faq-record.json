@@ -1,0 +1,23 @@
+{
+  "@context": "../micro-record.jsonld.json",
+  "id": "ezt-designer/faq/faq-geocoding-accuracy",
+  "source_span_uri": "ezt-designer/faq/faq-geocoding-accuracy.md",
+  "label": "Geocoding Accuracy FAQ",
+  "canonical_statement": "EasyTerritory Designer uses Azure Maps for geocoding; accuracy depends on address data quality, and street-level precision is not guaranteed for rural or non-US addresses.",
+  "type": "faq",
+  "pack": "ezt-designer",
+  "tags": ["geocoding", "azure-maps", "accuracy", "limitations"],
+  "provenance": {
+    "recorded_at": "2026-04-10",
+    "valid_from": "2023-01-01",
+    "verified_at": "2026-04-10",
+    "verified_by": "EasyBot",
+    "source": "Support ticket analysis + Azure Maps documentation"
+  },
+  "related": [
+    { "id": "ezt-designer/commercial/com-limitations-crm-geocoding", "kind": "wikilink" }
+  ],
+  "lifecycle": {
+    "status": "active"
+  }
+}

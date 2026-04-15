@@ -1,0 +1,48 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "ep": "https://expertpack.ai/schema/1.0/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "schema": "https://schema.org/",
+
+    "id":                   { "@id": "@id" },
+    "source_span_uri":      { "@id": "ep:sourceSpanUri" },
+    "label":                { "@id": "schema:name" },
+    "canonical_statement":  { "@id": "ep:canonicalStatement" },
+    "type":                 { "@id": "ep:contentType" },
+    "pack":                 { "@id": "ep:pack" },
+    "tags":                 { "@id": "ep:tag", "@container": "@set" },
+
+    "provenance": {
+      "@id": "ep:provenance",
+      "@type": "@id",
+      "@context": {
+        "recorded_at":   { "@id": "ep:recordedAt",  "@type": "xsd:date" },
+        "valid_from":    { "@id": "ep:validFrom",   "@type": "xsd:date" },
+        "verified_at":   { "@id": "ep:verifiedAt",  "@type": "xsd:date" },
+        "verified_by":   { "@id": "ep:verifiedBy" },
+        "source":        { "@id": "schema:isBasedOn" },
+        "content_hash":  { "@id": "ep:contentHash" }
+      }
+    },
+
+    "related": {
+      "@id": "ep:related",
+      "@container": "@set",
+      "@context": {
+        "id":   { "@id": "@id" },
+        "kind": { "@id": "ep:edgeKind" }
+      }
+    },
+
+    "lifecycle": {
+      "@id": "ep:lifecycle",
+      "@type": "@id",
+      "@context": {
+        "status":        { "@id": "ep:status" },
+        "superseded_by": { "@id": "ep:supersededBy", "@type": "@id" },
+        "valid_until":   { "@id": "ep:validUntil", "@type": "xsd:date" }
+      }
+    }
+  }
+}

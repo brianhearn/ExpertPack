@@ -1,0 +1,48 @@
+# ExpertPack Graph Edge Kind Registry
+# Version: 1.0.0 (2026-04-15)
+#
+# Canonical list of all declared graph edge kinds.
+# Used by ep-graph-export.py, micro-record exporters, and EP MCP graph traversal.
+
+edge_kinds:
+
+  - kind: wikilink
+    label: Wikilink
+    desc: >
+      Inline [[wikilink]] in source file body. Strongest signal — author
+      explicitly referenced the target from within content. Directed: source → target.
+    directed: true
+    source: "file body [[link]]"
+
+  - kind: related
+    label: Related
+    desc: >
+      Declared in frontmatter `related:` list. Author explicitly tagged
+      the relationship without embedding it in prose. Directed: source → target.
+    directed: true
+    source: "frontmatter related: field"
+
+  - kind: context
+    label: Context
+    desc: >
+      Declared in manifest.yaml `context.always` or inferred from directory
+      co-location. Weaker signal — structural proximity rather than semantic.
+    directed: false
+    source: "manifest.yaml context block or directory proximity"
+
+  - kind: supersedes
+    label: Supersedes
+    desc: >
+      New record explicitly replaces an older one. Set when lifecycle.status
+      is changed to "superseded". Directed: new → old.
+    directed: true
+    source: "lifecycle.superseded_by field"
+
+  - kind: entity_mention
+    label: Entity Mention
+    desc: >
+      A file mentions a canonical entity (from entities.json).
+      Emitted by ep-graph-export when entity IDs appear in file content.
+      Enables cross-pack entity linking. Directed: file → entity.
+    directed: true
+    source: "entities.json cross-reference scan"

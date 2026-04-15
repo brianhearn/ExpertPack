@@ -1,0 +1,25 @@
+{
+  "@context": "../micro-record.jsonld.json",
+  "id": "ezt-designer/workflows/wf-capacity-planning-overview",
+  "source_span_uri": "ezt-designer/workflows/wf-capacity-planning-overview.md",
+  "label": "Capacity Planning Overview",
+  "canonical_statement": "Capacity planning in EasyTerritory Designer involves setting rep workload targets, running the scheduling algorithm, and reviewing the output distribution before publishing territories to end users.",
+  "type": "workflow",
+  "pack": "ezt-designer",
+  "tags": ["capacity-planning", "scheduling", "workflow", "territories"],
+  "provenance": {
+    "recorded_at": "2026-04-10",
+    "valid_from": "2024-06-01",
+    "verified_at": "2026-04-10",
+    "verified_by": "EasyBot",
+    "source": "EasyTerritory Designer product documentation"
+  },
+  "related": [
+    { "id": "ezt-designer/concepts/con-capacity-planning", "kind": "wikilink" },
+    { "id": "ezt-designer/workflows/wf-scheduling-overview", "kind": "wikilink" },
+    { "id": "ezt-designer/workflows/wf-scheduling-workload-partitions", "kind": "wikilink" }
+  ],
+  "lifecycle": {
+    "status": "active"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "@context": "../micro-record.jsonld.json",
+  "id": "ezt-designer/concepts/con-scheduling-algorithm",
+  "source_span_uri": "ezt-designer/concepts/con-scheduling-algorithm.md",
+  "label": "Scheduling Algorithm",
+  "canonical_statement": "EasyTerritory Designer uses a spatial scheduling algorithm that assigns territory records to reps by optimizing for workload balance and geographic contiguity simultaneously, with three configurable modes: Standard, Aggressive, and Custom.",
+  "type": "concept",
+  "pack": "ezt-designer",
+  "tags": ["algorithm", "scheduling", "partitioning", "workload"],
+  "provenance": {
+    "recorded_at": "2026-04-10",
+    "valid_from": "2024-01-01",
+    "verified_at": "2026-04-10",
+    "verified_by": "EasyBot",
+    "source": "EasyTerritory Designer product documentation",
+    "content_hash": "sha256:a3f1c8e2d47b59f0c1234abcd5678ef901234567abcdef0123456789abcdef01"
+  },
+  "related": [
+    { "id": "ezt-designer/concepts/con-capacity-planning", "kind": "wikilink" },
+    { "id": "ezt-designer/workflows/wf-algorithm-selection", "kind": "related" },
+    { "id": "ezt-designer/concepts/con-workload-partitioning-algorithms", "kind": "wikilink" }
+  ],
+  "lifecycle": {
+    "status": "active"
+  }
+}
