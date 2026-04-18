@@ -61,20 +61,23 @@ packs/{person-slug}/
 └── meta/privacy.md
 ```
 
-## Product Pack Structure
+## Product Pack Structure (Schema v4.0)
 
 ```
 packs/{product-slug}/
-├── manifest.yaml          # type: product
+├── manifest.yaml          # type: product, schema_version: "4.0"
 ├── overview.md
-├── concepts/              # Core concepts, mental model
-├── workflows/             # Step-by-step procedures
+├── concepts/              # Atomic-conceptual files: each carries its definition,
+│                          # body, FAQs, related terms, key propositions in one file
+├── workflows/             # Step-by-step procedures (atomic retrieval)
 ├── interfaces/            # UI/API documentation
 ├── commercial/            # Pricing, deployment, security
 ├── troubleshooting/       # Errors, diagnostics, common mistakes
-├── faq/
-└── glossary.md
+├── faq/                   # Cross-cutting questions only; per-concept FAQs live in concepts/
+└── glossary.md            # (Optional) lean cross-cutting terms only
 ```
+
+*Schema v4.0 (RFC-001) deprecated the `summaries/`, `propositions/`, and `sources/` directories and per-domain `glossary-{domain}.md` files for product packs — concept files are now self-contained retrieval units.*
 
 ## Process Pack Structure
 

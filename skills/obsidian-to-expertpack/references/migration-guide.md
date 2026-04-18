@@ -13,11 +13,11 @@
 
 What it **cannot** do automatically (requires agent judgment):
 - EK triage (which content has real esoteric value vs. general knowledge)
-- Lead summaries (1-3 sentence blockquote at top of high-traffic files)
-- `propositions/` and `summaries/` retrieval layers
+- Retriever-anchored opening paragraphs on each concept file (v4.0: the opening paragraph IS the summary)
+- Co-locating FAQs, related terms, and key propositions into each concept file per the atomic-conceptual v4.0 model (RFC-001)
 - `sources/_coverage.md` research audit
-- Meaningful glossary entries
-- File size splitting (files >3KB should be split)
+- Meaningful glossary entries (and in v4.0 these typically embed as `## Related Terms` inside concepts rather than a root-level glossary)
+- File size splitting (files >1,500 tokens should be split at `##` boundaries)
 
 ## Pack Type Decision Tree
 
@@ -81,9 +81,8 @@ python3 /path/to/ExpertPack/tools/validator/ep-validate.py /path/to/output
 ```
 
 Then (agent-assisted):
-- Add lead summaries to the 5-10 most important files
-- Populate `glossary.md` with domain terms
-- Create `propositions/` with atomic factual statements from high-EK content
+- Restructure each concept into the v4.0 atomic-conceptual format: retriever-anchored opening paragraph, body sections, optional `## Frequently Asked` / `## Related Terms` / `## Key Propositions`
+- Populate an optional lean `glossary.md` only for cross-cutting terms (product name, industry vocabulary)
 - Run `expertpack-eval` to measure EK ratio
 
 ## RAG Configuration for OpenClaw

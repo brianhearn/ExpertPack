@@ -12,7 +12,7 @@ Condensed from the full schemas in the ExpertPack repo. Use this when creating o
 
 ## Core Files (all packs)
 - `manifest.yaml` - Required. Declares type, version, tiers, EK ratio.
-- `overview.md` - Required. Entry point with lead summary.
+- `overview.md` - Required. Entry point with retriever-anchored opening paragraph.
 
 ## Context Tier System
 Declared in manifest.yaml:
@@ -111,7 +111,9 @@ Content files declare how they should be chunked for RAG via directory defaults 
 **Directory defaults:**
 - `workflows/` → atomic (procedures are indivisible)
 - `troubleshooting/errors/`, `troubleshooting/diagnostics/`, `troubleshooting/common-mistakes/` → atomic
-- `interfaces/`, `concepts/`, `faq/`, `propositions/`, `summaries/`, `commercial/` → sectioned
+- `interfaces/`, `concepts/`, `faq/`, `commercial/` → sectioned
+- Person-pack `summaries/` → sectioned (person packs retain verbatim↔summary mirroring pending RFC-002)
+- `propositions/` / `summaries/` (product/process) → DEPRECATED in v4.0; content moved into concept files
 - All others → sectioned
 
 **Per-file override:**
