@@ -34,15 +34,13 @@ your-pack/
 │       └── new-volatile.md
 ├── manifest.yaml           ← Pack identity (fill this in first)
 ├── overview.md             ← Entry point for AI agents
-├── glossary.md             ← Key terms
+├── glossary.md             ← (Optional) lean cross-cutting terms only
 ├── Dashboard.md            ← Live Dataview dashboard
-├── concepts/               ← Core knowledge and mental models
-├── workflows/              ← Step-by-step procedures
+├── concepts/               ← Atomic-conceptual concept files (v4.0): one self-contained file per concept
+├── workflows/              ← Step-by-step procedures (atomic retrieval)
 ├── troubleshooting/        ← Errors, diagnostics, common mistakes
-├── faq/                    ← Frequently asked questions
-├── propositions/           ← Atomic facts for precise RAG
-├── summaries/              ← Broad-coverage summaries
-├── sources/                ← Research coverage audit trail
+├── faq/                    ← Cross-cutting questions only (per-concept FAQs live inside concept files)
+├── sources/                ← Research coverage audit trail (_coverage.md only)
 ├── volatile/               ← Time-bound content with TTL
 └── eval/                   ← Quality eval benchmark
 ```
@@ -122,7 +120,7 @@ Once your pack has content, measure its EK ratio:
 clawhub install expertpack-eval
 ```
 
-The eval skill blind-probes frontier models (no pack loaded) and measures what percentage of your pack's propositions they can't answer. This tells you:
+The eval skill blind-probes frontier models (no pack loaded) and measures what percentage of your pack's propositions they can't answer — pulled from concept-file `## Key Propositions` sections and body prose. This tells you:
 - How much of your content is genuinely valuable to an AI agent
 - Which sections have the highest knowledge density
 - Where to focus future hydration effort

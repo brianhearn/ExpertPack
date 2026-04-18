@@ -173,10 +173,9 @@ The +9.4% correctness improvement came from preventing splits on oversized files
 | `troubleshooting/diagnostics/` | atomic | Decision trees are indivisible |
 | `troubleshooting/common-mistakes/` | atomic | Symptom + fix is one unit |
 | `interfaces/` | sectioned | Large files; regions are independent |
-| `concepts/` | sectioned | Sections are self-contained |
-| `faq/` | sectioned | Each Q&A stands alone |
-| `propositions/` | sectioned | Groups of atomic facts |
-| `summaries/` | sectioned | Section summaries are independent |
+| `concepts/` | sectioned | Self-contained atomic-conceptual files (v4.0); each `##` section is a coherent sub-chunk |
+| `faq/` | sectioned | Cross-cutting questions only in v4.0; per-concept FAQs live inside concept files |
+| `summaries/` (person packs) | sectioned | Person-pack verbatim↔summary mirroring; pending RFC-002 |
 | `commercial/` | sectioned | Topics within commercial docs are independent |
 | All others | sectioned | Safe default |
 
@@ -250,10 +249,9 @@ Loaded at session start, every conversation. These establish the agent's domain 
 
 The bulk of knowledge — indexed for RAG retrieval. Loaded when the conversation touches a relevant topic:
 
-- Content files (concepts, workflows, troubleshooting)
-- Section summaries (`summaries/`)
-- Atomic propositions (`propositions/`)
+- Content files (atomic-conceptual concepts, workflows, troubleshooting)
 - Directory indexes (`_index.md`)
+- Person-pack summaries (`summaries/`) — person packs only, pending RFC-002
 
 Design Tier 2 files to be independently useful. An agent loading a single file should get a complete, actionable answer without needing to load five siblings for context.
 
@@ -391,7 +389,7 @@ Consumption quality is measurable. Don't optimize blind — run evals, identify 
 
 | Symptom | Likely Cause | Which Dimension | Fix |
 |---------|-------------|----------------|-----|
-| Wrong answer on a covered topic | Retrieval miss — right content exists but wasn't found | Structure | Add lead summary, improve `##` headers, run schema-aware chunker, check glossary for vocabulary gaps |
+| Wrong answer on a covered topic | Retrieval miss — right content exists but wasn't found | Structure | Tighten the concept's opening paragraph (it's your retrieval anchor), improve `##` headers, verify the user's phrasing is covered in the concept's `## Frequently Asked` section |
 | Confident wrong answer | Hallucination — model fabricating | Structure + Training | Add anti-hallucination facts to relevant files; add "only answer from provided knowledge" to SOUL.md |
 | Incomplete answer | Content gap or retrieval returning partial context | Structure | Check if content exists; if yes, add propositions for precise retrieval |
 | Answers questions it shouldn't | Weak refusal / scope creep | Training + Model | Strengthen SOUL.md scope rules with explicit examples; consider model upgrade |

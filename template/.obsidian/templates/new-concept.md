@@ -1,26 +1,37 @@
 ---
+id: your-pack-slug/concepts/<% tp.file.title.toLowerCase().replace(/ /g, '-') %>
 title: "<% tp.file.title %>"
 type: concept
-tags: [concept, <% tp.file.title.toLowerCase().replace(/ /g, '-') %>]
+tags: [<% tp.file.title.toLowerCase().replace(/ /g, '-') %>]
 pack: your-pack-slug
 retrieval_strategy: standard
-id: "your-pack-slug/concepts/<% tp.file.title.toLowerCase().replace(/ /g, '-') %>"
+concept_scope: single
+schema_version: "4.0"
 verified_at: "<% tp.date.now('YYYY-MM-DD') %>"
-verified_by: "agent"
+verified_by: agent
+related: []
 ---
-
-<!-- context: section=concepts, topic=<% tp.file.title.toLowerCase().replace(/ /g, '-') %>, related= -->
 
 # <% tp.file.title %>
 
-> **Lead summary:** 
+<!-- Opening paragraph: 1-3 sentences that define this concept in retriever-friendly terms. This IS the summary — no throat-clearing. -->
 
-## What It Is
+## How It Works
 
 ## Why It Matters
 
-## Key Details
+## Frequently Asked
 
-## Common Misconceptions
+### 
 
-## Related
+## Related Terms
+
+- 
+
+## Key Propositions
+
+<!-- Optional: axiomatic statements. Omit if body prose carries the truth. -->
+
+## Related Concepts
+
+- 

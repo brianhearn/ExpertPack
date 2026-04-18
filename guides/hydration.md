@@ -134,7 +134,7 @@ The percentages are rough guides, not targets. Some packs will reach 90% from do
 
 ### Pack-Type Notes
 - **Product:** Primary bootstrap method. Restructure from docs → concepts + workflows + specifications.
-- **Person:** Ingest published writing (books, articles, blog posts, social media) into `verbatim/` and `summaries/`. Preserve the person's voice — don't rewrite their words.
+- **Person:** Ingest published writing (books, articles, blog posts, social media) into `verbatim/` and `summaries/` (person packs retain the verbatim↔summary pattern in v4.0 pending RFC-002). Preserve the person's voice — don't rewrite their words.
 - **Process:** Ingest SOPs, runbooks, checklists, compliance docs into `phases/` and `checklists/`.
 
 ---
@@ -240,7 +240,7 @@ When building from multiple videos:
 
 ### Pack-Type Notes
 - **Product:** Tutorials and demos are gold for workflows and interfaces. Process by interaction moments.
-- **Person:** Talks, interviews, and appearances capture voice, reasoning, and personality. Extract into `verbatim/` preserving the person's words; generate `summaries/` for navigation.
+- **Person:** Talks, interviews, and appearances capture voice, reasoning, and personality. Extract into `verbatim/` preserving the person's words; generate `summaries/` for navigation. (Person packs retain verbatim↔summary mirroring in v4.0 pending RFC-002.)
 - **Process:** Recorded procedures and training sessions map directly to `phases/` and `checklists/`.
 
 ---
@@ -516,7 +516,7 @@ Not all content requires blind probing. Some content types are EK by definition:
 
 | Classification | Treatment | Purpose |
 |---------------|-----------|---------|
-| **EK** (model wrong/refuses) | Full treatment: dedicated file or section, lead summary, proposition extraction, careful structuring | This is the pack's core value |
+| **EK** (model wrong/refuses) | Full treatment: dedicated concept file with retriever-anchored opening paragraph, structured body, FAQs where relevant, and `## Key Propositions` if the concept has axiomatic statements | This is the pack's core value |
 | **Partial** (model vague/approximate) | Standard treatment: include in appropriate file, highlight the specific detail the model missed | The delta between "model knows roughly" and "pack knows precisely" is still valuable |
 | **GK scaffolding** (model correct, but needed for retrieval) | 1-3 sentences providing context for nearby EK content. No dedicated file. Glossary entry or inline context only. | Ensures EK content is retrievable — user queries match on GK terms, which lead to EK answers |
 | **GK unnecessary** (model correct, no EK depends on it) | Skip entirely. Do not file. | Adding this content would dilute EK ratio without improving retrieval |
@@ -595,104 +595,81 @@ The most common hydration mistake is spending equal effort on general and esoter
 
 ---
 
-## Building the Retrieval Layer
+## Building Atomic-Conceptual Content Files (Schema v4.0+)
 
-Hydrating content files is only half the job. A pack full of well-structured Markdown is still at the mercy of the retrieval system — and most RAG systems are dumb about structured content. This section covers the retrieval optimization layers that bridge the gap between how you *organized* the knowledge and how the consuming agent *finds* it.
+Hydrating content is half the job. The other half is structuring each concept file so the retriever can find it precisely. Schema v4.0 consolidates that into a single pattern: **one concept = one self-contained file** carrying definition, body, FAQs, related terms, and (when appropriate) key propositions.
 
-These layers are not optional nice-to-haves. In eval experiments on a real product pack, retrieval optimization produced the single largest quality improvement of any change — larger than model upgrades, content edits, or RAG configuration tuning.
+This supersedes the v3.x pattern of separate `summaries/`, `propositions/`, per-domain `glossary-*.md`, and standalone `faq/` directories. Those aggregator files were empirically shown to score broadly on every query and displace specific content — the opposite of what hierarchical retrieval theory predicted. See [`schemas/rfcs/RFC-001-atomic-conceptual-chunks.md`](../schemas/rfcs/RFC-001-atomic-conceptual-chunks.md) for the validation data and [`schemas/references/granularity-guide.md`](../schemas/references/granularity-guide.md) for embed-vs-promote authoring decisions.
 
-### Lead Summaries
-
-Add a 1–3 sentence blockquote at the very top of high-traffic content files that directly answers the most likely query.
+### The concept file structure
 
 ```markdown
+---
+id: ezt-designer/concepts/user-roles
+title: "User Roles"
+type: concept
+tags: [user-roles, permissions]
+pack: ezt-designer
+retrieval_strategy: standard
+concept_scope: single
+schema_version: "4.0"
+verified_at: "2026-04-18"
+related:
+  - managed-projects.md
+  - access-control.md
+---
+
 # User Roles
 
-> **Lead summary:** EZT Designer supports three user roles: Owner, Editor, and Viewer. Owners can manage team members and billing. Editors can create and modify territories but cannot change team settings. There is no "Admin" role — Owner is the highest permission level.
+EZT Designer supports three user roles: Owner, Editor, and Viewer. Owners can manage team members and billing; Editors can create and modify territories but cannot change team settings; Viewers can see territories and reports but cannot edit them. There is no "Admin" role — Owner is the highest permission level.
 
-## What It Is
-...
+## How It Works
+
+Detailed body content: role capabilities, permission inheritance, edge cases, examples.
+
+## Frequently Asked
+
+### Can I have multiple Owners on one account?
+Yes. Owner is not a singleton role; any number of team members can hold it. Billing access and admin actions are gated by the Owner role, not by a single "primary" user.
+
+### What happens to content owned by a removed Editor?
+Content stays with the account, not the user. When an Editor is removed, their territories and projects remain owned by the account and are editable by remaining Editors and Owners.
+
+## Related Terms
+
+- **Seat:** A paid slot in the team plan; assigned to one user at a time.
+- **Team plan:** The billing relationship; separate from the role model.
+
+## Key Propositions
+
+- There is no "Admin" role; Owner is the highest permission level.
+- Roles are assigned per-user per-account and do not inherit.
+- Billing access is exclusive to the Owner role.
+
+## Related Concepts
+- [[managed-projects]]
+- [[access-control]]
 ```
 
-**Why this matters:** RAG chunkers split files from the top. If the first 400 tokens are a table of contents or general introduction, the most relevant chunk ranks lower than it should. Lead summaries front-load the critical facts — including anti-hallucination "NOT" facts and common gotchas — into the highest-ranked chunk position.
+### What each element does for retrieval
 
-**Where to focus:** Start with the ~15 most-retrieved files (identified via eval results or support ticket analysis). Not every file needs one — prioritize files that answer high-frequency questions.
+- **Opening paragraph.** 1–3 sentences that name the concept, its category, and its distinguishing facts — including anti-hallucination "NOT" facts where relevant. No throat-clearing (no "This document describes…"). The EP MCP chunker splits files at `##` boundaries, so the opening paragraph is always in the first chunk — this is your top-ranked retrieval anchor.
+- **Body sections (`##`).** Each sub-topic a coherent sub-chunk. Write them so a reader (or a retriever) can understand the section without having to have read the others.
+- **`## Frequently Asked` (H3 per question).** The chunker splits on `###` too, so each Q/A becomes its own sub-chunk with a strong natural-language match surface. Phrase questions the way users actually ask them ("Why won't my ZIP codes move?" — not "How does locked territory behavior manifest?").
+- **`## Related Terms`.** For relative vocabulary that doesn't stand alone — terms whose definition requires the parent concept. Terms that *do* stand alone earn their own concept file instead (see granularity guide).
+- **`## Key Propositions`** (optional). For concepts with genuinely axiomatic statements: invariants, hard rules, formal properties. Omit when the concept's truth is carried by body prose. This replaces the deprecated `propositions/` directory as the path for declarative retrieval.
+- **`## Related Concepts`** with wikilinks. EP MCP's graph expansion pulls in wikilinked siblings during retrieval, so you don't need to duplicate content across files.
 
-### Summaries Directory (`summaries/`)
+### Authoring guidance
 
-Section-level summaries that enable hierarchical retrieval. One summary file per content section, each 1–3KB of dense bullet points with cross-references to detail files.
+- **Size target:** 500–900 tokens per concept file; hard ceiling 1,500. Files below ~200 tokens are almost always better embedded as related terms in a parent concept.
+- **Co-locate, don't spread.** If something is about this concept, it belongs in this file. Don't split the concept's definition, its FAQs, and its glossary entries across three files.
+- **Granularity.** Err toward embedding when in doubt. Promotion to a standalone concept file is cheap later; demotion creates broken wikilinks and orphan files. See the [granularity guide](../schemas/references/granularity-guide.md) for the full decision procedure with worked examples.
+- **Vocabulary bridging.** The old pattern of a separate glossary mapping user language to technical terms is replaced by inline anti-hallucination language in the opening paragraph ("There is NO Admin role…"), user-phrased FAQ questions, and Related Terms entries. If a pack has a cross-cutting optional `glossary.md` at the root for product-name-style terms, keep it lean — it's an author/agent navigation aid, not a retrieval layer.
 
-```markdown
-# Concepts — Summary
+### Workflow vs. concept
 
-Dense bullet-point summary of all concepts in this section.
-
-## Key Topics
-- **Territories** — Named geographic regions assigned to reps. See [territories.md](../concepts/territories.md)
-- **Routing Optimizer** — TSP solver using genetic algorithm, population 32. See [routing.md](../concepts/routing.md)
-- **Data Sources** — Supports Excel, Dynamics 365, Power Platform, SQL Azure. See [data-sources.md](../concepts/data-sources.md)
-...
-```
-
-**Why summaries matter:** Without summaries, broad questions like "what can this product do?" compete against hundreds of fine-grained files with mediocre relevance. A summary file matches with high relevance and provides a complete broad answer. Detail files then handle follow-ups. This is the RAPTOR pattern — recursive summarization into a retrieval tree.
-
-**Generation rules:**
-- Summaries are DERIVED from content files — read all files in a section before writing
-- Include cross-references to source files so agents can drill down
-- Regenerate when source content changes significantly
-
-### Propositions Directory (`propositions/`)
-
-Atomic factual statements extracted from content files. Each proposition captures exactly ONE fact and is self-contained — readable without any surrounding context.
-
-```markdown
-# Concepts — Propositions
-
-### territories.md
-- EZT Designer organizes geographic areas into hierarchical territories
-- Territories can be defined by postal codes, counties, states, or countries
-- A territory can only be assigned to one rep at a time
-- Territories support custom color coding based on any numeric metric
-
-### routing-optimizer.md
-- The route optimizer uses a TSP (Traveling Salesman Problem) genetic algorithm
-- Default population size is 32 candidates per generation
-- Maximum stops per route is 150
-...
-```
-
-**Why propositions matter:** Prose paragraphs contain multiple facts mixed with explanations and transitions. RAG retrieval against prose returns the whole paragraph, only part of which is relevant. Propositions isolate individual facts — each matches precisely or not at all.
-
-**Extraction rules:**
-- Each proposition = one fact (not compound statements)
-- Self-contained — no "it" or "this" references to surrounding context
-- 5–20 propositions per source file, depending on density
-- Do NOT invent facts — extract only what the source states
-- Regenerate when source content changes
-
-### Glossary (`glossary.md`)
-
-Maps common user vocabulary to precise technical terms. This bridges the gap between how users describe their problems and how the pack documents solutions.
-
-```markdown
-# EZT Designer — Glossary
-
-## Territory Terms
-
-| Term | Definition | Common User Language |
-|------|-----------|---------------------|
-| **Territory** | Named geographic region assigned to a rep | "area", "zone", "region", "turf" |
-| **Locked territory** | Territory with editing disabled to prevent changes | "stuck ZIP codes", "can't move", "frozen" |
-| **Alignment** | The complete set of territory assignments | "territory map", "the layout", "assignments" |
-```
-
-**Why a glossary matters:** Users say "stuck ZIP codes" when the pack documents "locked territories." Without a vocabulary bridge, RAG retrieval fails because the query terms don't match the content terms. A glossary gives RAG an explicit mapping to match against.
-
-**Guidelines:**
-- Include the "Common User Language" column — this is what makes glossaries effective
-- Keep definitions concise (1-2 sentences)
-- Add the glossary to manifest `always` tier (Tier 1) — it's small, high-value, and helps every query
-- Update when eval failures reveal vocabulary gaps
+A concept file is definitional: what something is, why it matters, how it behaves. A workflow file is procedural: numbered steps to accomplish a task. When content has both, split them and wikilink. Rule of thumb: if you'd teach it by saying "do this, then this, then this," it's a workflow.
 
 ### Schema-Aware Chunking
 
@@ -806,7 +783,7 @@ Eval failures point directly to hydration gaps:
 
 | Failure Pattern | Likely Cause | Hydration Fix |
 |----------------|-------------|---------------|
-| Wrong answer on a covered topic | Retrieval miss — content exists but wasn't found | Add lead summary, improve `##` headers, check chunk boundaries |
+| Wrong answer on a covered topic | Retrieval miss — content exists but wasn't found | Tighten the concept's opening paragraph to be more retriever-anchored, improve `##` headers, check chunk boundaries, verify the question is covered in the concept's `## Frequently Asked` |
 | Confident wrong answer | Hallucination — model fabricating | Add anti-hallucination facts to relevant files, add propositions |
 | Incomplete answer | Content gap or partial retrieval | Check if content exists; add propositions for precise retrieval |
 | Vocabulary mismatch | User terms ≠ pack terms | Update glossary with user language mappings |

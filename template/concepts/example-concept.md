@@ -1,38 +1,52 @@
 ---
+id: your-pack-slug/concepts/example-concept
 title: "Example Concept"
 type: concept
-tags: [concept, example-concept, pack-name]
+tags: [example-concept, your-domain]
 pack: your-pack-slug
 retrieval_strategy: standard
-id: "your-pack-slug/concepts/example-concept"
+concept_scope: single
+schema_version: "4.0"
 verified_at: "YYYY-MM-DD"
-verified_by: "agent"
+verified_by: agent
+related:
+  - other-concept.md
+  - related-workflow.md
 ---
-
-<!-- context: section=concepts, topic=example-concept, related=other-concept,workflow-name -->
 
 # Example Concept
 
-> **Lead summary:** One sentence that directly answers the most likely query about this concept. Put the answer first — even if RAG only retrieves this first chunk, the agent gets the core answer.
+An example concept is a self-contained unit of knowledge in an ExpertPack — it carries its definition, body, FAQs, related terms, and key propositions in a single retrieval-ready file. This opening paragraph IS the summary: retriever-anchored, reader-useful, no throat-clearing. Write it to answer the most likely query about this concept directly.
 
-## What It Is
+## How It Works
 
-Explain the concept clearly. Assume the reader knows the domain but not the specifics. Target 400–800 tokens for this whole file.
+Explain the concept clearly. Assume the reader knows the domain but not the specifics. Target 500–900 tokens for the whole file; hard ceiling 1,500. Use `##` section headers at natural topic breaks — the EP MCP chunker splits on these boundaries, so each section becomes its own coherent sub-chunk.
 
 ## Why It Matters
 
-What does understanding this concept unlock? What mistakes does it prevent?
+What does understanding this concept unlock? What mistakes does it prevent? This is often where esoteric knowledge (EK) lives — the things a general-purpose LLM gets wrong without the pack.
 
-## Key Details
+## Frequently Asked
 
-- Bullet points work well for discrete facts
-- Each bullet should be a complete, standalone proposition
-- Avoid bullets that only make sense in context of the previous one
+### How is this concept different from [sibling-concept]?
+Phrase questions the way users actually ask them. Each H3 becomes its own sub-chunk with a strong natural-language match surface.
 
-## Common Misconceptions
+### When should I use this concept vs. [alternative]?
+Keep answers tight and directly applicable. FAQ answers should not re-explain the whole concept — assume the reader has the opening paragraph.
 
-What do people get wrong about this? High-EK content often lives here.
+## Related Terms
 
-## Related
+- **Relative term 1:** Definition that only makes sense in context of this concept. If a term has its own definition, properties, and relationships, it earns its own concept file instead — don't embed it here.
+- **Relative term 2:** Short, concrete, 1–2 sentences.
 
-- [Other Concept](other-concept.md) — Brief note on the relationship
+## Key Propositions
+
+- Axiomatic statement 1 — a hard rule, invariant, or formal property.
+- Axiomatic statement 2.
+
+*(Omit this section when the concept's truth is adequately carried by body prose.)*
+
+## Related Concepts
+
+- [[other-concept]]
+- [[related-workflow]]

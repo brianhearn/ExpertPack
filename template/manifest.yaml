@@ -12,7 +12,7 @@ slug: "your-pack-slug"           # kebab-case, no spaces
 type: "product"
 
 version: "1.0.0"
-schema_version: "3.0"
+schema_version: "4.0"
 description: "One paragraph describing what this pack covers and who it's for."
 entry_point: "overview.md"
 
@@ -51,14 +51,11 @@ documentation: "https://docs.example.com"
 context:
   always:
     - overview.md
-    - glossary.md
+    - glossary.md        # Optional; only if you maintain a lean cross-cutting glossary
   searchable:
     - concepts/
     - workflows/
     - troubleshooting/
-    - faq/
-    - summaries/
+    - faq/               # v4.0: cross-cutting FAQs only; per-concept FAQs live in concepts/
   on_demand:
-    - sources/
-    - propositions/
     - volatile/

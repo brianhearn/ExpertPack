@@ -1,26 +1,28 @@
 ---
+id: your-pack-slug/overview
 title: "Pack Name — Overview"
 type: overview
 tags: [overview, pack-name]
 pack: your-pack-slug
 retrieval_strategy: standard
+schema_version: "4.0"
 ---
 
 # Pack Name
 
-> **Lead summary:** One sentence that answers the most likely question an AI will ask about this subject. This is the first thing any agent reads — make it count.
+One sentence that names the subject of this pack and places it in context — what the product is, what the process achieves, or who the person is. No throat-clearing; this is the retrieval anchor for the whole pack.
 
 ## What This Is
 
-Describe what this pack covers in 2–3 sentences. Who made the product/what is the process/who is the person? Why does this pack exist?
+Describe what this pack covers in 2–3 sentences. Why does this pack exist? What makes it worth reading over a general-purpose LLM answer?
 
 ## What's Covered
 
-- **[Concepts](concepts/_index.md)** — Core knowledge and mental models
+- **[Concepts](concepts/_index.md)** — Atomic-conceptual knowledge files. Each concept is a self-contained unit: definition, body, FAQs, related terms, and key propositions in one file.
 - **[Workflows](workflows/_index.md)** — Step-by-step procedures and how-tos
 - **[Troubleshooting](troubleshooting/_index.md)** — Errors, diagnostics, common mistakes
-- **[FAQ](faq/_index.md)** — Frequently asked questions
-- **[Glossary](glossary.md)** — Key terms and definitions
+- **[FAQ](faq/_index.md)** — Cross-cutting questions that don't belong to any single concept (per-concept FAQs live inside concept files)
+- **[Glossary](glossary.md)** *(optional)* — Lean cross-cutting terms
 
 ## What's NOT Covered
 
