@@ -129,14 +129,16 @@ Basic RAG — embed documents, retrieve top-k chunks — works, but it leaves pr
 
 | Element | What It Does | Best For |
 |---------|-------------|----------|
-| **Opening paragraph** | Retriever-anchored definition (1–3 sentences) | First chunk always carries the concept's core definition |
-| **Body sections (`##`)** | Sub-topics delimited at heading boundaries | Topic-specific detail retrieval |
-| **`## Frequently Asked` (H3 per Q)** | Natural-language question surface | Matching colloquial user queries |
+| **Opening paragraph** | Retriever-anchored definition (1–3 sentences) | Carries the core definition up front |
+| **Body sections (`##`)** | Organize the atom for the reader | Whole atom retrieves as one unit; headings are for navigation, not for splitting |
+| **`## Frequently Asked` (H3 per Q)** | Natural-language question surface | Matches colloquial user queries right inside the parent atom |
 | **`## Related Terms`** | Co-located relative vocabulary | Glossary-style matching without aggregator displacement |
-| **`## Key Propositions`** (optional) | Axiomatic declarative statements | Precise fact retrieval when the concept has formal invariants |
-| **`## Related Concepts`** | Wikilinks to siblings | Graph expansion pulls in neighbors during retrieval |
+| **`## Related Concepts`** | Wikilinks to siblings | Reader navigation and Obsidian graph view |
+| **`requires:` frontmatter (v4.1)** | Directional dependencies on other atoms | Retrieval auto-expands to include required atoms (depth 2, count 3 cap) |
 
-**v3.x → v4.0 change:** The old multi-layer pattern (separate `summaries/`, `propositions/`, per-domain `glossary-*.md`, and standalone `faq/` directories) was empirically found to displace specific atomic files at retrieval time — aggregator files scored broadly on every query. RFC-001 (schema v4.0) collapsed these into the atomic-conceptual model above. See [`schemas/rfcs/RFC-001-atomic-conceptual-chunks.md`](schemas/rfcs/RFC-001-atomic-conceptual-chunks.md) for the validation data.
+**v3.x → v4.0 change:** The old multi-layer pattern (separate `summaries/`, `propositions/`, per-domain `glossary-*.md`, and standalone `faq/` directories) was empirically found to displace specific atomic files at retrieval time. RFC-001 (schema v4.0) collapsed these into the atomic-conceptual model above.
+
+**v4.0 → v4.1 refinement:** The `concept_scope: composite` parent-child pattern was retired after the first post-territory migration showed it was semantically equivalent to co-retrieving a single large concept. v4.1 keeps the atomic principle strict (one concept = one file) and replaces composite hierarchy with directional `requires:` dependencies that retrieval expands on demand. Size ceiling tightened to 1,000 tokens, and `## Key Propositions` was deprecated (body prose already carries the propositions). See the RFC-001 "v4.1 refinement" section and [`schemas/core.md`](schemas/core.md).
 
 ---
 

@@ -566,34 +566,63 @@ class Validator:
                           f"Merge content into the file it describes as a lead sentence. "
                           f"Set manifest retrieval_model: full-context to suppress.")
 
-    # -- Check: schema v4.0 atomic-conceptual compliance -------------------
+    # -- Check: schema v4.x atomic-conceptual compliance -------------------
     def check_v40_atomic_conceptual(self):
-        """RFC-001 checks for Schema v4.0 packs:
+        """Atomic-conceptual checks for Schema v4.x packs.
 
-        W-V40-01: supersedes: target still exists in pack (migration not complete)
-        W-V40-02: parent_concept: target does not exist
-        W-V40-03: parent_concept: target is not concept_scope: composite
-        W-V40-04: concept file exceeds 1500-token hard ceiling
+        v4.0 checks:
+          W-V40-01: supersedes: target still exists in pack (migration not complete)
 
-        Only active when the manifest declares schema_version >= 4.0.
+        v4.1 checks (active when manifest schema_version >= 4.1):
+          W-V41-01: concept file exceeds 1,000-token hard ceiling (v4.1 tightened from 1,500)
+          W-V41-02: concept_scope: composite or parent_concept: field is present (removed in v4.1)
+          W-V41-03: ## Key Propositions section present (deprecated in v4.1)
+          W-V41-04: requires: target does not exist in the pack
+          W-V41-05: cyclic requires: (A requires B, B requires A) — author should audit
+
+        Legacy v4.0 checks retained for packs still declaring schema_version 4.0:
+          W-V40-02: parent_concept: target does not exist
+          W-V40-03: parent_concept: target is not concept_scope: composite
+          W-V40-04: concept file exceeds 1,500-token hard ceiling (v4.0)
+
         Packs on 3.x or missing the field skip these checks.
         """
         manifest_sv = str(self.manifest.get('schema_version', '')).strip()
         if not manifest_sv:
             return
         try:
-            major = int(manifest_sv.split('.')[0])
+            parts = manifest_sv.split('.')
+            major = int(parts[0])
+            minor = int(parts[1]) if len(parts) > 1 else 0
         except (ValueError, IndexError):
             return
         if major < 4:
             return
 
+        is_v41 = (major, minor) >= (4, 1)
+
         # Build a set of all basenames in the pack for supersedes lookup
         basenames = {os.path.basename(rel) for rel in self.files}
         rels = set(self.files)
 
+        # For cycle detection, build a requires-map keyed by basename
+        requires_map = {}
+        if is_v41:
+            for rel, fm in self.fm.items():
+                reqs = fm.get('requires') or []
+                if not isinstance(reqs, list):
+                    continue
+                bn = os.path.basename(rel)
+                deps = set()
+                for r in reqs:
+                    if isinstance(r, str):
+                        rbn = r if r.endswith('.md') else f"{r}.md"
+                        deps.add(os.path.basename(rbn))
+                if deps:
+                    requires_map[bn] = deps
+
         for rel, fm in self.fm.items():
-            # W-V40-01: supersedes target still present
+            # W-V40-01: supersedes target still present (v4.0 and v4.1)
             sups = fm.get('supersedes') or []
             if isinstance(sups, list):
                 for s in sups:
@@ -613,31 +642,80 @@ class Validator:
                                       f"'{bn}' still exists in the pack. Verify "
                                       f"the migration is complete.")
 
-            # W-V40-02 / W-V40-03: parent_concept resolution
-            parent = fm.get('parent_concept')
-            if parent and isinstance(parent, str):
-                parent_bn = parent if parent.endswith('.md') else f"{parent}.md"
-                # find the parent by basename match
-                parent_rel = None
-                for r in self.files:
-                    if os.path.basename(r) == parent_bn:
-                        parent_rel = r
-                        break
-                if parent_rel is None:
-                    self._add('WARN', 'W-V40-02', rel,
-                              f"parent_concept: '{parent}' — no matching file "
-                              f"found in the pack.")
-                else:
-                    parent_fm = self.fm.get(parent_rel, {})
-                    parent_scope = parent_fm.get('concept_scope', '')
-                    if parent_scope != 'composite':
-                        self._add('WARN', 'W-V40-03', rel,
-                                  f"parent_concept: '{parent}' resolves to "
-                                  f"'{parent_rel}' but that file is not "
-                                  f"concept_scope: composite (found: "
-                                  f"'{parent_scope or 'unset'}').")
+            if is_v41:
+                # W-V41-02: removed fields in v4.1
+                if fm.get('concept_scope') == 'composite':
+                    self._add('WARN', 'W-V41-02', rel,
+                              "concept_scope: composite was removed in schema v4.1. "
+                              "Split this composite into independent atoms and use "
+                              "requires: to declare cross-atom dependencies.")
+                if fm.get('parent_concept'):
+                    self._add('WARN', 'W-V41-02', rel,
+                              f"parent_concept: '{fm.get('parent_concept')}' was removed "
+                              f"in schema v4.1. Promote to an independent atom and "
+                              f"use requires: to declare the dependency on the parent.")
 
-            # W-V40-04: concept file exceeds 1500-token hard ceiling
+                # W-V41-03: deprecated ## Key Propositions section
+                full = os.path.join(self.pack_path, rel)
+                try:
+                    with open(full, 'r', encoding='utf-8') as f:
+                        body = f.read()
+                    if '\n## Key Propositions' in body or body.startswith('## Key Propositions'):
+                        self._add('WARN', 'W-V41-03', rel,
+                                  "## Key Propositions section is deprecated in v4.1 — "
+                                  "body prose already carries the propositions. "
+                                  "Fold claims into the body and remove the section.")
+                except OSError:
+                    pass
+
+                # W-V41-04: requires: targets exist
+                reqs = fm.get('requires') or []
+                if isinstance(reqs, list):
+                    for r in reqs:
+                        if not isinstance(r, str):
+                            continue
+                        rbn = r if r.endswith('.md') else f"{r}.md"
+                        if os.path.basename(rbn) not in basenames:
+                            self._add('WARN', 'W-V41-04', rel,
+                                      f"requires: '{r}' — no matching file found in the pack.")
+
+                # W-V41-05: cyclic requires
+                my_bn = os.path.basename(rel)
+                my_deps = requires_map.get(my_bn, set())
+                for dep in my_deps:
+                    dep_deps = requires_map.get(dep, set())
+                    if my_bn in dep_deps:
+                        self._add('WARN', 'W-V41-05', rel,
+                                  f"requires: cyclic dependency with '{dep}' — "
+                                  f"both atoms require each other. This is allowed "
+                                  f"but signals the two atoms may actually be one concept; "
+                                  f"audit the boundary.")
+
+            # W-V40-02 / W-V40-03 legacy checks (only for packs still declaring 4.0)
+            if not is_v41:
+                parent = fm.get('parent_concept')
+                if parent and isinstance(parent, str):
+                    parent_bn = parent if parent.endswith('.md') else f"{parent}.md"
+                    parent_rel = None
+                    for r in self.files:
+                        if os.path.basename(r) == parent_bn:
+                            parent_rel = r
+                            break
+                    if parent_rel is None:
+                        self._add('WARN', 'W-V40-02', rel,
+                                  f"parent_concept: '{parent}' — no matching file "
+                                  f"found in the pack.")
+                    else:
+                        parent_fm = self.fm.get(parent_rel, {})
+                        parent_scope = parent_fm.get('concept_scope', '')
+                        if parent_scope != 'composite':
+                            self._add('WARN', 'W-V40-03', rel,
+                                      f"parent_concept: '{parent}' resolves to "
+                                      f"'{parent_rel}' but that file is not "
+                                      f"concept_scope: composite (found: "
+                                      f"'{parent_scope or 'unset'}').")
+
+            # Concept size ceiling: v4.1 = 1,000 tokens, v4.0 = 1,500 tokens
             if fm.get('type') == 'concept':
                 full = os.path.join(self.pack_path, rel)
                 try:
@@ -646,12 +724,18 @@ class Validator:
                     continue
                 # Rough ~4 chars/token
                 est_tokens = int(size_chars / 4)
-                if est_tokens > 1500:
-                    self._add('WARN', 'W-V40-04', rel,
-                              f"concept file is ~{est_tokens} tokens, exceeds "
-                              f"v4.0 hard ceiling of 1,500. Split at ## "
-                              f"boundaries or decompose via concept_scope: "
-                              f"composite + parent_concept:.")
+                if is_v41:
+                    if est_tokens > 1000:
+                        self._add('WARN', 'W-V41-01', rel,
+                                  f"concept file is ~{est_tokens} tokens, exceeds "
+                                  f"v4.1 ceiling of 1,000. Split into independent "
+                                  f"atoms and declare cross-atom dependencies via requires:.")
+                else:
+                    if est_tokens > 1500:
+                        self._add('WARN', 'W-V40-04', rel,
+                                  f"concept file is ~{est_tokens} tokens, exceeds "
+                                  f"v4.0 ceiling of 1,500. Split at ## boundaries "
+                                  f"or bump to schema 4.1 and split into independent atoms.")
 
     # -- Checks 17-19: provenance (opt-in via --provenance) ----------------
     def check_provenance_fields(self):

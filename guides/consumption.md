@@ -131,7 +131,7 @@ For larger packs, RAG retrieval is essential — a 200-file pack won't fit in co
 
 ## Chunking Strategy
 
-ExpertPack files are designed to be **retrieval-ready by default**. When authored to the file-size guidelines in the core schema (400–800 tokens per file; 1,500 token ceiling), each file passes through any RAG platform's chunker as a single unit. The schema IS the chunking strategy — no external preprocessing or schema-aware chunker is needed for new packs.
+ExpertPack files are designed to be **retrieval-ready by default**. When authored to the file-size guidelines in the core schema (500–800 tokens per concept file; 1,000 token ceiling in schema v4.1), each file passes through any RAG platform's chunker as a single unit. The schema IS the chunking strategy — no external preprocessing or schema-aware chunker is needed for new packs.
 
 Author content files as self-contained retrieval units. RAG chunkers that see a file under their token budget leave it intact, preserving lead summaries, proposition groups, glossary tables, and `<!-- refresh -->` metadata.
 
@@ -150,7 +150,7 @@ Not all content should be authored to the standard size target. Procedural conte
 
 ### Pack–Consumer Coordination Contract
 
-The pack author and consumer config form a two-party contract. The pack commits to a hard ceiling (1,500 tokens for standard files; atomic files may be larger). The consumer sets `chunking.tokens` ≥ that ceiling so nothing gets split. If you're consuming a pack you didn't author, verify its file sizes before assuming the default 1,000-token budget applies. See [core.md — Pack–Consumer Coordination Contract](../schemas/core.md#packconsumer-coordination-contract) for details.
+The pack author and consumer config form a two-party contract. The pack commits to a hard ceiling (1,000 tokens for concept files in schema v4.1; atomic files may be larger). The consumer sets `chunking.tokens` ≥ that ceiling so nothing gets split. If you're consuming a pack you didn't author, verify its file sizes before assuming the default 1,000-token budget applies. See [core.md — Pack–Consumer Coordination Contract](../schemas/core.md#packconsumer-coordination-contract) for details.
 
 ### Platform Configuration - The Three-Knob Model
 

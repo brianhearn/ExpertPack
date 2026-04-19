@@ -424,15 +424,15 @@ Keep these as before but follow the small-file guideline. Cross-link heavily.
 
 ## Atomic-Conceptual Content
 
-Schema v4.0+ process packs use **atomic-conceptual concept files** the same way product packs do: each concept in `concepts/` (or fundamentals file) is a self-contained retrieval unit carrying definition, body, FAQs, related terms, and (optionally) key propositions in one file. The deprecated `summaries/`, `propositions/`, and per-domain `glossary-{domain}.md` aggregator files are replaced by this model.
+Schema v4.1 process packs use **atomic-conceptual concept files** the same way product packs do: each concept in `concepts/` (or fundamentals file) is a self-contained retrieval unit sized to fit in one RAG chunk (1,000-token ceiling). Concepts that would exceed the ceiling split into independent atoms; cross-atom dependencies are declared via the `requires:` frontmatter field. The deprecated v3 aggregator pattern (`summaries/`, `propositions/`, per-domain `glossary-{domain}.md`, standalone `faq/`) is replaced by this model.
 
 **Process-pack specifics:**
 - `phases/*.md` files are atomic workflows by default (`retrieval_strategy: atomic`) — they retain their step-by-step structure and are NOT absorbed into concept files.
 - `decisions/*.md` files remain a first-class type; they document tradeoff reasoning and act as decision records, not concepts.
 - `gotchas/` entries live as their own atomic files (same as `troubleshooting/common-mistakes/` in product packs).
-- Fundamental concepts and conceptual knowledge gain the same atomic-conceptual treatment: one self-contained file per concept with `## Frequently Asked`, `## Related Terms`, and `## Key Propositions` sections as needed.
+- Fundamental concepts and conceptual knowledge gain the same atomic-conceptual treatment: one self-contained file per concept with `## Frequently Asked` and `## Related Terms` sections as needed.
 
-See [core.md § Atomic-Conceptual Content Files](core.md#atomic-conceptual-content-files) for the full pattern, and [`references/granularity-guide.md`](references/granularity-guide.md) for embed-vs-promote decision rules.
+See [core.md § Atomic-Conceptual Content Files](core.md#atomic-conceptual-content-files) for the full pattern, and [`references/granularity-guide.md`](references/granularity-guide.md) for embed-vs-promote and when-to-split decision rules.
 
 ---
 

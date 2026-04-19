@@ -111,11 +111,11 @@ Each concept is a **single self-contained file** carrying everything the retriev
 | Element | What It Does | Why It Matters |
 |---------|-------------|----------------|
 | **Opening paragraph** | 1–3 sentences that define the concept in retriever-friendly terms | First chunk carries the core definition; no throat-clearing |
-| **Body sections** | `##`-delimited sub-topics | Chunker splits at headings, aligning retrieval to semantic boundaries |
-| **`## Frequently Asked`** | H3-per-question FAQ block | Natural-language query surface; each Q/A becomes its own sub-chunk |
+| **Body sections** | `##`-delimited sub-topics | Whole file travels as one retrieval unit; sections organize the narrative for the reader |
+| **`## Frequently Asked`** | H3-per-question FAQ block | Natural-language query surface right where the concept lives |
 | **`## Related Terms`** | Terms that don't stand alone | Co-locates glossary-style definitions with the parent concept |
-| **`## Key Propositions`** | Axiomatic statements (optional) | Precise fact retrieval without aggregator-directory displacement |
-| **`## Related Concepts`** | Wikilinks to siblings | EP MCP graph expansion pulls in neighbors when relevant |
+| **`## Related Concepts`** | Wikilinks to siblings | Reader navigation and Obsidian graph view |
+| **`requires:` frontmatter (v4.1)** | Directional dependencies on other atoms | EP MCP auto-includes required atoms in the retrieved context |
 
 This replaces the v3.x pattern of separate `summaries/`, `propositions/`, per-domain `glossary-*.md`, and standalone `faq/` directories — those aggregator files scored broadly on every query and displaced specific content at retrieval time. See [`schemas/rfcs/RFC-001-atomic-conceptual-chunks.md`](schemas/rfcs/RFC-001-atomic-conceptual-chunks.md) for the empirical findings that drove the change and [`schemas/references/granularity-guide.md`](schemas/references/granularity-guide.md) for authoring decisions.
 
@@ -123,7 +123,7 @@ This replaces the v3.x pattern of separate `summaries/`, `propositions/`, per-do
 
 Every extracted fact passes through the EK triage pipeline:
 
-- **EK** (model wrong/refuses) → Full treatment: dedicated concept file with a retriever-anchored opening, detailed body, and `## Key Propositions` if the concept has axiomatic statements
+- **EK** (model wrong/refuses) → Full treatment: dedicated concept atom with a retriever-anchored opening and detailed body (keep the whole atom ≤ 1,000 tokens; split into multiple atoms with `requires:` if the concept genuinely spans more)
 - **Partial** (model vague) → Standard treatment, highlight the specific detail the model missed
 - **GK scaffolding** (model correct, but needed for retrieval) → 1-3 sentences max, no dedicated file
 - **GK unnecessary** (model correct, no EK depends on it) → Skip entirely
@@ -146,7 +146,7 @@ The included [eval-ek.py](tools/eval-ek.py) tool measures EK ratio via blind pro
 
 ### Retrieval-Ready Authoring (Schema 2.5+)
 
-The schema itself is now the chunking strategy. Author content files as self-contained retrieval units **(400–800 tokens, 1,500 token hard ceiling)**. Any RAG chunker will pass these files through intact without splitting, preserving structure, lead summaries, propositions, and metadata.
+The schema itself is now the chunking strategy. Author concept files as self-contained retrieval units **(500–800 tokens, 1,000 token hard ceiling in schema v4.1)**. Any RAG chunker will pass these files through intact without splitting, preserving structure and metadata. Cross-atom dependencies are declared via the directional `requires:` frontmatter field and expanded at retrieval time by EP MCP.
 
 ### Provenance Metadata (Schema 3.0+)
 

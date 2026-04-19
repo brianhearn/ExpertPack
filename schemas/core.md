@@ -2,9 +2,11 @@
 
 *Shared principles and conventions that apply to every ExpertPack, regardless of type. Type-specific schemas (person, product, process) extend these rules — they don't replace them.*
 
-**Schema version:** 4.0 (2026-04-18)
+**Schema version:** 4.1 (2026-04-19)
 
-**What changed in 4.0** — Product and process packs adopt the **atomic-conceptual content model** per [RFC-001](rfcs/RFC-001-atomic-conceptual-chunks.md): each concept is a self-contained retrieval unit carrying its definition, body, FAQs, related terms, and key propositions in one file. The `summaries/`, `propositions/`, and per-domain `glossary-{domain}.md` aggregator patterns from v3.x are **deprecated**; see [Atomic-Conceptual Content Files](#atomic-conceptual-content-files). Person packs retain their verbatim↔summary mirroring model for now (RFC-002 pending).
+**What changed in 4.1 (refinement of 4.0)** — Atomic-conceptual is now strictly single-file: one concept = one file = one retrieval unit. The `composite` / `parent_concept` hierarchy from 4.0 is **removed** — oversized concepts split into independent atoms, and cross-atom dependencies are declared via the new `requires:` frontmatter field (directional, retrieved with the atom). Size ceiling tightened from 1,500 to 1,000 tokens. `## Key Propositions` section deprecated (body prose already carries the propositions; the section was a retrieval hack from the aggregator era). See [Atomic-Conceptual Content Files](#atomic-conceptual-content-files).
+
+**What changed in 4.0** — Product and process packs adopted the **atomic-conceptual content model** per [RFC-001](rfcs/RFC-001-atomic-conceptual-chunks.md): concepts became self-contained retrieval units. The `summaries/`, `propositions/`, and per-domain `glossary-{domain}.md` aggregator patterns from v3.x were **deprecated**. Person packs retain their verbatim↔summary mirroring model for now (RFC-002 pending).
 
 ---
 
@@ -187,9 +189,9 @@ This range ensures files pass through any reasonable chunker's token budget (typ
 - Large enough to carry a complete thought with sufficient context
 - Sized to maximize retrieval precision — one file = one topic = one chunk
 
-**Why this matters:** RAG chunkers that split files by character/token count destroy structure — they slice lead summaries from titles, split proposition groups from headers, and orphan metadata from content. By keeping files within the target range, the schema itself prevents this. No external chunking tool is needed.
+**Why this matters:** RAG chunkers that split files by character/token count destroy structure — they slice openings from titles, split definitions from examples, and orphan metadata from content. By keeping files within the target range, the schema itself prevents this. No external chunking tool is needed.
 
-**Hard ceiling: 1,500 tokens (~6,000 characters) for standard content files.** Files above this will be split by most chunkers and should be broken into focused sub-files. The only exception is files with `retrieval.strategy: atomic` in their frontmatter (workflows, troubleshooting procedures — see Chunking Strategy below).
+**Hard ceiling: 1,000 tokens (~4,000 characters) for concept files in v4.1.** (General reference/specification content may go larger when it carries no alternative retrieval path, but concept files in `concepts/` must stay under 1,000.) Files above the ceiling will be split by most chunkers and should be broken into independent atoms — not into numbered parts. The only exception is files with `retrieval.strategy: atomic` in their frontmatter (workflows, troubleshooting procedures — see Chunking Strategy below).
 
 **When a topic needs more space:**
 1. Split into numbered parts with cross-references: `territories-overview.md`, `territories-assignment.md`, `territories-balancing.md`
@@ -260,13 +262,13 @@ The EP CLI validator (when available) will enforce this rule and flag any duplic
 
 ## Atomic-Conceptual Content Files
 
-*This section supersedes the v3.x "Retrieval Optimization" layering (summaries/, propositions/, lead summaries, per-domain glossary files) with a single self-contained content model. See [`rfcs/RFC-001-atomic-conceptual-chunks.md`](rfcs/RFC-001-atomic-conceptual-chunks.md) for the full rationale and validation data.*
+*Schema v4.1 refines the v4.0 atomic-conceptual model: one concept = one file = one retrieval unit. Directional `requires` dependencies replace the `composite` / `parent_concept` hierarchy. See [`rfcs/RFC-001-atomic-conceptual-chunks.md`](rfcs/RFC-001-atomic-conceptual-chunks.md) for the original rationale and the "v4.1 refinement" note for why composite hierarchy was retired.*
 
 ### Core principle
 
-**One concept = one retrievable unit.** All knowledge about a concept — definition, mechanics, examples, relative terminology, common questions — lives in a single markdown file. The file's structure is designed for both retrieval (via section-boundary chunking) and LLM reasoning (via natural narrative flow).
+**One concept = one file = one retrieval unit.** All knowledge about a concept — definition, mechanics, examples, relative terminology, common questions — lives in a single markdown file sized to fit in a single RAG chunk. No hidden co-retrieval, no parent/child file groups, no aggregator layers. If a would-be-concept exceeds the size ceiling, that is the signal that it is not one concept — split it into independent atoms and declare any cross-atom dependencies explicitly via `requires:`.
 
-Aggregator directories (`summaries/`, `propositions/`, per-domain `glossary-*.md`) are deprecated. Empirical results show they score broadly on every query and displace specific atomic files — the opposite of what hierarchical retrieval theory predicted.
+Aggregator directories (`summaries/`, `propositions/`, per-domain `glossary-*.md`, standalone `faq/`) remain deprecated from v4.0. Empirical results showed they score broadly on every query and displace specific atomic files.
 
 ### Concept file structure
 
@@ -278,13 +280,13 @@ type: concept
 tags: [concept-slug, related-domain-tags]
 pack: {pack-slug}
 retrieval_strategy: standard
-concept_scope: single          # or "composite" for parent concepts spanning children
-parent_concept: parent-slug    # optional — set when this is a child in a composite hierarchy
-schema_version: "4.0"
+schema_version: "4.1"
 verified_at: "YYYY-MM-DD"
 supersedes:                    # optional — files replaced by this one (for migration tracking)
   - old-filename.md
-related:
+requires:                      # optional — directional dependencies; retrieved with this atom
+  - prerequisite-concept.md
+related:                       # optional — soft associations; NOT auto-retrieved
   - sibling-concept.md
   - related-workflow.md
 ---
@@ -310,11 +312,6 @@ Answer.
 - **Relative term:** Definition that only makes sense in context of this concept.
 - **Another term:** Definition.
 
-## Key Propositions
-
-- Axiomatic statement 1.
-- Axiomatic statement 2.
-
 ## Related Concepts
 - [[sibling-concept]]
 - [[related-workflow]]
@@ -323,22 +320,25 @@ Answer.
 ### Required elements
 
 1. **Opening paragraph defines the concept.** First 1–3 sentences must be retriever-anchored: the concept named explicitly, the category it belongs to, its distinguishing characteristic. No throat-clearing. This paragraph replaces both the old `## What It Is` section and the old lead-summary blockquote.
-2. **Section headers at topic breaks.** Every `##` section is one coherent sub-topic that produces a clean chunk. The EP MCP chunker splits at `##` and `###` boundaries; structure your file to align with how you want it retrieved.
-3. **Wikilinks for graph expansion.** `related:` frontmatter + `## Related Concepts` section with `[[bare-filename]]` wikilinks. EP MCP's graph expansion pulls in siblings when relevant, so content does not need to be duplicated across files.
+2. **Section headers at topic breaks.** Every `##` section is one coherent sub-topic. Structure your file so the narrative reads cleanly — the chunker respects file boundaries first, headings second.
+3. **Wikilinks for reader navigation.** `## Related Concepts` uses `[[bare-filename]]` wikilinks for human readers and Obsidian graph view. Frontmatter `requires:` and `related:` are the machine-readable sources of truth for retrieval behavior.
 
 ### Optional sections
 
-4. **`## Frequently Asked`.** Include when the concept has documented questions that users actually ask. Each question as an H3 heading — the chunker splits on headings, so each Q/A becomes its own sub-chunk with strong query-matching surface. **Canonical ownership:** each Q/A lives in the primary concept it answers for; other concepts cross-link via `## Related Concepts` rather than duplicating the Q/A (duplication would re-introduce the aggregator problem in miniature).
+4. **`## Frequently Asked`.** Include when the concept has documented questions users actually ask. Each question as an H3 heading. **Canonical ownership:** each Q/A lives in the primary concept it answers for; other concepts cross-link via `## Related Concepts` rather than duplicating the Q/A.
 
 5. **`## Related Terms`.** Include when the concept has relative terminology that doesn't stand alone. If a term has its own definition, properties, and relationships, it earns its own concept file instead. See [`references/granularity-guide.md`](references/granularity-guide.md) for the embed-vs-promote decision procedure.
 
-6. **`## Key Propositions`.** Include when the concept has genuinely axiomatic statements worth surfacing for logical extraction — invariants, hard rules, or formal properties. Each proposition as a concise bullet. Omit when the concept's truth is adequately carried by body prose. This is the schema-supported path for declarative statements that the deprecated `propositions/` directory used to carry, without the aggregator regression.
+### Removed from v4.0
+
+- **`## Key Propositions`** — deprecated in v4.1. Key propositions were a retrieval hack for the aggregator era; when the whole atom retrieves together as ~800 tokens of focused content, BM25 + embeddings on the atom body already provide precise targeting. The body itself states the propositions. Drop this section from new atoms; existing atoms may keep it until next revision.
+- **`concept_scope: composite`** and **`parent_concept:`** — removed. Concepts that used these split into independent atoms declaring `requires:` dependencies instead.
 
 ### Granularity
 
 A term or sub-topic earns its own concept file when it has its own definition (not just "X in the context of Y"), its own properties or sub-concepts, its own relationships to other concepts, or enough content to justify standalone treatment. Otherwise it lives embedded in the parent concept. When tests are inconclusive, **prefer embed** — promotion is cheap later; demotion creates broken wikilinks and orphan files.
 
-See [`references/granularity-guide.md`](references/granularity-guide.md) for the full decision procedure, boundary tables, and 8 worked examples.
+See [`references/granularity-guide.md`](references/granularity-guide.md) for the full decision procedure, boundary tables, and worked examples.
 
 ### Workflow vs. concept boundary
 
@@ -352,24 +352,43 @@ Rule of thumb: if you'd teach it by saying "do this, then this, then this," it's
 
 ### Size targets
 
-- **Soft target:** 500–900 tokens per concept file. Leaves room for the opening definition, body, FAQ section, and related terms without crowding.
-- **Hard ceiling:** 1,500 tokens. Files above this must be split at `##` boundaries or decomposed into parent+child concepts via `concept_scope: composite`.
-- **Lower bound:** ~200 tokens. Below this, prefer embedding as a related term in a parent concept — the file doesn't carry enough signal to justify its own retrieval slot.
+- **Soft target:** 500–800 tokens per concept file.
+- **Hard ceiling:** 1,000 tokens. Above this, split into independent atoms — do not split one concept across files.
+- **Lower bound:** ~250 tokens. Below this, embed as a related term in a parent concept or merge into a sibling; the file doesn't carry enough signal to justify its own retrieval slot.
 
-### Composite concepts
+Token estimates use chars÷4 as a rule of thumb. The ceiling is enforced by `ep-validate` (W-V41-01).
 
-Some concepts naturally span multiple files. Example: `partitioning.md` as a parent covering `simple-partitioning.md` and `workload-partitioning.md` as children. When using composite scope:
+### Splitting oversized concepts
 
-- The parent file has `concept_scope: composite` in frontmatter
-- Children have `concept_scope: single` and `parent_concept: {parent-slug}`
-- The parent file's body introduces both variants and links out to children via `## Related Concepts`
-- Children cover their own mechanics without repeating the parent's framing
+When a would-be-concept exceeds 1,000 tokens:
 
-Use composite scope for **natural hierarchy**, not when a concept just got too big. If a concept exceeds the size ceiling, first tighten the writing; only split when there are genuinely distinct sub-concepts.
+1. **Identify the distinct sub-concepts.** If the draft covers "territory realignment mechanics," "territory geometry," and "territory locking rules," those are three concepts, not one oversized concept.
+2. **Promote each sub-concept to its own atom.** Name them for the sub-concept (`realignment.md`, not `territory-part-2.md`). Each atom must stand alone as a retrievable answer to its own likely query.
+3. **Declare `requires:` where one atom is genuinely unintelligible without another.** Realignment requires Territory (you cannot explain what realignment is without first establishing what a territory is). Territory does NOT require Realignment (you can understand territories without knowing how to realign them).
+4. **If you cannot produce stand-alone sub-concepts**, the original concept boundary is wrong — rethink the split, or accept that the concept is genuinely smaller than you thought and tighten the prose.
+
+Splitting purely to satisfy the size ceiling without producing genuinely independent atoms is an anti-pattern. The split must reflect the domain.
+
+### Directional dependencies: `requires:`
+
+The `requires:` frontmatter field declares that an atom depends on one or more other atoms to be fully understood. At retrieval time, EP MCP expands a matched atom's context to include its `requires:` targets.
+
+**Semantics.** `A requires B` means: B's content is necessary to understand A, and A's content is NOT necessary to understand B. The relationship is asymmetric. If both directions are true, the two atoms are likely one concept — merge, or tighten the boundary.
+
+**Authoring rule.** Declare `requires:` only when the dependency is genuine. A passing mention of another concept (a wikilink in prose) does not imply `requires:` — use `related:` for soft associations. Reserve `requires:` for "this atom is not self-contained without that atom."
+
+**Retrieval behavior.** EP MCP applies these limits when expanding `requires:`:
+
+- **Depth cap:** follow `requires:` transitively up to depth 2 (match → required → required's required). Stop there.
+- **Count cap:** no more than 3 atoms total per expansion (original match + up to 2 required). If more dependencies are declared than the budget allows, retain declaration order.
+- **Token budget cap:** if the expansion exceeds the per-match token budget (default 3,500 tokens), drop the last-added atoms first.
+- **Cycles:** cyclic `requires:` (A requires B, B requires A) are allowed — they produce bundled retrieval and signal the two atoms may actually be one concept. `ep-validate` warns on cycles so authors can audit.
+
+**`related:` is NOT auto-retrieved.** It's for human readers, Obsidian graph view, and the static `_graph.yaml` export. Retrieval does not follow `related:` edges automatically.
 
 ### Optional root-level glossary
 
-A lean, optional `glossary.md` may live at the pack root for genuinely cross-cutting terms — the product name, industry vocabulary, or terms that don't belong to any single concept. Its role is **navigation for authors and agents**, not a retrieval layer. Do NOT create per-domain `glossary-{domain}.md` files — those are aggregators and will be flagged by `ep-validate` in v4.0+ packs.
+A lean, optional `glossary.md` may live at the pack root for genuinely cross-cutting terms — the product name, industry vocabulary, or terms that don't belong to any single concept. Its role is **navigation for authors and agents**, not a retrieval layer. Do NOT create per-domain `glossary-{domain}.md` files — those are aggregators and are flagged by `ep-validate` in v4.0+ packs.
 
 ### Deprecation tracking (`supersedes:`)
 
@@ -379,7 +398,7 @@ When a new atomic-conceptual file replaces one or more legacy files, list the le
 
 ### Chunking Strategy
 
-ExpertPack files are **retrieval-ready by default**. When authored to the 400–800 token target (1,500 token ceiling for standard content), each file passes through any RAG chunker intact — no external preprocessing needed. The schema IS the chunking strategy.
+ExpertPack files are **retrieval-ready by default**. When authored to the 500–800 token target (1,000 token ceiling for concept content in v4.1), each file passes through any RAG chunker intact — no external preprocessing needed. The schema IS the chunking strategy.
 
 #### Atomic vs. Sectioned Content
 
@@ -419,7 +438,7 @@ The `part X of Y` tells the agent this is one piece of a larger topic. The `sequ
 
 #### Pack–Consumer Coordination Contract
 
-- **Pack author commits:** Standard files ≤ 1,500 tokens. Atomic files (workflows, troubleshooting) may exceed the ceiling but must be retrieved whole.
+- **Pack author commits:** Concept files ≤ 1,000 tokens (v4.1). Atomic files (workflows, troubleshooting) may exceed the ceiling but must be retrieved whole.
 - **Consumer configures:** Set `chunking.tokens` ≥ 1,000 (the recommended minimum). The invariant: `chunking.tokens` > pack's hard ceiling for non-atomic files.
 
 See [guides/consumption.md](../guides/consumption.md) for the recommended RAG configuration.
@@ -469,7 +488,7 @@ A pack full of content the model already knows is dead weight — it burns token
 
 EK ratio is measured empirically using **proposition-level blind probing:**
 
-1. **Extract propositions** — pull atomic factual statements from concept-file `## Key Propositions` sections and from concept body prose (one atomic fact per line). If a pack predates schema v4.0 and still has a `propositions/` directory, use those files directly.
+1. **Extract propositions** — pull atomic factual statements from concept body prose, one atomic fact per line. For packs at v4.0 that still carry `## Key Propositions` sections, use those too. For packs predating v4.0 with a `propositions/` directory, use those files directly.
 
 2. **Generate probe questions** — convert each proposition into a natural question. *"The TSP optimizer uses a genetic algorithm with population size 32"* → *"What algorithm does EZT Designer use for route optimization, and what is the default population size?"*
 
@@ -1302,7 +1321,7 @@ These principles apply to every ExpertPack, regardless of type:
 |-----------|------|
 | Canonical format | Markdown for content, YAML for identity, JSON for navigation only |
 | One source of truth | Each fact lives in exactly one place |
-| File size | 400–800 tokens per file; 1,500 token ceiling; retrieval-ready by design |
+| File size | 500–800 tokens per concept; 1,000 token ceiling (v4.1); retrieval-ready by design |
 | Section headers | `##` headers at natural topic breaks for RAG chunking |
 | Naming | kebab-case for files, directories, and slugs |
 | Cross-references | Relative markdown links between related files |

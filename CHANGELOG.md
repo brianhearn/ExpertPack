@@ -10,6 +10,40 @@ Schema versions use the format `core.X.Y` for core schema and `type.X.Y` for typ
 
 ---
 
+## [Core 4.1] — 2026-04-19 — Atomic-Conceptual Refinement (`requires:` dependencies)
+
+**Minor version bump.** Refines the v4.0 atomic-conceptual model after the first real post-territory migration surfaced that the composite parent-child pattern added ceremony without retrieval gain. Schema v4.1 keeps every v4.0 deprecation (summaries, propositions directories, per-domain glossary, standalone faq) and strengthens the single-atom principle.
+
+### Added
+- **`requires:` frontmatter field** — directional dependencies between atoms. `A requires B` means B's content is needed to understand A; asymmetric. EP MCP expands a matched atom's context to include its `requires:` chain at retrieval time (depth cap 2, count cap 3 atoms total per expansion, token-budget cap).
+- `schemas/rfcs/RFC-001-atomic-conceptual-chunks.md` — appended "v4.1 refinement" section documenting why composite hierarchy was retired.
+- `schemas/references/granularity-guide.md` — new "Splitting oversized concepts" section with v4.1 decision procedure and an Authentication worked example.
+
+### Changed
+- **Size ceiling tightened: 1,500 → 1,000 tokens** for concept files. Concepts exceeding the ceiling split into independent atoms (not parent-child file groups).
+- Soft target tightened to 500–800 tokens per concept file.
+- Lower bound raised: ~250 tokens (from ~200).
+- `schemas/core.md` § Atomic-Conceptual Content Files rewritten for v4.1 model.
+- `schemas/product.md` and `schemas/process.md` atomic-conceptual pointers updated to reference v4.1 semantics.
+- Granularity guide Example 7 ("Simple Partitioning") rewritten from composite-embed to promote-with-`requires:`.
+- All `1,500`-token references in core.md and granularity-guide.md updated to `1,000`.
+
+### Deprecated
+- **`concept_scope: composite`** — removed from schema. Concepts that used composite hierarchy split into independent atoms with `requires:` dependencies.
+- **`parent_concept:`** frontmatter field — removed.
+- **`## Key Propositions`** section — deprecated. Body prose carries propositions; the separate section was a retrieval hack for the aggregator era. Existing atoms may keep it until next revision.
+
+### Migration notes
+- Packs already at v4.0 with no composite atoms and no `## Key Propositions` sections: bump manifest `schema_version: 4.1` after validator clears. No content changes needed.
+- Packs with composite atoms: split the composite parent and its children into independent atoms. Add `requires:` links where a child was truly unintelligible without the parent.
+- The ezt-designer pack had one v4.0 atom (`territory.md`) at the time of this bump; it's already v4.1-compatible.
+
+### Tools
+- `tools/validator/ep-validate.py` — new check `W-V41-01` flags concept files exceeding 1,000 tokens; `W-V41-02` flags `concept_scope: composite` and `parent_concept:` as removed fields; `W-V41-03` notes `## Key Propositions` as deprecated (warning, not error).
+- `tools/migrate/ep-migrate-3-to-4.py` — renamed to `ep-migrate-3-to-4.py` still; plan output now targets v4.1 shape by default.
+
+---
+
 ## [Core 4.0] — 2026-04-18 — Atomic-Conceptual Chunks (RFC-001)
 
 **Breaking change** — MAJOR version bump. Product and process packs adopt a single self-contained content model; v3.x aggregator directories are deprecated. Person packs retain their verbatim↔summary model pending a follow-up RFC.

@@ -5,10 +5,10 @@ type: concept
 tags: [<% tp.file.title.toLowerCase().replace(/ /g, '-') %>]
 pack: your-pack-slug
 retrieval_strategy: standard
-concept_scope: single
-schema_version: "4.0"
+schema_version: "4.1"
 verified_at: "<% tp.date.now('YYYY-MM-DD') %>"
 verified_by: agent
+requires: []
 related: []
 ---
 
@@ -27,10 +27,6 @@ related: []
 ## Related Terms
 
 - 
-
-## Key Propositions
-
-<!-- Optional: axiomatic statements. Omit if body prose carries the truth. -->
 
 ## Related Concepts
 

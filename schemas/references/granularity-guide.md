@@ -14,7 +14,7 @@ You're writing (or reviewing) a concept file. A related term, sub-topic, or idea
 
 The wrong choice on either side has real costs:
 
-- **Over-embedding** — concept files become bloated, drift over the 1,500-token ceiling, and retrieve broadly like the old aggregator files.
+- **Over-embedding** — concept files become bloated, drift over the 1,000-token ceiling, and retrieve broadly like the old aggregator files.
 - **Over-promoting** — the pack explodes into hundreds of tiny files, graph expansion becomes noisy, and users have to stitch multiple retrievals for any meaningful answer.
 
 This guide gives you a decision procedure and worked examples to make the call.
@@ -145,16 +145,16 @@ The following examples are drawn from the ezt-designer pack's 2026-04-18 validat
 - **Retrievability:** Users do ask this directly — but the answer is tightly coupled to understanding locked/hidden territories. Embedding in Territory keeps the answer adjacent to the conceptual context.
 - **Note:** The old `faq/faq-stuck-zip-codes.md` file was absorbed. Its content lives in the Territory concept's FAQ section, and any `troubleshooting/` entry for this symptom can link to the Territory concept for canonical context.
 
-### Example 7: "Simple Partitioning" → EMBED (with sibling link)
+### Example 7: "Simple Partitioning" → PROMOTE with `requires:` link (v4.1)
 
 **Context:** A distinct partitioning mode, contrasted with Workload Partitioning.
 
-**Decision:** Embedded in Workload Partitioning's `## Related Terms` with a brief contrast. A separate `partitioning.md` parent concept may exist covering both modes.
+**Decision:** Its own atom `simple-partitioning.md`. Declares `requires: [partitioning.md]` if a framing concept exists, otherwise stands alone. Workload Partitioning also declares `requires: [partitioning.md]` when a parent framing atom is needed.
 
 **Why:**
-- **Atomic-coherence:** Passes weakly — Simple Partitioning *is* its own mode with its own mechanics. But its utility is almost entirely in contrast to Workload Partitioning.
-- **Size:** A couple of paragraphs suffice; no need for its own file.
-- **Composite handling:** This is a candidate for the `concept_scope: composite` pattern — where Partitioning (the parent) covers both modes in a single concept file, rather than splitting into one file per mode.
+- **Atomic-coherence:** Passes. Simple Partitioning is its own mode with its own mechanics; it happens to be small, but v4.1 prefers small independent atoms over composite hierarchies.
+- **Size:** If the content is genuinely small (<250 tokens) it may still embed as a `## Related Terms` entry under a `partitioning.md` atom. If it's 250+ tokens of distinct mechanics, promote.
+- **v4.1 note:** The v4.0 `concept_scope: composite` pattern has been retired. Where v4.0 would have used a composite parent with child files, v4.1 uses independent atoms linked by `requires:` — retrieval expansion pulls required atoms into context on demand without introducing hidden file groups.
 
 ### Example 8: "EasyTerritory" → EMBED (in overview.md, mention in glossary if needed)
 
@@ -215,16 +215,22 @@ If an FAQ answer grows past ~200 tokens and starts introducing new mechanics, th
 
 ---
 
-## Composite concepts (`concept_scope: composite`)
+## Splitting oversized concepts (v4.1)
 
-Some concepts span multiple files by design. Example: `partitioning.md` as a parent covering `simple-partitioning.md` and `workload-partitioning.md` as children. When you use composite scope:
+*v4.0 introduced `concept_scope: composite` for parent-child file groups. v4.1 retires that pattern in favor of independent atoms linked by directional `requires:` dependencies. The reasoning: composite groups are semantically equivalent to "take one, take all" co-retrieval, which collapses to a single large file. The honest model is either one atom or several genuinely-independent atoms.*
 
-- The parent file has `concept_scope: composite` in frontmatter.
-- Children have `concept_scope: single` and `parent_concept: partitioning` (or `part_of: partitioning.md`).
-- The parent file's body introduces both variants and links out to children.
-- Children cover their own mechanics without repeating the parent's framing.
+When a would-be-concept exceeds the 1,000-token ceiling:
 
-Use composite scope when the parent-child split is a **natural hierarchy**, not when it's just "this concept got too big." If a concept exceeds the size ceiling, first try to tighten the writing; only split when there are genuinely distinct sub-concepts.
+1. **Identify the distinct sub-concepts.** If the draft covers "territory realignment mechanics," "territory geometry," and "territory locking rules," those are three concepts.
+2. **Promote each to its own atom.** Name for the sub-concept (`realignment.md`), not for the size (`territory-part-2.md`). Each atom must stand alone as a retrievable answer to its own likely query.
+3. **Declare `requires:` only where one atom is genuinely unintelligible without another.** `realignment.md` requires `territory.md` (you cannot explain what realignment is without first establishing what a territory is). `territory.md` does NOT require `realignment.md` (you can understand territories without knowing how to realign them). Asymmetry matters.
+4. **If you cannot produce stand-alone sub-concepts**, the original concept boundary is wrong. Rethink, or accept that the concept is genuinely smaller than you thought and tighten the prose.
+
+**Anti-pattern:** splitting purely to satisfy the size ceiling without producing independent atoms. The split must reflect the domain. A concept carved into `foo-part-1.md` and `foo-part-2.md` because of length is a smell — neither "part" stands alone, both always retrieve together, and the split adds maintenance cost with no retrieval gain.
+
+### Example: Authentication
+
+The ezt-designer pack's authentication content is ~2,000 tokens total (overview + Forms + AAD + OIDC). Under v4.1 this splits into four independent atoms: `authentication.md` (cross-mode overview, session lifecycle, role flags), `authentication-forms.md`, `authentication-aad.md`, `authentication-oidc.md`. Each mode atom declares `requires: [authentication.md]`. A user asking about AAD gets AAD + the overview; a user asking "what auth modes does EZT support?" gets just the overview.
 
 ---
 
@@ -234,13 +240,13 @@ Signals that you've made the wrong granularity call:
 
 ### Over-embedded (concept file is doing too much)
 
-- File exceeds 1,500 tokens
+- File exceeds 1,000 tokens (v4.1 ceiling)
 - `## Related Terms` section has 10+ entries
 - `## Frequently Asked` section has 8+ questions
 - Body has 5+ top-level `##` sections covering distinct topics
 - You find yourself wanting to write a table of contents at the top
 
-**Fix:** Identify the densest sub-topic, promote it to its own concept file, link from the parent.
+**Fix:** Identify the distinct sub-concept(s) and split into independent atoms. Declare `requires:` where one atom genuinely depends on another. Do not split purely for size.
 
 ### Over-promoted (too many tiny concept files)
 
@@ -266,9 +272,9 @@ Signals that you've made the wrong granularity call:
 Granularity decisions aren't permanent. Revisit when:
 
 - A "related term" keeps getting linked from new concepts → it's earning its own file
-- A concept file grows past 1,500 tokens → it needs splitting
-- A concept file shrinks (because material got refactored elsewhere) below ~300 tokens → consider merging it into its parent
-- Users consistently ask about something you embedded → promote it
+- A concept file grows past 1,000 tokens → it needs splitting into independent atoms
+- A concept file shrinks (because material got refactored elsewhere) below ~250 tokens → consider merging it into its parent
+- Users consistently ask about something you embedded → promote it to its own atom
 
 Keep the decision log in the pack's `meta/changelog.md` so the reasoning is preserved.
 

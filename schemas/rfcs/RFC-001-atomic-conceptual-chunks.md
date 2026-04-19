@@ -304,3 +304,20 @@ Full source mapping and friction analysis in `ExpertPacks/ezt-designer/_schema-r
 ---
 
 *Schema target: 4.0 (MAJOR bump — breaking structural change to directory layout)*
+
+---
+
+## v4.1 refinement (2026-04-19)
+
+Shortly after 4.0 shipped, the first real migration beyond territory (authentication cluster) surfaced that the `concept_scope: composite` parent-child pattern was semantically equivalent to "take one, take all" co-retrieval of a single large concept — which collapses to "just have one file." The composite pattern added authoring ceremony and hidden file groups without a retrieval win.
+
+Schema v4.1 retires composite hierarchy and replaces it with:
+
+- **Strict single-file atoms.** One concept = one file = one retrieval unit. No parent-child file groups.
+- **Tighter size ceiling** (1,500 → 1,000 tokens) so oversized concepts split earlier.
+- **Directional `requires:` dependencies.** When one atom is genuinely unintelligible without another, declare it in frontmatter. EP MCP expands a matched atom to include its `requires:` chain at retrieval time (depth cap 2, count cap 3 atoms total per expansion).
+- **`## Key Propositions` section deprecated.** Body prose carries the propositions; the separate section was a retrieval hack for the aggregator era.
+
+The atomic-conceptual principle from 4.0 is preserved and strengthened. What 4.1 changes is the mechanism for concepts that genuinely span multiple retrieval units — asymmetric `requires:` edges replace parent-child hierarchies, and the pack's concept graph becomes directly useful for retrieval rather than being a separate analysis artifact.
+
+The full 4.1 spec lives in `schemas/core.md` § "Atomic-Conceptual Content Files" and `schemas/references/granularity-guide.md`.

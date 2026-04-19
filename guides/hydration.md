@@ -662,7 +662,7 @@ Content stays with the account, not the user. When an Editor is removed, their t
 
 ### Authoring guidance
 
-- **Size target:** 500–900 tokens per concept file; hard ceiling 1,500. Files below ~200 tokens are almost always better embedded as related terms in a parent concept.
+- **Size target:** 500–800 tokens per concept file; hard ceiling 1,000 (schema v4.1). Files below ~250 tokens are almost always better embedded as related terms in a parent concept. Concepts that exceed the ceiling split into independent atoms linked by `requires:`, not into numbered parts.
 - **Co-locate, don't spread.** If something is about this concept, it belongs in this file. Don't split the concept's definition, its FAQs, and its glossary entries across three files.
 - **Granularity.** Err toward embedding when in doubt. Promotion to a standalone concept file is cheap later; demotion creates broken wikilinks and orphan files. See the [granularity guide](../schemas/references/granularity-guide.md) for the full decision procedure with worked examples.
 - **Vocabulary bridging.** The old pattern of a separate glossary mapping user language to technical terms is replaced by inline anti-hallucination language in the opening paragraph ("There is NO Admin role…"), user-phrased FAQ questions, and Related Terms entries. If a pack has a cross-cutting optional `glossary.md` at the root for product-name-style terms, keep it lean — it's an author/agent navigation aid, not a retrieval layer.
@@ -677,7 +677,7 @@ A concept file is definitional: what something is, why it matters, how it behave
 
 #### Authoring for Retrieval
 
-Author every content file to the 400–800 token target (1,500 token ceiling). These files become self-contained retrieval units. Any standard RAG chunker will pass them through intact.
+Author every concept file to the 500–800 token target (1,000 token ceiling in schema v4.1). These files become self-contained retrieval units. Any standard RAG chunker will pass them through intact.
 
 This preserves:
 - Lead summaries attached to titles

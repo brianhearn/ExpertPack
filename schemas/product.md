@@ -694,9 +694,9 @@ See [references/interface-vocabulary.md](references/interface-vocabulary.md) for
 
 ## Atomic-Conceptual Content
 
-Schema v4.0+ product packs use **atomic-conceptual concept files**: each concept in `concepts/` is a self-contained retrieval unit carrying its definition, body, FAQs, related terms, and (optionally) key propositions in a single file. The deprecated `summaries/`, `propositions/`, and per-domain `glossary-{domain}.md` aggregator files are replaced by this model.
+Schema v4.1 product packs use **atomic-conceptual concept files**: each concept in `concepts/` is a self-contained retrieval unit carrying its definition, body, FAQs, and related terms in a single markdown file sized to fit in one RAG chunk (1,000-token ceiling). Concepts that would exceed the ceiling split into independent atoms; cross-atom dependencies are declared via the `requires:` frontmatter field. The deprecated v3 aggregator pattern (`summaries/`, `propositions/`, per-domain `glossary-{domain}.md`, standalone `faq/`) is replaced by this model.
 
-See [core.md § Atomic-Conceptual Content Files](core.md#atomic-conceptual-content-files) for the full pattern, and [`references/granularity-guide.md`](references/granularity-guide.md) for embed-vs-promote decision rules.
+See [core.md § Atomic-Conceptual Content Files](core.md#atomic-conceptual-content-files) for the full pattern, and [`references/granularity-guide.md`](references/granularity-guide.md) for embed-vs-promote and when-to-split decision rules.
 
 ---
 

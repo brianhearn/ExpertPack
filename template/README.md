@@ -108,7 +108,7 @@ Open `Dashboard.md` for a live view of:
 
 **400–800 tokens per file** (~1,600–3,200 characters). This is the ExpertPack chunking strategy: author files at target size so any RAG chunker passes them through intact. The schema IS the chunking strategy.
 
-Hard ceiling: 1,500 tokens (~6,000 chars) for standard files. Atomic files may exceed this.
+Hard ceiling: 1,000 tokens (~4,000 chars) for concept files in schema v4.1. Atomic files (workflows, troubleshooting) may exceed this.
 
 ---
 
