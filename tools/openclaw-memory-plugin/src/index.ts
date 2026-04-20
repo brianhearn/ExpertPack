@@ -21,10 +21,8 @@ import {
   type PluginConfig,
   type ResolvedPluginConfig,
 } from "./config.js";
-import {
-  EpMemorySearchManager,
-  type HostMemorySearchManager,
-} from "./search-manager.js";
+import { EpMemorySearchManager } from "./search-manager.js";
+import { buildMemorySearchTool, buildMemoryGetTool } from "./tools.js";
 
 const PLUGIN_ID = "ep-memory-mcp";
 
@@ -34,7 +32,7 @@ const PLUGIN_ID = "ep-memory-mcp";
  * don't keep rebuilding the client.
  */
 type ManagerCacheEntry = {
-  manager: HostMemorySearchManager;
+  manager: EpMemorySearchManager;
   config: ResolvedPluginConfig;
 };
 
@@ -48,7 +46,7 @@ export default definePluginEntry({
   register(api: OpenClawPluginApi): void {
     let cached: ManagerCacheEntry | null = null;
 
-    function getManager(): HostMemorySearchManager {
+    function getManager(): EpMemorySearchManager {
       if (cached) return cached.manager;
       const raw = api.pluginConfig as unknown as PluginConfig;
       const resolved = resolvePluginConfig(raw);
@@ -70,6 +68,19 @@ export default definePluginEntry({
       );
       return manager;
     }
+
+    // Register memory_search and memory_get so agents keep the same tool
+    // surface after swapping away from memory-core. Factories receive the
+    // live context but don't actually use it — the manager encapsulates
+    // everything they need.
+    api.registerTool(
+      () => buildMemorySearchTool(getManager()),
+      { names: ["memory_search"] },
+    );
+    api.registerTool(
+      () => buildMemoryGetTool(getManager()),
+      { names: ["memory_get"] },
+    );
 
     api.registerMemoryCapability({
       runtime: {
