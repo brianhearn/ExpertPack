@@ -62,7 +62,7 @@ Then in `~/.openclaw/openclaw.json`:
         "config": {
           "endpoint": "https://expertpack.ai/mcp",
           "apiKey": "<EP MCP bearer token>",
-          "pack": "ezt-designer",
+          "pack": "your-pack-name",
           "embedding": {
             "apiKey": "${GEMINI_API_KEY}",
             "model": "gemini-embedding-001",

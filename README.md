@@ -158,7 +158,7 @@ Packs can generate a `_graph.yaml` adjacency file from wikilinks, `related:` fro
 
 ### ExpertPack MCP Server
 
-[ExpertPack MCP](https://github.com/brianhearn/ep-mcp) exposes any ExpertPack as expertise-as-a-service over the Model Context Protocol. Schema-aware hybrid retrieval (BM25 + vector), graph-aware traversal, frontmatter-aware indexing, provenance metadata extraction, and multi-pack routing — any MCP-compatible agent gets instant access to pack knowledge. A live instance serving the `ezt-designer` pack runs at [expertpack.ai/mcp](https://expertpack.ai/mcp).
+[ExpertPack MCP](https://github.com/brianhearn/ep-mcp) exposes any ExpertPack as expertise-as-a-service over the Model Context Protocol. Schema-aware hybrid retrieval (BM25 + vector), graph-aware traversal, frontmatter-aware indexing, provenance metadata extraction, and multi-pack routing — any MCP-compatible agent gets instant access to pack knowledge.
 
 ---
 
@@ -251,4 +251,4 @@ The ExpertPack framework (schemas, guides, tooling) is open source. Individual p
 
 ---
 
-**[Website](https://expertpack.ai)** · **[GitHub](https://github.com/brianhearn/ExpertPack)** · Built by [Brian Hearn](https://github.com/brianhearn)
+**[Website](https://expertpack.ai)** · **[GitHub](https://github.com/brianhearn/expert-pack)** · Built by [Brian Hearn](https://github.com/brianhearn)

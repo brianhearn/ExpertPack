@@ -14,31 +14,31 @@ Strips YAML frontmatter (`---...---` blocks) from all `.md` files in a pack befo
 
 ```bash
 # Standard deploy prep
-python3 ep-strip-frontmatter.py --src ./ezt-designer --out ./ezt-designer-deploy
+python3 ep-strip-frontmatter.py --src ./my-pack --out ./my-pack-deploy
 
 # Dry run — see what would be stripped
-python3 ep-strip-frontmatter.py --src ./ezt-designer --out ./ezt-designer-deploy --dry-run
+python3 ep-strip-frontmatter.py --src ./my-pack --out ./my-pack-deploy --dry-run
 
 # Suppress overwrite warning
-python3 ep-strip-frontmatter.py --src ./ezt-designer --out ./ezt-designer-deploy --force
+python3 ep-strip-frontmatter.py --src ./my-pack --out ./my-pack-deploy --force
 ```
 
 ### Recommended deploy pattern
 
 ```bash
 # 1. Strip frontmatter to a temp deploy dir
-python3 ExpertPack/tools/deploy-prep/ep-strip-frontmatter.py \
-    --src ExpertPacks/ezt-designer \
-    --out /tmp/ezt-designer-deploy \
+python3 expert-pack/tools/deploy-prep/ep-strip-frontmatter.py \
+    --src ExpertPacks/my-pack \
+    --out /tmp/my-pack-deploy \
     --force
 
 # 2. Package and ship
-tar czf /tmp/ezt-designer-deploy.tar.gz -C /tmp/ezt-designer-deploy .
-scp /tmp/ezt-designer-deploy.tar.gz root@64.225.0.26:/tmp/
-ssh root@64.225.0.26 "rm -rf /root/.openclaw/workspace/ezt-designer && \
-    mkdir -p /root/.openclaw/workspace/ezt-designer && \
-    tar xzf /tmp/ezt-designer-deploy.tar.gz -C /root/.openclaw/workspace/ezt-designer"
+tar czf /tmp/my-pack-deploy.tar.gz -C /tmp/my-pack-deploy .
+scp /tmp/my-pack-deploy.tar.gz user@your-server:/tmp/
+ssh user@your-server "rm -rf /path/to/my-pack && \
+    mkdir -p /path/to/my-pack && \
+    tar xzf /tmp/my-pack-deploy.tar.gz -C /path/to/my-pack"
 
 # 3. Clean up
-rm -rf /tmp/ezt-designer-deploy /tmp/ezt-designer-deploy.tar.gz
+rm -rf /tmp/my-pack-deploy /tmp/my-pack-deploy.tar.gz
 ```
