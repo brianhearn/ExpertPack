@@ -37,7 +37,7 @@ A complete ExpertPack at the output directory:
 - `overview.md` — summary of graph contents, entity/relation counts, navigation guide
 - Content organized by mapped category (relationships/, workflows/, facts/, concepts/, operational/, governance/)
 - `_index.md` in each content directory
-- `relations.yaml` — typed entity relation graph (schema 2.3 compliant)
+- `relations.yaml` — typed entity relation graph (schema 4.1 compliant)
 - `glossary.md` — entity types and terms
 - Lead summaries and `##` section headers for optimal chunking
 

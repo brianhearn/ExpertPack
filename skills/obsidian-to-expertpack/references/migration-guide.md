@@ -13,8 +13,8 @@
 
 What it **cannot** do automatically (requires agent judgment):
 - EK triage (which content has real esoteric value vs. general knowledge)
-- Retriever-anchored opening paragraphs on each concept file (v4.0: the opening paragraph IS the summary)
-- Co-locating FAQs, related terms, and key propositions into each concept file per the atomic-conceptual v4.0 model (RFC-001)
+- Retriever-anchored opening paragraphs on each concept file (v4.1: the opening paragraph IS the summary)
+- Co-locating FAQs, related terms, and key propositions into each concept file per the atomic-conceptual v4.1 model (RFC-001)
 - `sources/_coverage.md` research audit
 - Meaningful glossary entries (and in v4.0 these typically embed as `## Related Terms` inside concepts rather than a root-level glossary)
 - File size splitting (files >1,500 tokens should be split at `##` boundaries)

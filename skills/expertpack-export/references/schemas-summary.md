@@ -61,11 +61,11 @@ packs/{person-slug}/
 └── meta/privacy.md
 ```
 
-## Product Pack Structure (Schema v4.0)
+## Product Pack Structure (Schema v4.1)
 
 ```
 packs/{product-slug}/
-├── manifest.yaml          # type: product, schema_version: "4.0"
+├── manifest.yaml          # type: product, schema_version: "4.1"
 ├── overview.md
 ├── concepts/              # Atomic-conceptual files: each carries its definition,
 │                          # body, FAQs, related terms, key propositions in one file
@@ -77,7 +77,7 @@ packs/{product-slug}/
 └── glossary.md            # (Optional) lean cross-cutting terms only
 ```
 
-*Schema v4.0 (RFC-001) deprecated the `summaries/`, `propositions/`, and `sources/` directories and per-domain `glossary-{domain}.md` files for product packs — concept files are now self-contained retrieval units.*
+*Schema v4.1 (RFC-001) deprecated the `summaries/`, `propositions/`, and `sources/` directories and per-domain `glossary-{domain}.md` files for product packs — concept files are now self-contained retrieval units.*
 
 ## Process Pack Structure
 

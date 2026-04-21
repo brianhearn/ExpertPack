@@ -103,7 +103,7 @@ relations:
 
 Navigation aid, not content. Markdown files always win on conflicts. Aim for 15–30 key relationships, not exhaustive graphs.
 
-## Chunking Strategy (schema 2.4+)
+## Chunking Strategy (schema 4.1)
 Content files declare how they should be chunked for RAG via directory defaults or frontmatter override.
 
 **Strategies:** `atomic` (never split) or `sectioned` (split on ## headers, default).
@@ -113,7 +113,7 @@ Content files declare how they should be chunked for RAG via directory defaults 
 - `troubleshooting/errors/`, `troubleshooting/diagnostics/`, `troubleshooting/common-mistakes/` → atomic
 - `interfaces/`, `concepts/`, `faq/`, `commercial/` → sectioned
 - Person-pack `summaries/` → sectioned (person packs retain verbatim↔summary mirroring pending RFC-002)
-- `propositions/` / `summaries/` (product/process) → DEPRECATED in v4.0; content moved into concept files
+- `propositions/` / `summaries/` (product/process) → DEPRECATED in v4.0 (RFC-001); content moved into concept files
 - All others → sectioned
 
 **Per-file override:**

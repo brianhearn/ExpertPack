@@ -173,8 +173,8 @@ The +9.4% correctness improvement came from preventing splits on oversized files
 | `troubleshooting/diagnostics/` | atomic | Decision trees are indivisible |
 | `troubleshooting/common-mistakes/` | atomic | Symptom + fix is one unit |
 | `interfaces/` | sectioned | Large files; regions are independent |
-| `concepts/` | sectioned | Self-contained atomic-conceptual files (v4.0); each `##` section is a coherent sub-chunk |
-| `faq/` | sectioned | Cross-cutting questions only in v4.0; per-concept FAQs live inside concept files |
+| `concepts/` | sectioned | Self-contained atomic-conceptual files (v4.1); each `##` section is a coherent sub-chunk |
+| `faq/` | sectioned | Cross-cutting questions only in v4.1; per-concept FAQs live inside concept files |
 | `summaries/` (person packs) | sectioned | Person-pack verbatim↔summary mirroring; pending RFC-002 |
 | `commercial/` | sectioned | Topics within commercial docs are independent |
 | All others | sectioned | Safe default |
@@ -210,7 +210,7 @@ Atomic files may exceed the chunker's default character budget. This is expected
 
 ### Evidence: What Works and What Doesn't
 
-These results come from 6 controlled experiments on a deployed product pack (EZT Designer, 204 source files, 50-question eval set), each changing one variable at a time:
+These results come from 6 controlled experiments on a deployed product pack (204 source files, 50-question eval set), each changing one variable at a time:
 
 | Change | Correctness | Hallucination | Input Tokens | Verdict |
 |--------|------------|---------------|-------------|---------|

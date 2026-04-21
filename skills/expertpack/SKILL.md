@@ -50,7 +50,7 @@ For detailed platform integration (Cursor, Claude Code, custom APIs, direct cont
    - Focus on esoteric knowledge — content the model cannot produce on its own
    - Full treatment for EK content; compressed scaffolding for general knowledge
    - Skip content with zero EK value
-8. Structure each concept file as an atomic-conceptual unit (v4.0): retriever-anchored opening paragraph, body sections, optional `## Frequently Asked`, `## Related Terms`, and `## Key Propositions`. Avoid `summaries/`/`propositions/`/per-domain `glossary-*.md` aggregator directories — they were deprecated in schema v4.0 (RFC-001).
+8. Structure each concept file as an atomic-conceptual unit (v4.1): retriever-anchored opening paragraph, body sections, optional `## Frequently Asked`, `## Related Terms`, and `## Key Propositions`. Avoid `summaries/`/`propositions/`/per-domain `glossary-*.md` aggregator directories — they were deprecated in schema v4.0 (RFC-001).
 9. Add `sources/_coverage.md` documenting what was researched
 
 For full hydration methodology and source prioritization: read `{skill_dir}/references/hydration.md`.

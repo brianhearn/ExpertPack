@@ -595,9 +595,9 @@ The most common hydration mistake is spending equal effort on general and esoter
 
 ---
 
-## Building Atomic-Conceptual Content Files (Schema v4.0+)
+## Building Atomic-Conceptual Content Files (Schema v4.1+)
 
-Hydrating content is half the job. The other half is structuring each concept file so the retriever can find it precisely. Schema v4.0 consolidates that into a single pattern: **one concept = one self-contained file** carrying definition, body, FAQs, related terms, and (when appropriate) key propositions.
+Hydrating content is half the job. The other half is structuring each concept file so the retriever can find it precisely. Schema v4.1 consolidates that into a single pattern: **one concept = one self-contained file** carrying definition, body, FAQs, related terms, and (when appropriate) key propositions.
 
 This supersedes the v3.x pattern of separate `summaries/`, `propositions/`, per-domain `glossary-*.md`, and standalone `faq/` directories. Those aggregator files were empirically shown to score broadly on every query and displace specific content — the opposite of what hierarchical retrieval theory predicted. See [`schemas/rfcs/RFC-001-atomic-conceptual-chunks.md`](../schemas/rfcs/RFC-001-atomic-conceptual-chunks.md) for the validation data and [`schemas/references/granularity-guide.md`](../schemas/references/granularity-guide.md) for embed-vs-promote authoring decisions.
 
@@ -605,14 +605,14 @@ This supersedes the v3.x pattern of separate `summaries/`, `propositions/`, per-
 
 ```markdown
 ---
-id: ezt-designer/concepts/user-roles
+id: my-pack/concepts/user-roles
 title: "User Roles"
 type: concept
 tags: [user-roles, permissions]
-pack: ezt-designer
+pack: my-pack
 retrieval_strategy: standard
 concept_scope: single
-schema_version: "4.0"
+schema_version: "4.1"
 verified_at: "2026-04-18"
 related:
   - managed-projects.md
@@ -621,7 +621,7 @@ related:
 
 # User Roles
 
-EZT Designer supports three user roles: Owner, Editor, and Viewer. Owners can manage team members and billing; Editors can create and modify territories but cannot change team settings; Viewers can see territories and reports but cannot edit them. There is no "Admin" role — Owner is the highest permission level.
+This product supports three user roles: Owner, Editor, and Viewer. Owners can manage team members and billing; Editors can create and modify content but cannot change team settings; Viewers can see content and reports but cannot edit them. There is no "Admin" role — Owner is the highest permission level.
 
 ## How It Works
 
@@ -688,7 +688,7 @@ This preserves:
 
 **Evidence: What Works and What Doesn't**
 
-These results come from 6 controlled experiments on a real product pack (EZT Designer, 204 source files), each changing one variable at a time:
+These results come from 6 controlled experiments on a real product pack (204 source files), each changing one variable at a time:
 
 | Change | Correctness | Hallucination | Tokens | Verdict |
 |--------|------------|---------------|--------|---------|

@@ -35,7 +35,7 @@ Override `.learnings/` location with `--learnings /path/to/.learnings`.
 
 ## What It Produces
 
-A complete ExpertPack conforming to schema 2.3:
+A complete ExpertPack conforming to schema 4.1:
 
 - `manifest.yaml` (with context tiers, EK stub)
 - `overview.md` summarizing conversion (entry counts, categories, priority breakdown)
