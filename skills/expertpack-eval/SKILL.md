@@ -64,4 +64,4 @@ python3 {skill_dir}/scripts/run-eval.py \
 - Fix one dimension at a time: structure → agent training → model
 - Re-run after each change to verify improvement
 
-**Learn more:** [expertpack.ai](https://expertpack.ai) · [GitHub](https://github.com/brianhearn/ExpertPack)
+**Learn more:** [expertpack.ai](https://expertpack.ai) · [GitHub](https://github.com/brianhearn/expert-pack)

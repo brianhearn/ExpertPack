@@ -15,7 +15,7 @@ Part of the [ExpertPack](https://expertpack.ai) framework — a structured, port
 
 Export an OpenClaw instance into a composite ExpertPack — an agent pack (subtype: agent) as the voice, plus person/product/process packs as knowledge constituents.
 
-**Learn more:** [expertpack.ai](https://expertpack.ai) · [GitHub](https://github.com/brianhearn/ExpertPack) · [Schema docs](https://expertpack.ai/#schemas)
+**Learn more:** [expertpack.ai](https://expertpack.ai) · [GitHub](https://github.com/brianhearn/expert-pack) · [Schema docs](https://expertpack.ai/#schemas)
 
 ## Prerequisites
 

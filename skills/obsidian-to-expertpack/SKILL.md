@@ -15,7 +15,7 @@ metadata:
 
 Converts an Obsidian Vault into a structured **ExpertPack** — agent-ready, RAG-optimized, and OpenClaw-compatible. Source vault is never modified; output is a clean copy.
 
-**Learn more:** [expertpack.ai](https://expertpack.ai) · [GitHub](https://github.com/brianhearn/ExpertPack)
+**Learn more:** [expertpack.ai](https://expertpack.ai) · [GitHub](https://github.com/brianhearn/expert-pack)
 
 > **Companion skills:** Install `expertpack` for full EP workflows. Install `expertpack-eval` to measure EK ratio after conversion.
 

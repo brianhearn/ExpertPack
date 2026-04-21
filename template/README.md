@@ -2,7 +2,7 @@
 
 A ready-to-go [Obsidian](https://obsidian.md) vault for building an [ExpertPack](https://expertpack.ai) — a structured knowledge pack that gives AI agents deep expertise in a specific domain.
 
-**[🌐 expertpack.ai](https://expertpack.ai)** · **[📦 ExpertPack on GitHub](https://github.com/brianhearn/ExpertPack)** · **[💎 What is an ExpertPack?](#what-is-an-expertpack)**
+**[🌐 expertpack.ai](https://expertpack.ai)** · **[📦 ExpertPack on GitHub](https://github.com/brianhearn/expert-pack)** · **[💎 What is an ExpertPack?](#what-is-an-expertpack)**
 
 ---
 
@@ -53,7 +53,7 @@ your-pack/
 
 ```bash
 # Option A — clone the ExpertPack repo and copy the template folder
-git clone https://github.com/brianhearn/ExpertPack.git
+git clone https://github.com/brianhearn/expert-pack.git
 cp -r ExpertPack/template my-pack-name
 
 # Option B — download the template folder directly from GitHub
@@ -159,7 +159,7 @@ Files are pre-sized at 400–800 tokens. Point any vector store at the pack dire
 ## Learn More
 
 - **[ExpertPack Schema docs](https://expertpack.ai/#schemas)** — Full specification
-- **[Community packs](https://github.com/brianhearn/ExpertPack/tree/main/packs)** — See real examples (Blender 3D, Home Assistant, Solar DIY)
-- **[ExpertPack on GitHub](https://github.com/brianhearn/ExpertPack)** — Star if useful ⭐
+- **[Community packs](https://github.com/brianhearn/expert-pack/tree/main/packs)** — See real examples (Blender 3D, Home Assistant, Solar DIY)
+- **[ExpertPack on GitHub](https://github.com/brianhearn/expert-pack)** — Star if useful ⭐
 - **[expertpack-eval skill](https://clawhub.ai/skills/expertpack-eval)** — EK ratio measurement
 - **[expertpack-export skill](https://clawhub.ai/skills/expertpack-export)** — Export an AI agent as an ExpertPack

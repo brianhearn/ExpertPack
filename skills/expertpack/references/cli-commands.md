@@ -2,7 +2,7 @@
 
 ## Obsidian Setup
 
-Copy the `.obsidian/` config from the ExpertPack repo template into your pack root. This enables Dataview and Templater pre-configured. See the ExpertPack repo at github.com/brianhearn/ExpertPack — the command is: `cp -r template/.obsidian ./your-pack-slug/.obsidian`
+Copy the `.obsidian/` config from the ExpertPack repo template into your pack root. This enables Dataview and Templater pre-configured. See the ExpertPack repo at github.com/brianhearn/expert-pack — the command is: `cp -r template/.obsidian ./your-pack-slug/.obsidian`
 
 ## OpenClaw RAG Configuration
 

@@ -10,7 +10,7 @@ metadata:
 
 Structured knowledge packs for AI agents. Maximize the knowledge your AI is missing.
 
-**Learn more:** [expertpack.ai](https://expertpack.ai) · [GitHub](https://github.com/brianhearn/ExpertPack) · [Schema docs](https://expertpack.ai/#schemas) · [Obsidian compatible](https://expertpack.ai/#obsidian)
+**Learn more:** [expertpack.ai](https://expertpack.ai) · [GitHub](https://github.com/brianhearn/expert-pack) · [Schema docs](https://expertpack.ai/#schemas) · [Obsidian compatible](https://expertpack.ai/#obsidian)
 
 > **💎 Obsidian compatible:** Every ExpertPack is a valid Obsidian vault. Copy the `.obsidian/` folder from the repo root into any pack directory, open it in Obsidian, and install Dataview + Templater. You get live queries by content type, EK score, and tags; graph view; and full-text search. Standard relative Markdown links — packs render correctly on GitHub and in Obsidian simultaneously.
 
@@ -43,7 +43,7 @@ For detailed platform integration (Cursor, Claude Code, custom APIs, direct cont
 1. Determine pack type: person, product, process, or composite
 2. Read `{skill_dir}/references/schemas.md` for structural requirements
 3. Create root directory using the pack slug (kebab-case)
-4. **Copy `.obsidian/` config into the pack root** — from the `template/` folder in the public ExpertPack repo (github.com/brianhearn/ExpertPack). This makes the pack immediately usable in Obsidian with Dataview and Templater pre-configured. See `{skill_dir}/references/cli-commands.md` for the copy command.
+4. **Copy `.obsidian/` config into the pack root** — from the `template/` folder in the public ExpertPack repo (github.com/brianhearn/expert-pack). This makes the pack immediately usable in Obsidian with Dataview and Templater pre-configured. See `{skill_dir}/references/cli-commands.md` for the copy command.
 5. Create `manifest.yaml` and `overview.md` (both required)
 6. Scaffold content directories per the type schema with `_index.md` in each
 7. Populate content using EK-aware hydration:
@@ -65,7 +65,7 @@ Install the companion skill `expertpack-eval` via clawhub — it handles all LLM
 
 ### 5. Validate & Fix a Pack
 
-The ExpertPack repo (`tools/validator/` at github.com/brianhearn/ExpertPack) includes local Python scripts for validation and auto-fix. They operate on local pack files only — no network calls, no external dependencies beyond Python stdlib.
+The ExpertPack repo (`tools/validator/` at github.com/brianhearn/expert-pack) includes local Python scripts for validation and auto-fix. They operate on local pack files only — no network calls, no external dependencies beyond Python stdlib.
 
 - **ep-validate.py** — 16-check compliance validator (manifest, frontmatter, wikilinks, cross-links, file prefixes, orphans, file size). Must pass with 0 errors before committing.
 - **ep-doctor.py** — auto-fixes common issues. Always run in dry-run mode first (default behavior); only add the apply flag after reviewing proposed changes. Fix categories: links, fm, prefix.

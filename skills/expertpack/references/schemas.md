@@ -169,7 +169,7 @@ ek_ratio:
 - Lead summaries, propositions, glossary for retrieval
 - Respect privacy and EK focus
 
-Full details: https://github.com/brianhearn/ExpertPack/schemas
+Full details: https://github.com/brianhearn/expert-pack/schemas
 See also: https://expertpack.ai
 ```
 
