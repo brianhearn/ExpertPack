@@ -162,14 +162,35 @@ Packs can generate a `_graph.yaml` adjacency file from wikilinks, `related:` fro
 
 ---
 
+## Implementation Status
+
+ExpertPack is an actively evolving framework. The table below shows which features are fully implemented, which are partial, and which are spec-level (defined but not yet wired end-to-end in the reference runtime).
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Atomic-conceptual content model | ✅ Full | Schema v4.0+; all new packs use this model |
+| `requires:` dependency frontmatter | ✅ Full | Spec + EP MCP runtime expansion live (depth 2, count 3 cap) |
+| EK triage during hydration | ✅ Full | Spec + tooling (`eval-ek.py`) |
+| Provenance frontmatter | ✅ Full | Spec defined; authoring tooling honors it |
+| Volatile data isolation | ✅ Full | `volatile/` convention + frontmatter TTL |
+| Automated eval runner | ✅ Full | `eval-runner/` with LLM-as-judge scoring |
+| Graph export | ✅ Full | `ep-graph-export.py`; `_graph.yaml` output |
+| Pack validation CLI | ✅ Full | `ep-validate`; structural + schema checks |
+| MCP server (EP MCP) | ✅ Full | BM25 + vector hybrid retrieval; multi-pack routing |
+| Provenance display in agent responses | ⚠️ Partial | Metadata available; surface-level rendering is runtime-dependent |
+| Scaffolding CLI / guided creation | 🚧 Roadmap | Planned; current creation requires agent-operated workflow |
+| Process schema (v1.4) | ⚠️ Partial | Core patterns stable; some v4.1 refinements not yet backported |
+
+---
+
 ## Schemas
 
 | Schema | Version | What It Covers |
 |--------|---------|---------------|
-| [core.md](schemas/core.md) | 3.1 | Shared principles: MD-canonical, file structure, retrieval optimization, chunking strategies, EK ratio, context tiers, provenance metadata, graph export |
-| [person.md](schemas/person.md) | 1.6 | Person packs: verbatim, mind taxonomy, relationships, presentation |
+| [core.md](schemas/core.md) | 4.1 | Shared principles: MD-canonical, atomic-conceptual model, `requires:` dependencies, EK ratio, context tiers, provenance, graph export |
+| [person.md](schemas/person.md) | 4.1 | Person packs: verbatim, mind taxonomy, relationships, presentation |
 | [agent.md](schemas/agent.md) | 1.0 | Agent extension: persona, capabilities, tool access, behavioral rules |
-| [product.md](schemas/product.md) | 3.1 | Product packs: concepts, workflows, interfaces, troubleshooting, commercial, customers |
+| [product.md](schemas/product.md) | 4.1 | Product packs: concepts, workflows, interfaces, troubleshooting, commercial, customers |
 | [process.md](schemas/process.md) | 1.4 | Process packs: phases, decisions, checklists, exceptions, scheduling, regulations |
 | [composite.md](schemas/composite.md) | 1.1 | Composites: multi-pack deployment, role assignments, auto-discovery & export |
 | [eval.md](schemas/eval.md) | 1.2 | Evaluation: EK ratio, correctness, hallucination, retrieval quality, structural health |

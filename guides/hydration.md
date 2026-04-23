@@ -8,6 +8,8 @@
 
 **The goal of hydration is not to document everything — it's to document what only this pack can provide.** An ExpertPack is valued by its esoteric knowledge (EK) ratio: the proportion of content that frontier LLMs cannot produce on their own (see [AXIOMS.md](../AXIOMS.md) and [core.md — EK Ratio](../schemas/core.md#esoteric-knowledge-ek-ratio)). Every hydration decision should be filtered through this lens: *Does the model already know this? If yes, minimize. If no, maximize.*
 
+**EK ratio is a north star, not a deletion rule.** The goal is to make the pack's *substance* esoteric — not to strip out every piece of general knowledge. GK scaffolding that makes EK content retrievable or intelligible belongs in the pack; see [EK Triage](#ek-triage--the-default-hydration-filter) for when to compress vs. skip. Similarly, explanatory context that helps a model reason from EK — not just retrieve it — has value even if the explanation itself isn't esoteric. The failure mode to avoid is a pack so aggressively pruned that EK atoms become isolated facts the model can retrieve but can't reason from.
+
 An ExpertPack is only as good as its sources. The best packs combine multiple population methods because no single method captures everything:
 
 - **Documentation gives you the intended behavior.** What the product/process/person is *supposed* to do or be.
