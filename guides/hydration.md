@@ -22,6 +22,23 @@ No method is inherently superior. The right mix depends on what source materials
 
 ---
 
+## Schema Negotiation
+
+Before populating a pack, review the typed schema against the pack's actual purpose. ExpertPack's schemas (person, product, process) provide a sensible default skeleton — but every domain is different, and a schema that fits an enterprise SaaS product poorly may cause the pack owner to disengage before hydration even begins.
+
+**The LLM's job during schema negotiation:**
+
+1. **Start with the typed skeleton.** Read the relevant type schema (person.md, product.md, or process.md) and scaffold the default directory structure.
+2. **Identify the pack's purpose.** Ask the pack owner 1–2 scoping questions: *What is the primary use case for this pack?* and *What kinds of questions should this pack be able to answer?* These answers take 30 seconds and prevent hours of misaligned content.
+3. **Propose adjustments — don't ask open-ended questions.** Based on the purpose, identify any default categories that clearly don't apply and any obvious gaps the schema doesn't cover. Present a concrete proposal: *"I'm adding a `pricing/` section and removing `philosophy/` since this is a technical reference. Confirm?"* The LLM proposes; the owner approves or adjusts.
+4. **Lock the schema before hydration begins.** Once confirmed, the agreed structure becomes the retrieval contract. Avoid adding new top-level categories mid-hydration — category drift produces near-duplicates (`use_cases/` and `applications/`) that fragment retrieval.
+
+**What stays fixed:** The `type` field and typed skeleton are the foundation. Schema negotiation shapes the *contents* of the structure, not the fundamental typing. This keeps composites and cross-pack reasoning coherent.
+
+**When to skip negotiation:** If the pack's purpose obviously maps cleanly to the default schema, skip the scoping questions and proceed. Negotiation is for cases where there's a meaningful mismatch — not a gate every hydration must pass through.
+
+---
+
 ## Planning a Hydration Campaign
 
 Before diving into population, step back and plan. A well-planned hydration campaign prioritizes the highest-EK sources, avoids wasting effort on general knowledge, and sequences methods so each builds on what came before.
