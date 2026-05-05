@@ -1671,6 +1671,17 @@ Use AKS when token efficiency and deterministic citations matter more than archi
 | `schemas/registry/edge-kinds.yaml` | All declared edge kinds (wikilink, related, context, supersedes, entity_mention, requires) |
 | `schemas/registry/examples/` | Concrete example records |
 
+
+### Ontology Suggestions
+
+`tools/ontology-suggest/ep-ontology-suggest.py` can propose a lightweight ontology from the compact AKS projection plus existing `requires:` / `related` edges:
+
+```bash
+python tools/ontology-suggest/ep-ontology-suggest.py path/to/pack
+```
+
+Default output is `ontology-suggestions.yaml` in the pack root. The output is **review-first**: generated categories, entities, and edges are suggestions only until a maintainer accepts them into a pack-specific ontology/entity registry. This avoids the failure mode where noisy capitalized phrases or generic tags become authoritative graph nodes.
+
 ### Generating Micro-Records
 
 Micro-records are generated from pack files by `tools/micro-record-exporter/`:
