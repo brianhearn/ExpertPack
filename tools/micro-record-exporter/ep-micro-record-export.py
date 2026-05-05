@@ -84,7 +84,7 @@ OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 DEFAULT_STATEMENT_MODEL = "openrouter/openai/gpt-4o-mini"
 
 # Files to skip
-SKIP_FILES = {"_graph.yaml", "_index.json", "_access.json", "manifest.yaml"}
+SKIP_FILES = {"_graph.yaml", "_index.json", "_access.json", "manifest.yaml", "STATUS.md", "README.md", "SCHEMA.md"}
 SKIP_PREFIXES = {".obsidian", ".git"}
 
 
@@ -185,7 +185,11 @@ def is_exportable_markdown(pack_path: Path, file_path: Path) -> bool:
         return False
     if file_path.name.startswith("_") or file_path.name in SKIP_FILES:
         return False
-    return not any(part.startswith(".") for part in rel_path.parts[:-1])
+    if any(part.startswith(".") for part in rel_path.parts[:-1]):
+        return False
+    if any(part in {"eval", "__pycache__"} for part in rel_path.parts[:-1]):
+        return False
+    return True
 
 
 # ---------------------------------------------------------------------------
