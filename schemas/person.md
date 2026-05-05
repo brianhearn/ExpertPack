@@ -165,7 +165,7 @@ schema_version: 4.1
 date_range: "1985-summer"                   # Flexible: YYYY, YYYY-MM, YYYY-MM-DD, "1985-summer", "late-1990s"
 location:
   - "Lake Talquin, FL"
-people:                                     # IDs matching relationships/ entries
+people:                                     # Relationship slugs (slug field, not canonical id)
   - "dad"
   - "uncle-mike"
 themes:
@@ -307,13 +307,14 @@ schema_version: 4.1
 
 ### relationships/{person-id}.md
 
-Each significant person in the subject's life gets their own atom. The file slug is the stable ID used in story card `people` arrays and timeline entries.
+Each significant person in the subject's life gets their own atom. The file slug becomes the `slug` field and is used in story card `people` arrays and timeline entries. The `id` field follows the core citation format: `{pack-slug}/relationships/{slug}`.
 
 **Atom template:**
 
 ```markdown
 ---
-id: uncle-mike
+id: "{person-slug}/relationships/uncle-mike"  # Core citation format: {pack-slug}/{path-without-extension}
+slug: "uncle-mike"                            # Short local reference; used in people: arrays and timeline entries
 title: "Mike Hearn (Uncle Mike)"
 type: relationship
 tags: [relationship, family, uncle]
@@ -346,7 +347,8 @@ Not asked about inclusion as of 2026-04-19.
 ```
 
 **Guidelines:**
-- **File slug** (`uncle-mike`) is the stable ID used everywhere — in story card `people:` arrays, timeline entries, and other atoms' body links
+- **`id`** follows the core citation format: `{pack-slug}/relationships/{slug}` (e.g., `brian-gpt/relationships/uncle-mike`). Use this for cross-pack references and AKS export citations
+- **`slug`** (`uncle-mike`) is the short local reference used in story card `people:` arrays, timeline entries, and other atoms' body links
 - **`time_period`** captures when the relationship was active: `lifelong`, `1995–2003`, `childhood`, `ongoing`. Prevents the agent from flattening a life into one static social graph
 - **`consent`** tracks whether this person has been asked about inclusion: `consented`, `not-asked`, `declined`, `deceased`, `public-figure`. See [Privacy & Consent](#privacy--consent) for rules
 - **Appears in** should cross-link to every atom where this person is mentioned — keep this list current when new content references them
