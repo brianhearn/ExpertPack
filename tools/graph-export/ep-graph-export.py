@@ -3,6 +3,7 @@
 
 Usage:
     python3 ep-graph-export.py /path/to/pack [--output _graph.yaml] [--format yaml|json]
+    python3 ep-graph-export.py /path/to/pack --ontology ontology.yaml
 
 Output (_graph.yaml by default at pack root):
     nodes:    list of {id, title, type, file, verified_at}
@@ -13,6 +14,8 @@ Edge kinds:
     wikilink  -- [[target.md]] body reference
     related   -- frontmatter related: list
     context   -- context comment related= hint
+    ontology_entity -- accepted ontology entity node
+    entity_mention  -- content node evidence/alias match to accepted entity
 
 Nodes without an id frontmatter field are excluded (use ep-validate --provenance first).
 """
@@ -31,6 +34,12 @@ RE_WIKI    = re.compile(r'\[\[([^\]|#\n]+?)(?:\|[^\]\n]+?)?\]\]')
 RE_CTX_REL = re.compile(r'<!--\s*context:[^>]*?related=([^\s,>]+)')
 
 
+def slugify(text):
+    text = text.lower()
+    text = re.sub(r'[^a-z0-9]+', '-', text).strip('-')
+    return text or 'unknown'
+
+
 def parse_fm(content):
     m = RE_FM.match(content)
     if not m:
@@ -45,7 +54,20 @@ def strip_fm(content):
     return RE_FM.sub('', content, count=1).lstrip('\n')
 
 
-def build_graph(pack_path):
+def load_ontology(pack_path, ontology_path=None):
+    path = ontology_path or os.path.join(pack_path, 'ontology.yaml')
+    if not path or not os.path.exists(path):
+        return {'entities': [], 'relations': []}
+    try:
+        data = yaml.safe_load(open(path, encoding='utf-8').read()) or {}
+    except Exception:
+        return {'entities': [], 'relations': []}
+    data.setdefault('entities', [])
+    data.setdefault('relations', [])
+    return data
+
+
+def build_graph(pack_path, ontology_path=None):
     pack_path = os.path.abspath(pack_path)
 
     manifest = {}
@@ -56,6 +78,7 @@ def build_graph(pack_path):
         except Exception:
             pass
     slug = manifest.get('slug', os.path.basename(pack_path))
+    ontology = load_ontology(pack_path, ontology_path)
 
     nodes = {}
     basename_to_ids = defaultdict(list)
@@ -108,6 +131,25 @@ def build_graph(pack_path):
             return file_to_id[rel_try]
         return None
 
+    # Add accepted ontology entity nodes. These are maintainer-approved, unlike
+    # ontology-suggestions.yaml output. They are included in graph export so
+    # GraphRAG/runtime traversal can bridge content files through canonical terms.
+    ontology_entities = {}
+    for entity in ontology.get('entities', []):
+        eid = str(entity.get('id', '')).strip()
+        if not eid:
+            continue
+        ontology_entities[eid] = entity
+        nodes[eid] = {
+            'id': eid,
+            'title': entity.get('label', eid),
+            'type': 'ontology_entity',
+            'kind': entity.get('kind', 'term'),
+            'aliases': entity.get('aliases', []),
+            'status': entity.get('status', 'accepted'),
+            'verified_at': str(entity.get('accepted_at', '')) or None,
+        }
+
     edges = []
     seen_edges = set()
 
@@ -118,6 +160,19 @@ def build_graph(pack_path):
         if key not in seen_edges:
             seen_edges.add(key)
             edges.append({'source': src, 'target': tgt, 'kind': kind})
+
+    def text_mentions_entity(text, entity):
+        needles = [entity.get('label', ''), *(entity.get('aliases') or [])]
+        lowered = text.lower()
+        for needle in needles:
+            needle = str(needle).strip()
+            if not needle or len(needle) < 3:
+                continue
+            # For short labels, require word-ish boundaries to avoid accidental substrings.
+            pattern = r'(?<![a-z0-9])' + re.escape(needle.lower()) + r'(?![a-z0-9])'
+            if re.search(pattern, lowered):
+                return True
+        return False
 
     for root, dirs, files in os.walk(pack_path):
         dirs[:] = sorted(d for d in dirs if d not in SKIP_DIRS)
@@ -158,6 +213,23 @@ def build_graph(pack_path):
                         if tgt:
                             add_edge(src_id, tgt, 'context')
 
+            searchable = ' '.join([
+                str(fm.get('title', '')),
+                ' '.join(str(t) for t in (fm.get('tags') or [])),
+                body[:4000],
+            ])
+            for eid, entity in ontology_entities.items():
+                evidence = entity.get('evidence') or []
+                if src_id in evidence or rel in evidence or text_mentions_entity(searchable, entity):
+                    add_edge(src_id, eid, 'entity_mention')
+
+    for rel in ontology.get('relations', []):
+        src = str(rel.get('source', '')).strip()
+        tgt = str(rel.get('target', '')).strip()
+        kind = str(rel.get('kind', 'related_to')).strip() or 'related_to'
+        if src and tgt:
+            add_edge(src, tgt, kind)
+
     return {
         'meta': {
             'pack':           manifest.get('name', slug),
@@ -165,7 +237,8 @@ def build_graph(pack_path):
             'generated_at':   datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
             'node_count':     len(nodes),
             'edge_count':     len(edges),
-            'schema_version': '1.0',
+            'ontology_entity_count': len(ontology_entities),
+            'schema_version': '1.1',
         },
         'nodes': list(nodes.values()),
         'edges': edges,
@@ -180,6 +253,8 @@ def main():
                         help='Output filename (default: _graph.yaml at pack root)')
     parser.add_argument('--format', choices=['yaml', 'json'], default='yaml',
                         help='Output format (default: yaml)')
+    parser.add_argument('--ontology', default=None,
+                        help='Accepted ontology file (default: pack/ontology.yaml if present)')
     args = parser.parse_args()
 
     if not os.path.isdir(args.pack):
@@ -187,7 +262,7 @@ def main():
         sys.exit(1)
 
     print(f"Building graph for {os.path.basename(args.pack)}...", file=sys.stderr)
-    graph = build_graph(args.pack)
+    graph = build_graph(args.pack, ontology_path=args.ontology)
 
     out_path = os.path.join(os.path.abspath(args.pack), args.output)
     with open(out_path, 'w', encoding='utf-8') as fh:
@@ -200,6 +275,7 @@ def main():
     m = graph['meta']
     print(f"  Nodes: {m['node_count']}", file=sys.stderr)
     print(f"  Edges: {m['edge_count']}", file=sys.stderr)
+    print(f"  Ontology entities: {m.get('ontology_entity_count', 0)}", file=sys.stderr)
     print(f"  Written: {out_path}", file=sys.stderr)
 
 

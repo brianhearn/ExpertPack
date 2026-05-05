@@ -55,3 +55,13 @@ The output is a flat adjacency list — import into any graph framework:
 - **NetworkX:** `G.add_edges_from([(e['source'], e['target']) for e in graph['edges']])`
 - **Neo4j/Cypher:** Map nodes as `:Concept` with `id` as the key property
 - **LlamaIndex Knowledge Graph:** Feed nodes/edges into `KnowledgeGraphIndex`
+
+## Accepted Ontology Integration
+
+`ep-graph-export.py` reads `ontology.yaml` from the pack root when present, or an explicit file via `--ontology`. Accepted ontology entities become graph nodes with `type: ontology_entity`; content files that mention accepted entity labels/aliases get `entity_mention` edges. Accepted ontology relations are emitted as graph edges using their declared `kind`.
+
+```bash
+python tools/graph-export/ep-graph-export.py /path/to/pack --ontology /path/to/ontology.yaml
+```
+
+Only accepted ontology entries are used. `ontology-suggestions.yaml` is intentionally ignored unless a maintainer promotes entries into `ontology.yaml`.

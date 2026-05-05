@@ -174,7 +174,7 @@ ExpertPack is an actively evolving framework. The table below shows which featur
 | Provenance frontmatter | ✅ Full | Spec defined; authoring + micro-record tooling honors it |
 | Volatile data isolation | ✅ Full | `volatile/` convention + frontmatter TTL |
 | Automated eval runner | ✅ Full | `eval-runner/` with LLM-as-judge scoring |
-| Graph export | ✅ Full | `ep-graph-export.py`; `_graph.yaml` output |
+| Graph export | ✅ Full | `ep-graph-export.py`; `_graph.yaml` output incl. accepted ontology/entity edges |
 | Agent Knowledge Schema (AKS) export | ✅ Full | `ep-micro-record-export.py --compact`; compact provenance-first JSONL for agent pipelines |
 | Ontology suggestion CLI | ✅ Initial | `ep-ontology-suggest.py`; review-first entity/category suggestions plus accepted ontology.yaml registry |
 | Pack validation CLI | ✅ Full | `ep-validate`; structural + schema/provenance/AKS-readiness checks |

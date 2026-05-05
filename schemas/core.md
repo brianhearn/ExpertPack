@@ -1680,7 +1680,7 @@ Use AKS when token efficiency and deterministic citations matter more than archi
 python tools/ontology-suggest/ep-ontology-suggest.py path/to/pack
 ```
 
-Default output is `ontology-suggestions.yaml` in the pack root. The output is **review-first**: generated categories, entities, and edges are suggestions only until a maintainer accepts them into `ontology.yaml`, the pack-level accepted ontology registry (`schema: expertpack.ontology.v1`). This avoids the failure mode where noisy capitalized phrases or generic tags become authoritative graph nodes.
+Default output is `ontology-suggestions.yaml` in the pack root. The output is **review-first**: generated categories, entities, and edges are suggestions only until a maintainer accepts them into `ontology.yaml`, the pack-level accepted ontology registry (`schema: expertpack.ontology.v1`). `ep-graph-export.py` consumes accepted `ontology.yaml` entries and emits ontology entity nodes plus `entity_mention` / accepted relation edges into `_graph.yaml`. This avoids the failure mode where noisy capitalized phrases or generic tags become authoritative graph nodes.
 
 ### Generating Micro-Records
 
