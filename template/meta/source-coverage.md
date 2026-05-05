@@ -1,9 +1,9 @@
 ---
 title: "Source Coverage"
-type: source
+type: meta
 tags: [source, coverage, pack-name]
 pack: your-pack-slug
-retrieval_strategy: standard
+retrieval_strategy: navigation
 ---
 
 # Source Coverage

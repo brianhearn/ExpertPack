@@ -152,13 +152,13 @@ def scan_workspace(workspace: str) -> dict:
             if rel in [v for v in MEMORY_PATTERNS.keys()]:
                 continue  # already handled
             if re.match(r'memory/\d{4}-\d{2}-\d{2}\.md', rel):
-                entry = _make_file_entry(f, ws, agent_slug, "summaries/lessons", 0.6)
+                entry = _make_file_entry(f, ws, agent_slug, "lessons/lessons", 0.6)
                 entry["content_type"] = "daily_journal"
                 entry["needs_content_analysis"] = True
                 manifest["files"].append(entry)
                 packs[agent_slug]["sources"].append(rel)
             elif re.match(r'memory/\d{4}-\d{2}-summary\.md', rel):
-                entry = _make_file_entry(f, ws, agent_slug, "summaries/lessons", 0.7)
+                entry = _make_file_entry(f, ws, agent_slug, "lessons/lessons", 0.7)
                 entry["content_type"] = "monthly_summary"
                 manifest["files"].append(entry)
                 packs[agent_slug]["sources"].append(rel)

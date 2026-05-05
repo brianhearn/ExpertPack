@@ -164,7 +164,7 @@ Categories are pack-type flexible. Use what applies:
 | Metric | What It Measures | How to Score |
 |--------|-----------------|-------------|
 | **EK Ratio** | Proportion of pack propositions containing esoteric knowledge | See [core.md — EK Ratio](core.md#esoteric-knowledge-ek-ratio) for full methodology |
-| **EK by Section** | Which sections contribute most/least esoteric knowledge | EK ratio calculated per content section (e.g. per concept file or per phase) by aggregating propositions extracted from `## Key Propositions` sections and body prose |
+| **EK by Section** | Which sections contribute most/least esoteric knowledge | EK ratio calculated per content section (e.g. per concept file or per phase) by aggregating propositions extracted from body prose, FAQs, and procedural steps |
 | **GK Bloat** | How much pack space is consumed by general knowledge | Total tokens in low-EK files / total pack tokens |
 
 **Methodology:** EK ratio is measured via proposition-level blind probing — asking frontier models each proposition as a question without pack context. See [core.md — Measuring EK Ratio](core.md#measuring-ek-ratio) for the complete protocol.
@@ -195,20 +195,20 @@ ek_ratio:
 
 ### Measuring EK Across Pack Types
 
-The standard EK measurement protocol extracts atomic factual statements (propositions) from pack content and converts them to probe questions. In schema v4.0+, propositions come from concept-file `## Key Propositions` sections and from body prose. In v3.x packs, propositions still live in `propositions/` files and the same protocol applies against those. Person packs require adaptation:
+The standard EK measurement protocol extracts atomic factual statements (propositions) from pack content and converts them to probe questions. In schema v4.1+, propositions are extracted from body prose, FAQs, workflow steps, and other atom content. Legacy v4.0 packs may also carry concept-file `## Key Propositions` sections. In v3.x packs, propositions still live in `propositions/` files and the same protocol applies against those. Person packs require adaptation:
 
-**Product packs (v4.0):** Extract propositions from each concept file's `## Key Propositions` section plus atomic statements from body prose and FAQs. Also pull from workflows, troubleshooting, and specifications. Probe with factual questions.
+**Product packs (v4.1):** Extract atomic statements from concept body prose, FAQs, workflows, troubleshooting, interfaces, and specifications. Probe with factual questions. For legacy v4.0 packs, also use any remaining `## Key Propositions` sections.
 
 **Product packs (v3.x legacy):** Use the pack's `propositions/` files directly.
 
-**Process packs:** Extract propositions from phases, decisions, gotchas, and regulations files, plus concept-file `## Key Propositions` sections in v4.0+ packs. Some process propositions are procedural ("Phase 3 requires a structural inspection before framing begins") — convert these to "what happens after X?" or "what is required before Y?" style questions.
+**Process packs:** Extract propositions from phases, decisions, gotchas, regulations, fundamentals/concepts, checklists, and exceptions. Some process propositions are procedural ("Phase 3 requires a structural inspection before framing begins") — convert these to "what happens after X?" or "what is required before Y?" style questions.
 
-**Person packs:** Adapted protocol. Person packs store knowledge in `verbatim/`, `mind/`, `facts/`, and `relationships/` — not traditional propositions. To measure EK:
+**Person packs:** Adapted protocol. Person packs store knowledge in `stories/`, `reflections/`, `opinions/`, `conversations/`, `mind/`, `facts/`, `relationships/`, and `presentation/` — not traditional propositions. To measure EK:
 1. Extract testable claims from `facts/` (biographical data) and `mind/` (beliefs, positions) — these behave like propositions
-2. For `verbatim/` content (stories, reflections), extract the unique factual claims embedded in narratives ("Brian watched the Apollo 11 launch from a sailboat named Dulcinea")
+2. For narrative atoms in `stories/`, `reflections/`, `opinions/`, and `conversations/`, extract the unique factual claims embedded in narratives ("Brian watched the Apollo 11 launch from a sailboat named Dulcinea")
 3. Skip `presentation/` (speech patterns, voice) — these are inherently esoteric and unmeasurable via blind probing
 4. For public figures, EK ratio of `facts/` and known positions may be lower; for private individuals, nearly everything is EK
-5. Report person-pack EK ratio with a note: "EK ratio reflects `facts/` and `mind/` content only; `verbatim/` and `presentation/` are EK by definition and excluded from measurement"
+5. Report person-pack EK ratio with a note: "EK ratio reflects testable claims from `facts/`, `mind/`, relationships, and narrative atoms; `presentation/` is EK by definition and excluded from blind-probe scoring"
 
 **Composite packs:** Measure each sub-pack independently and report per-sub-pack EK ratios alongside the composite ratio.
 
@@ -221,7 +221,7 @@ The standard EK measurement protocol extracts atomic factual statements (proposi
 | **Index Completeness** | Do all directories have current `_index.md` files? | % of content directories with up-to-date indexes |
 | **Cross-Reference Integrity** | Do internal markdown links resolve? | % of links that point to existing files |
 | **Freshness** | How recently was content updated? | Days since last update, per section |
-| **File Size Compliance** | Are content files within the 1-3KB guideline? | % of files within range (excluding known exceptions) |
+| **File Size Compliance** | Do concept-like files fit the 400–800 token target and 1,000-token ceiling, with procedural atomic exceptions documented? | % of files within target/ceiling; separate count for approved atomic procedural exceptions |
 | **Provenance Coverage** | Do content files have source attribution? | % of files with provenance frontmatter |
 
 ---
@@ -387,6 +387,6 @@ eval:
 
 ---
 
-*Schema version: 1.2*
+*Schema version: 1.3*
 *Created: 2026-03-05*
 *Last updated: 2026-03-12*

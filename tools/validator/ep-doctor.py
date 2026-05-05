@@ -11,10 +11,10 @@ Usage:
 Fix operations:
   links  — convert path-based related: to bare filenames
          — convert markdown links to wikilinks in body
-         — add missing verbatim<->summary cross-links
+         — add missing legacy verbatim<->summary cross-links
          — add reverse related: links (bidirectional enforcement)
   fm     — add missing frontmatter fields (title, type, tags, pack)
-         — fix canonical_verbatim paths to bare filenames
+         — fix legacy canonical_verbatim paths to bare filenames
   size   — (report only) flag files over the char ceiling
   prefix — suggest prefix map for packs without file_prefixes
          — rename files with prefixes (--apply required, transactional)
@@ -38,25 +38,30 @@ RE_MDLINK = re.compile(r'\[([^\]]+)\]\(([^)]+\.md)\)')
 
 PERSON_PACK_PREFIXES = {
     'facts': 'facts-', 'meta': 'meta-', 'mind': 'mind-',
-    'propositions': 'prop-', 'relationships': 'rel-',
+    'relationships': 'rel-',
     'presentation': 'pres-',
     'presentation/appearance': 'pres-appearance-',
     'presentation/voice': 'pres-voice-',
-    'summaries/stories': 'sum-', 'summaries/reflections': 'sum-',
-    'summaries/opinions': 'sum-',
-    'verbatim/stories': 'vbt-', 'verbatim/reflections': 'vbt-',
-    'verbatim/opinions': 'vbt-',
+    'stories': 'story-', 'reflections': 'refl-',
+    'opinions': 'opn-', 'conversations': 'conv-',
 }
 
 DIR_TYPE_MAP = {
     'concepts': 'concept', 'workflows': 'workflow',
-    'troubleshooting': 'troubleshooting', 'faq': 'faq',
+    'troubleshooting': 'troubleshooting',
+    'errors': 'troubleshooting',
+    'diagnostics': 'troubleshooting',
+    'common-mistakes': 'gotcha',
+    'faq': 'faq',
     'propositions': 'proposition', 'summaries': 'summary',
     'sources': 'source', 'decisions': 'decision',
     'facts': 'fact', 'mind': 'mind', 'relationships': 'relationship',
-    'presentation': 'presentation', 'verbatim': 'verbatim',
+    'stories': 'story', 'reflections': 'reflection',
+    'opinions': 'opinion', 'conversations': 'conversation',
+    'presentation': 'presentation',
     'training': 'training', 'meta': 'meta', 'commercial': 'commercial',
     'customers': 'customer', 'volatile': 'volatile',
+    'lessons': 'lesson',
 }
 
 
@@ -287,8 +292,10 @@ class Doctor:
                     added.append('title')
             # type from directory
             if 'type' not in fm:
-                top_dir = rel_dir.split('/')[0]
-                t = DIR_TYPE_MAP.get(top_dir)
+                parts = rel.split('/')
+                top_dir = parts[0]
+                leaf_key = parts[-2] if len(parts) > 2 else os.path.splitext(os.path.basename(rel))[0]
+                t = DIR_TYPE_MAP.get(leaf_key) or DIR_TYPE_MAP.get(top_dir)
                 if t:
                     fm['type'] = t
                     added.append('type')

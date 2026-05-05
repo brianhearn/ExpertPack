@@ -5,7 +5,7 @@ type: faq
 tags: [faq, <% tp.file.title.toLowerCase().replace(/ /g, '-') %>]
 pack: your-pack-slug
 retrieval_strategy: standard
-schema_version: "4.0"
+schema_version: "4.1"
 verified_at: "<% tp.date.now('YYYY-MM-DD') %>"
 verified_by: agent
 ---
@@ -13,7 +13,7 @@ verified_by: agent
 # <% tp.file.title %>
 
 <!--
-  SCHEMA v4.0 NOTE:
+  SCHEMA v4.1 NOTE:
   Use this template ONLY for cross-cutting questions that do not belong to any
   single concept (e.g., "What does this product name mean?").
 

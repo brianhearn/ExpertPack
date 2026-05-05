@@ -52,7 +52,7 @@ def scaffold_agent_pack(output_dir: Path, slug: str, scan: dict):
         "relationships",
         "facts",
         "presentation",
-        "summaries",
+        "lessons",
         "meta",
     ]
     for d in dirs:
@@ -65,7 +65,7 @@ def scaffold_agent_pack(output_dir: Path, slug: str, scan: dict):
         "type": "person",
         "subtype": "agent",
         "version": "1.0.0",
-        "schema_version": "1.6",
+        "schema_version": "1.7",
         "description": f"Agent identity and operational knowledge for {slug}",
         "entry_point": "overview.md",
         "subject": {
@@ -76,7 +76,7 @@ def scaffold_agent_pack(output_dir: Path, slug: str, scan: dict):
         "context": {
             "always": [
                 "overview.md",
-                "presentation/speech_patterns.md",
+                "presentation/speech-patterns.md",
                 "operational/safety.md",
                 "mind/values.md",
             ],
@@ -85,7 +85,7 @@ def scaffold_agent_pack(output_dir: Path, slug: str, scan: dict):
                 "relationships/",
                 "facts/",
                 "operational/",
-                "summaries/",
+                "lessons/",
                 "presentation/modes.md",
             ],
             "on_demand": [
@@ -105,25 +105,25 @@ def scaffold_agent_pack(output_dir: Path, slug: str, scan: dict):
 
     # Write stub files that the agent will fill with distilled content
     stubs = {
-        "overview.md": "# {name}\n\n> Agent identity and personality. To be distilled from SOUL.md + IDENTITY.md.\n",
-        "MIGRATION.md": "# Migration Guide\n\n> Hydration instructions. To be filled after distillation.\n",
-        "operational/tools.md": "# Tools\n\n> Distilled from TOOLS.md. No secrets.\n",
-        "operational/infrastructure.md": "# Infrastructure\n\n> Distilled from TOOLS.md + memory files.\n",
-        "operational/integrations.md": "# Integrations\n\n> Messaging channels, APIs, external services.\n",
-        "operational/routines.md": "# Routines\n\n> Distilled from HEARTBEAT.md + cron jobs.\n",
-        "operational/safety.md": "# Safety Contracts\n\n> Distilled from AGENTS.md safety rules.\n",
-        "mind/values.md": "# Values & Operational Principles\n\n> Prescriptive rules from AGENTS.md.\n",
-        "mind/skills.md": "# Capabilities\n\n> What this agent can do.\n",
-        "mind/relational.md": "# Interaction Rules\n\n> How this agent communicates in different contexts.\n",
-        "mind/preferences.md": "# Learned Preferences\n\n> Formatting, behavior, platform-specific rules.\n",
-        "mind/reasoning.md": "# Reasoning Patterns\n\n> How this agent approaches decisions.\n",
-        "mind/tensions.md": "# Known Limitations\n\n> Failure modes, weaknesses, things to improve.\n",
-        "relationships/people.md": "# Relationships\n\n> Primary user, contacts, peer agents.\n",
-        "facts/personal.md": "# Agent Identity\n\n> Name, creation date, platform, avatar.\n",
-        "facts/timeline.md": "# Timeline\n\n> Significant events in this agent's history.\n",
-        "presentation/speech_patterns.md": "# Communication Style\n\n> Tone, humor, formality, emoji usage.\n",
-        "presentation/modes.md": "# Modes\n\n> Context-dependent voices.\n",
-        "summaries/lessons.md": "# Lessons Learned\n\n> Patterns, post-mortems, accumulated wisdom.\n",
+        "overview.md": "# {name}\n\n{name} is an agent identity and operational knowledge pack distilled from SOUL.md, IDENTITY.md, and workspace state.\n",
+        "MIGRATION.md": "# Migration Guide\n\nHydration instructions and migration notes for restoring this agent pack into another runtime.\n",
+        "operational/tools.md": "# Tools\n\nDistilled tool and infrastructure knowledge from TOOLS.md. No secrets.\n",
+        "operational/infrastructure.md": "# Infrastructure\n\nDistilled infrastructure knowledge from TOOLS.md and memory files.\n",
+        "operational/integrations.md": "# Integrations\n\nMessaging channels, APIs, and external services available to this agent.\n",
+        "operational/routines.md": "# Routines\n\nRecurring routines distilled from HEARTBEAT.md and scheduled jobs.\n",
+        "operational/safety.md": "# Safety Contracts\n\nSafety and privacy contracts distilled from AGENTS.md and workspace rules.\n",
+        "mind/values.md": "# Values & Operational Principles\n\nPrescriptive operating values and rules distilled from AGENTS.md.\n",
+        "mind/skills.md": "# Capabilities\n\nWhat this agent can do and when those capabilities apply.\n",
+        "mind/relational.md": "# Interaction Rules\n\nHow this agent communicates in different contexts and channels.\n",
+        "mind/preferences.md": "# Learned Preferences\n\nFormatting, behavior, and platform-specific preference rules.\n",
+        "mind/reasoning.md": "# Reasoning Patterns\n\nHow this agent approaches decisions, tradeoffs, and uncertainty.\n",
+        "mind/tensions.md": "# Known Limitations\n\nFailure modes, weaknesses, and areas to improve.\n",
+        "relationships/people.md": "# Relationships\n\nPrimary user, contacts, collaborators, and peer agents.\n",
+        "facts/personal.md": "# Agent Identity\n\nName, creation date, platform, avatar, and other stable identity facts.\n",
+        "facts/timeline.md": "# Timeline\n\nSignificant events in this agent's history and capability development.\n",
+        "presentation/speech-patterns.md": "# Communication Style\n\nTone, humor, formality, emoji usage, and other speech patterns.\n",
+        "presentation/modes.md": "# Modes\n\nContext-dependent communication modes and when to use them.\n",
+        "lessons/lessons.md": "# Lessons Learned\n\nPatterns, post-mortems, and accumulated operational wisdom.\n",
         "meta/privacy.md": "# Privacy\n\n## Public\n- Identity, capabilities, communication style\n\n## Private\n- User details, infrastructure specifics, relationship details\n",
     }
 
@@ -146,7 +146,7 @@ def scaffold_person_pack(output_dir: Path, slug: str, scan: dict):
         "slug": slug,
         "type": "person",
         "version": "1.0.0",
-        "schema_version": "1.5",
+        "schema_version": "4.1",
         "description": f"Knowledge about {slug.replace('-', ' ').title()}",
         "entry_point": "overview.md",
         "subject": {
@@ -170,10 +170,10 @@ def scaffold_person_pack(output_dir: Path, slug: str, scan: dict):
     _write_yaml(output_dir / "manifest.yaml", manifest)
 
     stubs = {
-        "overview.md": "# {name}\n\n> Person overview. To be distilled from USER.md + MEMORY.md.\n",
-        "facts/personal.md": "# Personal Facts\n\n> Bio, timezone, role, background.\n",
-        "relationships/people.md": "# Relationships\n\n> Key people in this person's life/work.\n",
-        "mind/preferences.md": "# Preferences\n\n> Communication style, work patterns, interests.\n",
+        "overview.md": "# {name}\n\n{name} is a person captured in this ExpertPack. This overview should be distilled from USER.md, MEMORY.md, and source notes.\n",
+        "facts/personal.md": "# Personal Facts\n\nCore biographical facts: timezone, role, background, and other verified details.\n",
+        "relationships/people.md": "# Relationships\n\nKey people in this person's life and work, with context for how they relate.\n",
+        "mind/preferences.md": "# Preferences\n\nCommunication style, work patterns, interests, and other preference signals.\n",
         "meta/privacy.md": "# Privacy\n\n## Public\n- Name, role, professional info\n\n## Private\n- Personal details, family, beliefs\n",
     }
 
@@ -196,7 +196,7 @@ def scaffold_product_pack(output_dir: Path, slug: str, scan: dict):
         "slug": slug,
         "type": "product",
         "version": "1.0.0",
-        "schema_version": "1.4",
+        "schema_version": "4.1",
         "description": f"Product knowledge for {slug.replace('-', ' ').title()}",
         "entry_point": "overview.md",
         "context": {
@@ -216,7 +216,7 @@ def scaffold_product_pack(output_dir: Path, slug: str, scan: dict):
     _write_yaml(output_dir / "manifest.yaml", manifest)
 
     stubs = {
-        "overview.md": f"# {slug.replace('-', ' ').title()}\n\n> Product overview. To be distilled.\n",
+        "overview.md": f"# {slug.replace('-', ' ').title()}\n\n{slug.replace('-', ' ').title()} is a product knowledge pack scaffolded from OpenClaw workspace knowledge. Replace this sentence with a precise product definition during distillation.\n",
     }
 
     for relpath, content in stubs.items():
@@ -236,7 +236,7 @@ def scaffold_process_pack(output_dir: Path, slug: str, scan: dict):
         "slug": slug,
         "type": "process",
         "version": "1.0.0",
-        "schema_version": "1.2",
+        "schema_version": "4.1",
         "description": f"Process documentation for {slug.replace('-', ' ').title()}",
         "entry_point": "overview.md",
         "context": {
@@ -256,7 +256,7 @@ def scaffold_process_pack(output_dir: Path, slug: str, scan: dict):
     _write_yaml(output_dir / "manifest.yaml", manifest)
 
     stubs = {
-        "overview.md": f"# {slug.replace('-', ' ').title()}\n\n> Process overview. To be distilled.\n",
+        "overview.md": f"# {slug.replace('-', ' ').title()}\n\n{slug.replace('-', ' ').title()} is a process knowledge pack scaffolded from OpenClaw workspace knowledge. Replace this sentence with a precise process definition during distillation.\n",
     }
 
     for relpath, content in stubs.items():

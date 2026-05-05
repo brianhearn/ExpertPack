@@ -43,7 +43,7 @@ Reduce hallucinations and improve answer completeness.
 - [ ] **Contradiction detection** — surface conflicting chunks at runtime instead of guessing
 - [x] **Hallucination measurement** — automated detection via LLM-as-judge against pack content
 - [x] **Claim-to-span verification** *(shipped 2026-04-15)* — `tools/eval-runner/claim_verifier.py`: post-processor that extracts claims from any completed eval result, verifies each against pack spans, and appends `claim_coverage` + `citation_f1` to both per-question details and aggregate scores. Run after `run_eval.py` to get grounding metrics on any result file.
-- [x] **Schema registry** *(shipped 2026-04-15)* — `schemas/registry/`: full micro-record schema (YAML field definitions), JSON-LD context with stable URIs at `expertpack.ai/schema/1.0/`, `types.yaml` (all 25 types), `edge-kinds.yaml` (5 edge kinds), and 3 worked examples (concept, workflow, FAQ). Core schema section added. Bi-temporal provenance (`valid_from` + `recorded_at`) formalized here as part of the micro-record spec. Exporter tooling (`tools/micro-record-exporter/`) is the natural next step — see Hybrid KG + vector micro-records export item.
+- [x] **Schema registry** *(shipped 2026-04-15)* — `schemas/registry/`: descriptive registry specs for compact AKS export and accepted ontology (`agent-knowledge.spec.yaml`, `ontology.spec.yaml`) plus usage guide. Markdown remains canonical; `.spec.yaml` files are ExpertPack-native specs rather than JSON Schema/OpenAPI.
 
 ### 4. Pack Creation & Training
 Make it easier to build and maintain packs.
@@ -180,7 +180,7 @@ Stay current with developments that could improve the framework.
 - Run after `run_eval.py` to get grounding metrics on any result file
 
 **Schema registry:**
-- `schemas/registry/` — full micro-record schema (YAML field definitions), JSON-LD context with stable URIs at `expertpack.ai/schema/1.0/`, `types.yaml` (25 types), `edge-kinds.yaml` (5 edge kinds), 3 worked examples (concept, workflow, FAQ)
+- `schemas/registry/` — descriptive registry specs for AKS and accepted ontology plus usage guide
 - Core schema section updated to reference registry
 
 **EP MCP graph traversal verified:**

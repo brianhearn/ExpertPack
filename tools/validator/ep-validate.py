@@ -13,10 +13,10 @@ Checks (21):
   7. _index.md presence for every content directory
   8. Broken related: frontmatter references
   9. Path-based related: entries (should be bare filenames)
- 10. Missing verbatim<->summary cross-links
+ 10. Legacy verbatim<->summary cross-links
  11. Broken wikilinks in body
  12. Markdown links in body (should be wikilinks for Obsidian)
- 13. Broken canonical_verbatim: references
+ 13. Broken legacy canonical_verbatim: references
  14. Bidirectional related: check (A->B but not B->A)
  15. Orphaned files (no related: and no incoming links)
  16. File size check (>6000 chars warning)
@@ -43,14 +43,12 @@ ROOT_EXEMPT = {
 
 PERSON_PACK_PREFIXES = {
     'facts': 'facts-', 'meta': 'meta-', 'mind': 'mind-',
-    'propositions': 'prop-', 'relationships': 'rel-',
+    'relationships': 'rel-',
     'presentation': 'pres-',
     'presentation/appearance': 'pres-appearance-',
     'presentation/voice': 'pres-voice-',
-    'summaries/stories': 'sum-', 'summaries/reflections': 'sum-',
-    'summaries/opinions': 'sum-',
-    'verbatim/stories': 'vbt-', 'verbatim/reflections': 'vbt-',
-    'verbatim/opinions': 'vbt-',
+    'stories': 'story-', 'reflections': 'refl-',
+    'opinions': 'opn-', 'conversations': 'conv-',
 }
 
 MANIFEST_REQUIRED = {'name', 'slug', 'type', 'version', 'description', 'entry_point'}
@@ -60,13 +58,20 @@ CHAR_CEILING = 6000
 
 DIR_TYPE_MAP = {
     'concepts': 'concept', 'workflows': 'workflow',
-    'troubleshooting': 'troubleshooting', 'faq': 'faq',
+    'troubleshooting': 'troubleshooting',
+    'errors': 'troubleshooting',
+    'diagnostics': 'troubleshooting',
+    'common-mistakes': 'gotcha',
+    'faq': 'faq',
     'propositions': 'proposition', 'summaries': 'summary',
     'sources': 'source', 'decisions': 'decision',
     'facts': 'fact', 'mind': 'mind', 'relationships': 'relationship',
-    'presentation': 'presentation', 'verbatim': 'verbatim',
+    'stories': 'story', 'reflections': 'reflection',
+    'opinions': 'opinion', 'conversations': 'conversation',
+    'presentation': 'presentation',
     'training': 'training', 'meta': 'meta', 'commercial': 'commercial',
-    'customers': 'customer', 'volatile': 'volatile', 'patterns': 'pattern',
+    'customers': 'customer', 'volatile': 'volatile',
+    'lessons': 'lesson', 'patterns': 'pattern',
 }
 
 RE_FM = re.compile(r'^---\n(.*?)\n---', re.DOTALL)
@@ -266,10 +271,13 @@ class Validator:
             rel_dir = os.path.dirname(rel).replace(os.sep, '/')
             if not rel_dir:
                 continue
-            top_dir = rel_dir.split('/')[0]
-            expected_type = DIR_TYPE_MAP.get(top_dir)
+            parts = rel.split('/')
+            top_dir = parts[0]
+            leaf_key = parts[-2] if len(parts) > 2 else os.path.splitext(os.path.basename(rel))[0]
+            expected_type = DIR_TYPE_MAP.get(leaf_key) or DIR_TYPE_MAP.get(top_dir)
             if expected_type and fm['type'] != expected_type:
-                # Allow close matches (e.g. 'story' in summaries is fine)
+                # Allow legacy person-pack mirrors in older packs. New v4.1 packs
+                # should use stories/reflections/opinions/conversations directly.
                 if fm['type'] in ('story', 'reflection', 'opinion') and top_dir in ('summaries', 'verbatim'):
                     continue
                 if fm['type'] == 'index':
@@ -311,8 +319,10 @@ class Validator:
                     self._add('WARN', 'path-in-related', rel,
                                f"related: '{ref}' - should be bare filename '{bn}'")
 
-    # ── Check 10: verbatim<->summary cross-links ────────────────────────
+    # ── Check 10: legacy verbatim<->summary cross-links ─────────────────
     def check_vbt_sum_links(self):
+        if str(self.manifest.get('schema_version', '0')) >= '4.1':
+            return
         vbt_files = {}  # slug -> rel_path
         sum_files = {}  # slug -> rel_path
         for rel in self.files:
@@ -413,7 +423,7 @@ class Validator:
                            f"{len(md_links)} markdown link(s) - should be [[wikilinks]] for Obsidian graph: {', '.join(targets[:3])}" +
                            (f" + {len(targets)-3} more" if len(targets) > 3 else ""))
 
-    # ── Check 13: broken canonical_verbatim ──────────────────────────────
+    # ── Check 13: broken legacy canonical_verbatim ───────────────────────
     def check_canonical_verbatim(self):
         for rel, fm in self.fm.items():
             cv = fm.get('canonical_verbatim')
@@ -556,24 +566,24 @@ class Validator:
         if retrieval_model == 'full-context':
             return
 
-        # Check for antipattern directory names. sources/ is a special case:
-        # sources/_coverage.md is the legitimate research-tracking file and
-        # does not count as an aggregator. Only warn on sources/ when it
-        # contains per-source index files (the deprecated v3.x pattern).
+        # Check for antipattern directory names. sources/ is legacy/non-retrieval.
+        # Schema v4.1 uses meta/source-coverage.md for research coverage.
+        # For migration leniency, suppress sources/ only when it contains the
+        # old coverage file and no per-source index artifacts.
         ANTIPATTERN_DIRS = {'summaries', 'propositions', 'sources'}
         found_dirs = set()
         for rel in self.files:
             parts = rel.split('/')
             for part in parts[:-1]:  # exclude filename itself
                 if part in ANTIPATTERN_DIRS:
-                    # Suppress sources/ warning if only _coverage.md is present
+                    # Suppress sources/ warning if only a legacy coverage file is present
                     if part == 'sources':
                         sources_files = [
                             r for r in self.files if r.startswith('sources/')
                         ]
                         non_coverage = [
                             r for r in sources_files
-                            if os.path.basename(r) != '_coverage.md'
+                            if os.path.basename(r) not in {'_coverage.md', 'source-coverage.md'}
                         ]
                         if not non_coverage:
                             continue
@@ -865,7 +875,7 @@ class Validator:
 
             if not _has_canonical_statement_surface(body):
                 self._add('WARN', 'W-AKS-04', rel,
-                          'AKS canonical_statement fallback is weak: add a Lead summary blockquote or an opening prose paragraph.')
+                          'AKS canonical_statement fallback is weak: add a retriever-anchored opening prose paragraph.')
 
     # ── Run all checks ───────────────────────────────────────────────────
     def validate(self):

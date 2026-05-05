@@ -24,8 +24,10 @@ A product pack gives an AI agent the same depth of knowledge as a veteran produc
 packs/{product-slug}/
 ├── manifest.yaml          ← Pack identity and metadata (required)
 ├── overview.md            ← Product summary — load first, always (required)
-├── glossary.md            ← Term definitions + vocabulary bridging (recommended) ← See core.md Retrieval Optimization
 ├── entities.json          ← Entity cross-reference index (recommended)
+│
+├── meta/                  ← Navigation/provenance metadata
+│   └── source-coverage.md ← Pack-level research coverage map (`retrieval_strategy: navigation`)
 │
 ├── concepts/              ← The mental model
 │   ├── _index.md          ← Directory of all concepts
@@ -80,7 +82,7 @@ packs/{product-slug}/
 ```
 
 **Required:** `manifest.yaml`, `overview.md`
-**Recommended:** `entities.json`, `concepts/`, and `workflows/`
+**Recommended:** `entities.json`, `concepts/`, `workflows/`, `interfaces/`, and `meta/source-coverage.md`
 **Optional:** Everything else, based on pack focus and available content
 
 ---
@@ -89,7 +91,7 @@ packs/{product-slug}/
 
 These aren't arbitrary. They map to how product interactions actually flow:
 
-1. **Customer asks a question** → Check the relevant concept's `## Frequently Asked` section (v4.0) or `faq/` for cross-cutting questions
+1. **Customer asks a question** → Check the relevant concept's `## Frequently Asked` section (or `faq/` only for genuinely cross-cutting questions)
 2. **Customer needs to do something** → Load the relevant `workflows/` file
 3. **Customer doesn't understand something** → Load the relevant `concepts/` file
 4. **Something went wrong** → Navigate `troubleshooting/` decision trees
@@ -126,27 +128,54 @@ How to access the product, first steps.
 
 ### Concept File (concepts/{concept}.md)
 
-Mental model, terminology, how things work.
+Product concepts use the exact v4.1 atomic-conceptual atom structure from [core.md](core.md#atomic-conceptual-content-files). Add product-specific examples in body sections, but do not reintroduce `## What It Is`, `## Why It Matters`, `## How It Works`, or generic Markdown-link `## Related` sections as the default template.
 
 ```markdown
-# {Concept Name}
+---
+id: {product-slug}/concepts/{concept-slug}
+title: "Concept Name"
+type: concept
+tags: [concept-slug, product-domain-tag]
+pack: {product-slug}
+retrieval_strategy: standard
+schema_version: "4.1"
+verified_at: "YYYY-MM-DD"
+supersedes:
+  - old-filename.md
+requires:
+  - prerequisite-concept.md
+related:
+  - sibling-concept.md
+  - relevant-workflow.md
+---
 
-## What It Is
-Clear explanation of the concept.
+# Concept Name
 
-## Why It Matters
-When/why users encounter this concept.
+Opening paragraph (1–3 sentences) that defines the concept in retriever-friendly terms: name the concept, classify what it is in the product, and state the distinguishing behavior or value. This paragraph is the summary.
 
-## How It Works
-Mechanics, rules, behavior.
+## {Body Section}
 
-## Example
-Concrete example to illustrate.
+Full product-specific EK: mechanics, behavior, usage, examples, constraints, version notes, and edge cases. Use `##` section headers at natural topic breaks.
 
-## Related
-- [Other Concept](other-concept.md)
-- [Relevant Workflow](../workflows/relevant-workflow.md)
+## Frequently Asked
+
+### How does X differ from Y?
+Answer phrased to match likely user queries.
+
+### When should I use X?
+Answer.
+
+## Related Terms
+
+- **Relative term:** Definition that only makes sense in context of this concept.
+- **Another term:** Definition.
+
+## Related Concepts
+- [[sibling-concept]]
+- [[relevant-workflow]]
 ```
+
+**Product-specific example sections:** `## Product Behavior`, `## Configuration Rules`, `## Version Applicability`, `## User-Facing Examples`, `## Limits and Edge Cases`. Use whichever fit the atom; the v4.1 frontmatter, opening definition, FAQ, related terms, and wikilinked related concepts pattern stays fixed.
 
 #### Recommended: concepts/mental-model.md
 
@@ -208,9 +237,9 @@ How to know it worked. What they should observe when done.
 ## Common Issues
 - **{Problem}:** {Solution}
 
-## Related
-- [Relevant Concept](../concepts/relevant-concept.md)
-- [Related Workflow](related-workflow.md)
+## Related Concepts
+- [[relevant-concept]]
+- [[related-workflow]]
 ```
 
 ### Interface File (interfaces/{interface}.md)
@@ -257,10 +286,10 @@ sources:
 
 **Elements:**
 
-| # | Element | Type | Location | Description | States/Behavior |
-|---|---------|------|----------|-------------|-----------------|
-| 1 | {Label/Name} | {type} | {position within region} | {What it does} | {When available, state changes, dynamic behavior} |
-| 2 | ... | ... | ... | ... | ... |
+| Element ID | Label | Type | Region | Location | Action | State | Opens/Changes | Used By Workflows | Notes |
+|------------|-------|------|--------|----------|--------|-------|---------------|-------------------|-------|
+| {screen-slug}.{element-slug} | {Visible label or accessible name} | {type} | {region-id} | {position within region} | {click/select/type/drag/etc.} | {enabled/disabled/selected/hidden/loading/error + conditions} | {dialog/panel/state/data changed} | [[workflow-slug]] | {version, accessibility label, gotchas} |
+| ... | ... | ... | ... | ... | ... | ... | ... | ... | ... |
 
 ### {Next Sub-section}
 ...
@@ -280,11 +309,11 @@ sources:
 
 {Document elements that appear/disappear based on context, content, or state.}
 
-## Related
+## Related Concepts
 
-- [{Workflow}](../workflows/{workflow}.md)
-- [{Concept}](../concepts/{concept}.md)
-- [{Other Interface}]({other-interface}.md)
+- [[{workflow}]]
+- [[{concept}]]
+- [[{other-interface}]]
 
 ## Open Questions
 
@@ -292,6 +321,14 @@ sources:
 ```
 
 See [Reference Tables: Interfaces](#reference-tables-interfaces) below for the standardized region taxonomy, element type vocabulary, and spatial descriptors to use in the `Type`, `Location`, and `Region` fields.
+
+**Element IDs:** Use stable kebab-case IDs scoped to the interface file (`{interface-slug}.{element-slug}`). IDs should survive label changes when the underlying control is the same. Include accessibility names/ARIA labels in `Notes` when available.
+
+**Screenshots and visual references:** Screenshots are ingestion/provenance inputs, not required pack outputs. If a pack keeps screenshots for audit, store them outside retrieval tiers (for example `meta/screenshots/`) and reference them from `sources` frontmatter; do not rely on images as the only source of interface knowledge.
+
+**UI state conditions:** Document when controls appear, disable, select, or change meaning. Prefer explicit state conditions over vague phrases like "sometimes shown."
+
+**Workflow linkage:** `Used By Workflows` is mandatory for controls that appear in task guidance. Use wikilinks so Obsidian graph view shows screen→workflow relationships.
 
 #### API / Endpoint Interface Template
 
@@ -404,9 +441,9 @@ How to correct it.
 What to remember for next time.
 ```
 
-### FAQ content (v4.0: embedded in concept files)
+### FAQ content (v4.1: embedded in concept files)
 
-Schema v4.0+ packs embed FAQs inside the primary concept file they answer for, as H3 questions under a `## Frequently Asked` section. See [core.md § Atomic-Conceptual Content Files](core.md#atomic-conceptual-content-files).
+Schema v4.1 packs embed FAQs inside the primary concept file they answer for, as H3 questions under a `## Frequently Asked` section. See [core.md § Atomic-Conceptual Content Files](core.md#atomic-conceptual-content-files).
 
 A standalone `faq/` directory is only appropriate for cross-cutting questions that genuinely don't belong to any single concept (e.g., "What is {product-name}?"). Per-concept FAQs live with the concept; duplication across files is forbidden and will be flagged by `ep-validate`.
 
@@ -731,11 +768,11 @@ Technical parameters, tolerances, compliance statements, or API contracts.
 
 ---
 
-## Sources Directory (sources/) — DEPRECATED in v4.0
+## Source Ingestion Artifacts — DEPRECATED in v4.0
 
-*The `sources/` ingestion-artifacts directory is deprecated in schema v4.0. It was found to score broadly as an aggregator during retrieval and was deleted from the reference ezt-designer pack on 2026-04-17 with measurable retrieval improvement. Source-provenance tracking lives in per-file `verified_at` / `source:` frontmatter (see [core.md](core.md#provenance-metadata)) and in the pack-level `sources/_coverage.md` coverage map. The old `sources/{source}.md` per-source index files are no longer part of the schema.*
+*The old `sources/` ingestion-artifacts directory is deprecated in schema v4.0. It was found to score broadly as an aggregator during retrieval and was deleted from the reference ezt-designer pack on 2026-04-17 with measurable retrieval improvement. Source-provenance tracking lives in per-file `verified_at` / `source:` frontmatter (see [core.md](core.md#provenance-metadata)) and in the pack-level `meta/source-coverage.md` coverage map. The old `sources/{source}.md` per-source index files are no longer part of the schema. If legacy source indexes are kept for audit, mark `sources/` as non-retrieval/on-demand and do not index it for normal RAG.*
 
-### Source Index File (sources/{source}.md)
+### Legacy Source Index File (sources/{source}.md)
 
 One file per major source material. For a video, this is a scene-by-scene index with timestamps and extracted artifacts. For a documentation site, this is a page inventory with extraction status.
 

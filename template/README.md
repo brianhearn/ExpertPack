@@ -36,12 +36,12 @@ your-pack/
 ├── overview.md             ← Entry point for AI agents
 ├── glossary.md             ← (Optional) lean cross-cutting terms only
 ├── Dashboard.md            ← Live Dataview dashboard
-├── concepts/               ← Atomic-conceptual concept files (v4.0): one self-contained file per concept
+├── concepts/               ← Atomic-conceptual concept files (v4.1): one self-contained file per concept
 ├── workflows/              ← Step-by-step procedures (atomic retrieval)
 ├── troubleshooting/        ← Errors, diagnostics, common mistakes
 ├── faq/                    ← Cross-cutting questions only (per-concept FAQs live inside concept files)
-├── sources/                ← Research coverage audit trail (_coverage.md only)
-├── volatile/               ← Time-bound content with TTL
+├── meta/source-coverage.md  ← Research coverage audit trail
+├── volatile/               ← Time-bound content with TTL (`_index.md` explains format)
 └── eval/                   ← Quality eval benchmark
 ```
 

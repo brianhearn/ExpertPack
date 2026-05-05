@@ -35,7 +35,7 @@ AGENT_REQUIRED_FILES = [
     "operational/safety.md",
     "mind/values.md",
     "relationships/people.md",
-    "presentation/speech_patterns.md",
+    "presentation/speech-patterns.md",
 ]
 
 MAX_FILE_SIZE_KB = 5  # Soft limit — warn above this

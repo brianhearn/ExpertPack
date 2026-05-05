@@ -4,7 +4,7 @@ ExpertPack Micro-Record Exporter
 
 Generates canonical micro-records from pack content files. Default output is
 full JSONL micro-records; --compact emits Agent Knowledge Schema (AKS) JSONL
-(schemas/registry/agent-knowledge.schema.yaml). Reads frontmatter + _graph.yaml;
+(schemas/registry/agent-knowledge.spec.yaml). Reads frontmatter + _graph.yaml;
 optionally uses an LLM to generate canonical_statement for files that don't have one.
 
 Usage:
@@ -47,7 +47,7 @@ Usage:
 Output:
     JSONL file (one micro-record per line) or single JSON for --file.
     Default records are full micro-records. --compact records conform to
-    schemas/registry/agent-knowledge.schema.yaml.
+    schemas/registry/agent-knowledge.spec.yaml.
 
 Notes:
     - canonical_statement is the one field that can't be derived from frontmatter alone.
@@ -129,12 +129,12 @@ def first_paragraph(body: str) -> str:
     """Extract the best canonical statement from markdown body.
 
     Priority:
-    1. Lead summary blockquote (> **Lead summary:** ...)
-    2. First non-empty, non-heading prose paragraph
+    1. Opening prose paragraph (schema v4.1)
+    2. Legacy lead summary blockquote (> **Lead summary:** ...)
     """
     lines = body.splitlines()
 
-    # Pass 1: look for lead summary blockquote
+    # Legacy fallback: look for lead summary blockquote
     for line in lines:
         stripped = line.strip()
         if stripped.startswith(">") and "lead summary" in stripped.lower():

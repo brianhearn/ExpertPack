@@ -99,16 +99,16 @@ Place the pack in your project directory. IDE agents discover and index workspac
 - **Claude Code:** Reference from `CLAUDE.md` or let the agent discover it
 - **Other IDE agents:** Place pack where the agent's workspace indexer can find it
 
-For IDE agents, the small-file structure (400–800 tokens per file) is already optimized for any chunker. No pre-processing needed.
+For IDE agents, the v4.1 small-file structure (concept atoms target 400–800 tokens with a 1,000-token ceiling) is already optimized for any chunker. No pre-processing needed.
 
 ### Custom / API Integrations
 
 Feed `.md` files into your vector store or embedding pipeline. The ExpertPack structure is designed for this:
 
-- **Small files** (1–3KB each) produce high-relevance chunks with any splitter
+- **Small atomic files** (400–800 token target; 1,000-token concept ceiling) produce high-relevance chunks with any splitter
 - **`##` headers** provide natural split points for any markdown-aware chunker
 - **Context tiers** from `manifest.yaml` tell you what to always include vs. index vs. skip
-- **Propositions** can be embedded directly as atomic retrieval units
+- **Body prose and FAQs** carry atomic statements directly; do not index separate proposition aggregators for v4.1 packs
 
 For custom integrations, respect the context tier declarations in `manifest.yaml`:
 - **Tier 1 (Always):** Include in every prompt as system context
@@ -173,9 +173,9 @@ The +9.4% correctness improvement came from preventing splits on oversized files
 | `troubleshooting/diagnostics/` | atomic | Decision trees are indivisible |
 | `troubleshooting/common-mistakes/` | atomic | Symptom + fix is one unit |
 | `interfaces/` | sectioned | Large files; regions are independent |
-| `concepts/` | sectioned | Self-contained atomic-conceptual files (v4.0); each `##` section is a coherent sub-chunk |
-| `faq/` | sectioned | Cross-cutting questions only in v4.0; per-concept FAQs live inside concept files |
-| `summaries/` (person packs) | sectioned | Person-pack verbatim↔summary mirroring; pending RFC-002 |
+| `concepts/` | sectioned | Self-contained atomic-conceptual files (v4.1); each `##` section is a coherent sub-chunk; use `requires:` for dependencies |
+| `faq/` | sectioned | Cross-cutting questions only; per-concept FAQs live inside concept files |
+| `stories/`, `reflections/`, `opinions/`, `conversations/` | sectioned | Person-pack narrative atoms; verbatim material lives inside the atom |
 | `commercial/` | sectioned | Topics within commercial docs are independent |
 | All others | sectioned | Safe default |
 
@@ -251,7 +251,7 @@ The bulk of knowledge — indexed for RAG retrieval. Loaded when the conversatio
 
 - Content files (atomic-conceptual concepts, workflows, troubleshooting)
 - Directory indexes (`_index.md`)
-- Person-pack summaries (`summaries/`) — person packs only, pending RFC-002
+- Person-pack narrative atoms (`stories/`, `reflections/`, `opinions/`, `conversations/`) — keep exact voice inside the atom
 
 Design Tier 2 files to be independently useful. An agent loading a single file should get a complete, actionable answer without needing to load five siblings for context.
 

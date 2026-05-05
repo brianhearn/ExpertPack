@@ -213,7 +213,7 @@ def build_overview(pack_name, pack_type, stats, warnings):
         '## Next Steps',
         '',
         '1. Review frontmatter on converted files — especially `type` and `tags`',
-        '2. Restructure concept files in the v4.0 atomic-conceptual format: retriever-anchored opening paragraph, body sections, optional `## Frequently Asked`, `## Related Terms`, `## Key Propositions`',
+        '2. Restructure concept files in the v4.1 atomic-conceptual format: `requires:`/`related:` frontmatter, retriever-anchored opening paragraph, body sections, optional `## Frequently Asked`, `## Related Terms`, `## Related Concepts`',
         '3. Do NOT create separate `propositions/` or `summaries/` directories — those were deprecated in schema v4.0 (RFC-001)',
         '4. Run `ep-validate` to check for 0 errors',
         '5. Run `expertpack-eval` to measure EK ratio',

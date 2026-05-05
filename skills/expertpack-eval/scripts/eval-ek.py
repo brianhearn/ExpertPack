@@ -430,7 +430,7 @@ def run_evaluation(pack_path: Path, models: list[str], sample_size: int = 0, api
         print(
             "ERROR: No propositions found. Either: (a) v3.x pack — generate "
             "propositions/ via the improvement pipeline, or (b) v4.0 pack — "
-            "add `## Key Propositions` sections to high-EK concept files.",
+            "strengthen body prose, FAQs, and retriever-anchored openings in high-EK concept files.",
             file=sys.stderr,
         )
         sys.exit(1)
@@ -442,7 +442,7 @@ def run_evaluation(pack_path: Path, models: list[str], sample_size: int = 0, api
     )
     print(
         f"  Found {len(all_props)} propositions "
-        f"({n_v3} v3.x propositions/ files, {n_v4} v4.0 concept files with ## Key Propositions)"
+        f"({n_v3} v3.x propositions/ files, {n_v4} legacy v4.0 concept files with ## Key Propositions)"
     )
     
     # 2. Sample if requested

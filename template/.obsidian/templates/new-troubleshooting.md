@@ -13,7 +13,7 @@ verified_by: "agent"
 
 # <% tp.file.title %>
 
-> **Lead summary:** 
+Opening paragraph:
 
 ## Symptoms
 

@@ -95,7 +95,7 @@ Open-source ExpertPacks built from real documentation, community forums, and sou
 | **OpenClaw** | Add pack path to `memorySearch.extraPaths`. RAG indexes all `.md` files automatically. |
 | **Cursor** | Place pack in project. Cursor indexes workspace files for context. |
 | **Claude Code** | Place pack in project. Reference from `CLAUDE.md` or let agent discover it. |
-| **Custom / API** | Feed `.md` files into your vector store or context window. Small-file structure (1–3KB each) is optimized for chunked retrieval. |
+| **Custom / API** | Feed `.md` files into your vector store or context window. v4.1 concept atoms target 400–800 tokens with a 1,000-token hard ceiling, so files remain retrieval-ready without external chunking. |
 | **MCP Server** | [ExpertPack MCP](https://github.com/brianhearn/ep-mcp) serves any pack over the Model Context Protocol — connect Claude Desktop, Cursor, Windsurf, or any MCP host instantly. |
 
 ---
@@ -104,7 +104,7 @@ Open-source ExpertPacks built from real documentation, community forums, and sou
 
 ExpertPacks go beyond basic RAG with a multi-layer retrieval system and EK-aware hydration.
 
-### Atomic-Conceptual Content (Schema v4.0+)
+### Atomic-Conceptual Content (Schema v4.1)
 
 Each concept is a **single self-contained file** carrying everything the retriever needs:
 
@@ -168,7 +168,7 @@ ExpertPack is an actively evolving framework. The table below shows which featur
 
 | Feature | Status | Notes |
 |---------|--------|-------|
-| Atomic-conceptual content model | ✅ Full | Schema v4.0+; all new packs use this model |
+| Atomic-conceptual content model | ✅ Full | Schema v4.1; all new packs use this model |
 | `requires:` dependency frontmatter | ✅ Full | Spec + EP MCP runtime expansion live (depth 2, count 3 cap) |
 | EK triage during hydration | ✅ Full | Spec + tooling (`eval-ek.py`) |
 | Provenance frontmatter | ✅ Full | Spec defined; authoring + micro-record tooling honors it |
@@ -181,22 +181,25 @@ ExpertPack is an actively evolving framework. The table below shows which featur
 | MCP server (EP MCP) | ✅ Full | BM25 + vector hybrid retrieval; multi-pack routing |
 | Provenance display in agent responses | ✅ Runtime-supported | EP MCP supports opt-in reconstruct mode with original spans and provenance blocks; final rendering is host-dependent |
 | Scaffolding CLI / guided creation | 🚧 Roadmap | Planned; current creation requires agent-operated workflow |
-| Process schema (v1.4) | ⚠️ Partial | Core patterns stable; some v4.1 refinements not yet backported |
+| Process schema (v4.1) | ✅ Full | Migrated to atomic conceptual/procedural files, `requires:` phase dependencies, and core v4.1 size rules |
 
 ---
 
 ## Schemas
 
+The canonical compatibility matrix lives in [`schemas/schema-index.yaml`](schemas/schema-index.yaml). Regenerate this table with `python3 tools/update-schema-readme.py` when schema versions change.
+
 | Schema | Version | What It Covers |
 |--------|---------|---------------|
 | [core.md](schemas/core.md) | 4.1 | Shared principles: MD-canonical, atomic-conceptual model, `requires:` dependencies, EK ratio, context tiers, provenance, graph export, registry projections |
-| [registry/agent-knowledge.schema.yaml](schemas/registry/agent-knowledge.schema.yaml) | 1.0 | Compact Agent Knowledge Schema (AKS) JSONL for grounded agent retrieval pipelines |
-| [person.md](schemas/person.md) | 4.1 | Person packs: verbatim, mind taxonomy, relationships, presentation |
-| [agent.md](schemas/agent.md) | 1.0 | Agent extension: persona, capabilities, tool access, behavioral rules |
 | [product.md](schemas/product.md) | 4.1 | Product packs: concepts, workflows, interfaces, troubleshooting, commercial, customers |
-| [process.md](schemas/process.md) | 1.4 | Process packs: phases, decisions, checklists, exceptions, scheduling, regulations |
+| [person.md](schemas/person.md) | 4.1 | Person packs: stories, reflections, opinions, conversations, mind taxonomy, relationships, presentation |
+| [agent.md](schemas/agent.md) | 1.7 | Agent extension: persona, capabilities, tool access, behavioral rules |
+| [process.md](schemas/process.md) | 4.1 | Process packs: phases, decisions, checklists, exceptions, scheduling, regulations |
 | [composite.md](schemas/composite.md) | 1.1 | Composites: multi-pack deployment, role assignments, auto-discovery & export |
-| [eval.md](schemas/eval.md) | 1.2 | Evaluation: EK ratio, correctness, hallucination, retrieval quality, structural health |
+| [eval.md](schemas/eval.md) | 1.3 | Evaluation: EK ratio, correctness, hallucination, retrieval quality, structural health |
+| [registry/agent-knowledge.spec.yaml](schemas/registry/agent-knowledge.spec.yaml) | 1.0 | Compact Agent Knowledge Schema (AKS) JSONL descriptive spec for grounded agent retrieval pipelines |
+| [registry/ontology.spec.yaml](schemas/registry/ontology.spec.yaml) | 1.0 | Accepted ontology registry descriptive spec for graph/entity interop |
 
 ---
 
@@ -228,13 +231,13 @@ ExpertPack/
 ├── LICENSE                  ← Apache 2.0
 │
 ├── schemas/                 ← Pack blueprints (the framework)
-│   ├── core.md              ← Shared principles (v3.1)
-│   ├── person.md            ← Person-pack schema (v1.6)
-│   ├── agent.md             ← Agent extension schema (v1.0)
-│   ├── product.md           ← Product-pack schema (v3.1)
-│   ├── process.md           ← Process-pack schema (v1.4)
+│   ├── core.md              ← Shared principles (v4.1)
+│   ├── person.md            ← Person-pack schema (v4.1)
+│   ├── agent.md             ← Agent extension schema (v1.7)
+│   ├── product.md           ← Product-pack schema (v4.1)
+│   ├── process.md           ← Process-pack schema (v4.1)
 │   ├── composite.md         ← Composite schema (v1.1)
-│   ├── eval.md              ← Evaluation framework (v1.2)
+│   ├── eval.md              ← Evaluation framework (v1.3)
 │   └── references/          ← Extracted reference material
 │
 ├── guides/                  ← Practical guides

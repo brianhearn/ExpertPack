@@ -83,7 +83,7 @@ packs/{agent-slug}/
 │   └── career.md          ← Evolution: how the agent's role and capabilities expanded over time
 │
 ├── presentation/          ← How the agent communicates
-│   ├── speech_patterns.md ← Tone, humor, formality level, emoji usage
+│   ├── speech-patterns.md ← Tone, humor, formality level, emoji usage
 │   └── modes.md           ← Context-dependent voices: business mode, casual mode, group chat mode
 │
 ├── decisions/             ← OPTIONAL: Significant decisions worth preserving (atomic)
@@ -106,7 +106,7 @@ These base person schema directories are typically **not applicable** to agent p
 
 | Directory | Reason | Alternative |
 |-----------|--------|-------------|
-| `facts/family_tree.md` | Agents don't have genealogy | Use `relationships/people.md` for connections |
+| `facts/family-tree.md` | Agents don't have genealogy | Use `relationships/people.md` for connections |
 | `facts/education.md` | Agents don't attend school | Use `facts/timeline.md` for capability milestones |
 | `LEGACY.md` | Posthumous wishes don't apply | Replaced by `MIGRATION.md` |
 | `meta/verification.json` | Codeword verification is for memorial mode | Omit unless needed |
@@ -246,7 +246,7 @@ Recommended tier assignments:
 
 | Tier | Contents |
 |------|----------|
-| **Always (Tier 1)** | `overview.md`, `presentation/speech_patterns.md`, `operational/safety.md`, `mind/values.md` |
+| **Always (Tier 1)** | `overview.md`, `presentation/speech-patterns.md`, `operational/safety.md`, `mind/values.md` |
 | **Searchable (Tier 2)** | `mind/`, `relationships/`, `facts/`, `operational/`, `lessons/`, `decisions/`, `presentation/modes.md` |
 | **On-demand (Tier 3)** | `training/`, `meta/` |
 

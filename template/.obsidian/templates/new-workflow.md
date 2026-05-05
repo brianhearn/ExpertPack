@@ -13,7 +13,7 @@ verified_by: "agent"
 
 # <% tp.file.title %>
 
-> **Lead summary:** 
+Opening paragraph:
 
 ## When to Use This
 
@@ -21,9 +21,9 @@ verified_by: "agent"
 
 ## Steps
 
-1. 
-2. 
-3. 
+1.
+2.
+3.
 
 ## Verification
 

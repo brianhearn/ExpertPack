@@ -5,7 +5,7 @@ type: overview
 tags: [overview, pack-name]
 pack: your-pack-slug
 retrieval_strategy: standard
-schema_version: "4.0"
+schema_version: "4.1"
 ---
 
 # Pack Name
@@ -18,11 +18,11 @@ Describe what this pack covers in 2–3 sentences. Why does this pack exist? Wha
 
 ## What's Covered
 
-- **[Concepts](concepts/_index.md)** — Atomic-conceptual knowledge files. Each concept is a self-contained unit: definition, body, FAQs, related terms, and key propositions in one file.
-- **[Workflows](workflows/_index.md)** — Step-by-step procedures and how-tos
-- **[Troubleshooting](troubleshooting/_index.md)** — Errors, diagnostics, common mistakes
-- **[FAQ](faq/_index.md)** — Cross-cutting questions that don't belong to any single concept (per-concept FAQs live inside concept files)
-- **[Glossary](glossary.md)** *(optional)* — Lean cross-cutting terms
+- **Concepts** — Atomic-conceptual knowledge files. Each concept is a self-contained unit: definition, body, FAQs, related terms, and `requires:` dependencies where needed.
+- **Workflows** — Step-by-step procedures and how-tos
+- **Troubleshooting** — Errors, diagnostics, common mistakes
+- **FAQ** — Cross-cutting questions that don't belong to any single concept (per-concept FAQs live inside concept files)
+- **Glossary** *(optional)* — Lean cross-cutting terms
 
 ## What's NOT Covered
 

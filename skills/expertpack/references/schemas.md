@@ -30,7 +30,7 @@ ek_ratio:
 ```
 
 ## File Size & Naming Rules
-- 1-3KB preferred per content file
+- Concept atoms target 400–800 tokens with a 1,000-token ceiling; one dominant topic per file
 - kebab-case for filenames and slugs
 - Markdown canonical: all knowledge in .md
 - One topic per file
@@ -65,8 +65,11 @@ overview.md
 facts/
 mind/
 relationships/
+stories/
+reflections/
+opinions/
+conversations/
 presentation/
-summaries/
 meta/privacy.md
 ```
 
@@ -112,8 +115,8 @@ Content files declare how they should be chunked for RAG via directory defaults 
 - `workflows/` → atomic (procedures are indivisible)
 - `troubleshooting/errors/`, `troubleshooting/diagnostics/`, `troubleshooting/common-mistakes/` → atomic
 - `interfaces/`, `concepts/`, `faq/`, `commercial/` → sectioned
-- Person-pack `summaries/` → sectioned (person packs retain verbatim↔summary mirroring pending RFC-002)
-- `propositions/` / `summaries/` (product/process) → DEPRECATED in v4.0 (RFC-001); content moved into concept files
+- Person-pack `stories/`, `reflections/`, `opinions/`, `conversations/` → sectioned; verbatim material lives inside the atom
+- `propositions/` / `summaries/` → DEPRECATED for v4.1 retrieval-first packs; content moved into atoms
 - All others → sectioned
 
 **Per-file override:**
@@ -166,7 +169,7 @@ ek_ratio:
 - NO secrets ever
 - Distill knowledge, do not copy raw state
 - Provenance in frontmatter
-- Lead summaries, propositions, glossary for retrieval
+- Opening definitions, body prose, `requires:` dependencies, related terms, and `_index.md` navigation for retrieval
 - Respect privacy and EK focus
 
 Full details: https://github.com/brianhearn/expert-pack/schemas

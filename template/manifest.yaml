@@ -12,7 +12,7 @@ slug: "your-pack-slug"           # kebab-case, no spaces
 type: "product"
 
 version: "1.0.0"
-schema_version: "4.0"
+schema_version: "4.1"
 description: "One paragraph describing what this pack covers and who it's for."
 entry_point: "overview.md"
 
@@ -56,6 +56,6 @@ context:
     - concepts/
     - workflows/
     - troubleshooting/
-    - faq/               # v4.0: cross-cutting FAQs only; per-concept FAQs live in concepts/
+    - faq/               # v4.1: cross-cutting FAQs only; per-concept FAQs live in concepts/
   on_demand:
     - volatile/

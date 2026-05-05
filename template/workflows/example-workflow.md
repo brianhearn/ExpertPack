@@ -13,7 +13,7 @@ verified_by: "agent"
 
 # Example Workflow
 
-> **Lead summary:** What this workflow accomplishes and when to use it. Include any critical prerequisites.
+Opening paragraph: what this workflow accomplishes, when to use it, and any critical prerequisites. No separate lead-summary blockquote is needed.
 
 ## When to Use This
 
@@ -42,6 +42,6 @@ How does the user know it worked? What should they check?
 |---------|-------|-----|
 | Error message or symptom | Why it happens | What to do |
 
-## Related
+## Related Concepts
 
-- [Example Concept](../concepts/example-concept.md) — The underlying concept this workflow applies
+- [[example-concept]] — The underlying concept this workflow applies

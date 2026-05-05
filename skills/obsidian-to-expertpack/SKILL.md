@@ -77,11 +77,11 @@ Do not proceed until `ep-validate` reports **0 errors**.
 
 After validation, enhance retrieval quality:
 
-1. **Lead summaries** — add a 1-3 sentence blockquote at the top of the 5-10 most important files
-2. **Glossary** — populate `glossary.md` with domain-specific terms (this is Tier 1 — always loaded)
-3. **Atomic-conceptual structure (v4.1)** — structure each concept file as a self-contained retrieval unit: retriever-anchored opening paragraph, body sections, and optional `## Frequently Asked`, `## Related Terms`, and `## Key Propositions` sections. Do NOT create separate `propositions/` or `summaries/` directories — those aggregator patterns were deprecated in schema v4.0 (RFC-001) because they score broadly at retrieval time and displace specific content.
+1. **Opening definitions** — make the first paragraph of each concept a 1–3 sentence retriever-anchored definition.
+2. **Related terms** — embed relative/domain terms inside the owning concept under `## Related Terms`; avoid glossary hubs unless truly cross-cutting and navigational.
+3. **Atomic-conceptual structure (v4.1)** — structure each concept file as a self-contained retrieval unit: frontmatter with `requires:` / `related:`, retriever-anchored opening paragraph, body sections, and optional `## Frequently Asked`, `## Related Terms`, and `## Related Concepts`. Do NOT create separate `propositions/` or `summaries/` directories.
 4. **EK triage** — identify low-EK files (general knowledge) and compress or remove them
-5. **File size** — split files >3KB on `##` header boundaries
+5. **File size** — split concept files >1,000 tokens into independent atoms with `requires:` dependencies where needed
 
 ## Step 5: Configure RAG in OpenClaw
 

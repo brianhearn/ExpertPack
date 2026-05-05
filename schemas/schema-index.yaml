@@ -1,0 +1,47 @@
+# ExpertPack schema compatibility index
+# Generated/maintained as the single source for README schema tables.
+
+expertpack_schema_family: "4.1"
+updated: "2026-05-05"
+schemas:
+  core:
+    file: schemas/core.md
+    version: "4.1"
+    description: "Shared principles: MD-canonical, atomic-conceptual model, `requires:` dependencies, EK ratio, context tiers, provenance, graph export, registry projections"
+  product:
+    file: schemas/product.md
+    version: "4.1"
+    extends: core
+    description: "Product packs: concepts, workflows, interfaces, troubleshooting, commercial, customers"
+  person:
+    file: schemas/person.md
+    version: "4.1"
+    extends: core
+    description: "Person packs: stories, reflections, opinions, conversations, mind taxonomy, relationships, presentation"
+  agent:
+    file: schemas/agent.md
+    version: "1.7"
+    subtype_of: person
+    description: "Agent extension: persona, capabilities, tool access, behavioral rules"
+  process:
+    file: schemas/process.md
+    version: "4.1"
+    extends: core
+    description: "Process packs: phases, decisions, checklists, exceptions, scheduling, regulations"
+  composite:
+    file: schemas/composite.md
+    version: "1.1"
+    extends: core
+    description: "Composites: multi-pack deployment, role assignments, auto-discovery & export"
+  eval:
+    file: schemas/eval.md
+    version: "1.3"
+    description: "Evaluation: EK ratio, correctness, hallucination, retrieval quality, structural health"
+  registry_agent_knowledge:
+    file: schemas/registry/agent-knowledge.spec.yaml
+    version: "1.0"
+    description: "Compact Agent Knowledge Schema (AKS) JSONL descriptive spec for grounded agent retrieval pipelines"
+  registry_ontology:
+    file: schemas/registry/ontology.spec.yaml
+    version: "1.0"
+    description: "Accepted ontology registry descriptive spec for graph/entity interop"

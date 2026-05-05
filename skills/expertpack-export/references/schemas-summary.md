@@ -38,7 +38,7 @@ packs/{agent-slug}/
 │   ├── personal.md        # Agent identity facts
 │   └── timeline.md        # Significant events
 ├── presentation/
-│   ├── speech_patterns.md # Communication style
+│   ├── speech-patterns.md # Communication style
 │   └── modes.md           # Context-dependent voices
 ├── summaries/
 │   └── lessons.md         # Patterns learned, failure post-mortems
@@ -57,7 +57,7 @@ packs/{person-slug}/
 ├── relationships/people.md
 ├── mind/                  # 9 core files + optional reasoning, influences
 ├── preferences/           # (captured in mind/preferences.md)
-├── presentation/          # speech_patterns.md, modes.md
+├── presentation/          # speech-patterns.md, modes.md
 └── meta/privacy.md
 ```
 
@@ -68,7 +68,7 @@ packs/{product-slug}/
 ├── manifest.yaml          # type: product, schema_version: "4.1"
 ├── overview.md
 ├── concepts/              # Atomic-conceptual files: each carries its definition,
-│                          # body, FAQs, related terms, key propositions in one file
+│                          # body, FAQs, related terms, and dependencies in one file
 ├── workflows/             # Step-by-step procedures (atomic retrieval)
 ├── interfaces/            # UI/API documentation
 ├── commercial/            # Pricing, deployment, security
@@ -117,7 +117,7 @@ conflicts:
 ## Key Rules
 
 1. **Markdown canonical** — all knowledge in .md files
-2. **1-3KB per file** — one topic per file
+2. **Atomic file sizing** — concept atoms target 400–800 tokens with a 1,000-token ceiling; one dominant topic per file
 3. **## headers** at natural breaks for RAG chunking
 4. **kebab-case** filenames and slugs
 5. **No secrets** — never include API keys, tokens, passwords

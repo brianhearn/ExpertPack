@@ -123,7 +123,7 @@ When creating a new ExpertPack from scratch, follow this sequence:
 5. **Scaffold content directories** per the type schema — `concepts/`, `workflows/`, `troubleshooting/`, etc. Each directory gets an `_index.md`.
 5a. **Schema negotiation (before populating).** Review the default scaffold against the pack's actual purpose. If there's a meaningful mismatch — categories that clearly don't belong, or obvious domain gaps the default structure doesn't cover — propose adjustments to the pack owner and get confirmation before beginning hydration. The typed skeleton (`type:` field, core structure) stays fixed; negotiation shapes the *contents*. See [Schema Negotiation](../guides/hydration.md#schema-negotiation) in the Hydration Guide.
 6. **(Optional) Create a lean `glossary.md`** for genuinely cross-cutting terms only (product name, industry vocabulary). Do not create per-domain `glossary-*.md` aggregator files — terms either earn their own concept file or live embedded in a parent concept's `## Related Terms` section. See [`references/granularity-guide.md`](references/granularity-guide.md).
-7. **Create `sources/_coverage.md`** — track what sources have been researched. See [Research Coverage](#research-coverage-sources_coveragemd).
+7. **Create `meta/source-coverage.md`** — track what sources have been researched. See [Research Coverage](#research-coverage-metasource-coveragemd).
 8. **Begin hydration** — populate atomic-conceptual content files using EK-aware triage (esoteric knowledge first). Each concept file is a self-contained retrieval unit — definition, body, FAQs, and related terms co-located. See the [Atomic-Conceptual Content Files](#atomic-conceptual-content-files) section below.
 9. **Measure EK ratio** — run blind-probe eval once the pack has substantive content.
 
@@ -235,19 +235,17 @@ Standard prefixes for person packs:
 
 | Directory | Prefix | Example |
 |---|---|---|
-| `summaries/stories/` | `sum-` | `sum-nina-street.md` |
-| `summaries/reflections/` | `sum-` | `sum-ai-personhood.md` |
-| `summaries/opinions/` | `sum-` | `sum-on-ai.md` |
-| `verbatim/stories/` | `vbt-` | `vbt-nina-street.md` |
-| `verbatim/reflections/` | `vbt-` | `vbt-ai-personhood.md` |
-| `verbatim/opinions/` | `vbt-` | `vbt-on-ai.md` |
+| `stories/` | `story-` | `story-nina-street.md` |
+| `reflections/` | `refl-` | `refl-ai-personhood.md` |
+| `opinions/` | `opn-` | `opn-on-ai.md` |
+| `conversations/` | `conv-` | `conv-apollo-launch.md` |
 | `mind/` | `mind-` | `mind-epistemology.md` |
 | `facts/` | `facts-` | `facts-timeline.md` |
 | `meta/` | `meta-` | `meta-changelog.md` |
 | `relationships/` | `rel-` | `rel-people.md` |
 | `presentation/` | `pres-` | `pres-modes.md` |
 
-*Note: person-pack prefixes above reflect the verbatim↔summary content model used in person packs. Product packs do not use these directories. The `propositions/` directory is deprecated schema-wide in v4.0 (see [Atomic-Conceptual Content Files](#atomic-conceptual-content-files)).*
+*Note: person-pack prefixes above reflect the v4.1 atom directories. Legacy `summaries/`, `verbatim/`, and `propositions/` directories are retired/deprecated; capture verbatim material inside the appropriate story/reflection/opinion/conversation atom instead.*
 
 For other pack types (product, process, etc.), define prefixes in the pack's `manifest.yaml` under `file_prefixes`. Choose short (3–5 char) abbreviations that reflect content type.
 
@@ -445,7 +443,7 @@ Based on eval experiments, avoid these common mistakes:
 
 **Do NOT compact or compress prose to save tokens.** Denser text is harder for models to parse correctly. Examples, explanations, and context that feel redundant to a human often serve as reasoning scaffolding for a model. The content quality was never the bottleneck — retrieval precision was.
 
-**Do NOT split files without adding retrieval layers.** Splitting alone degrades quality. An agent that retrieves one fragment of what used to be a unified file loses the context that made that file useful. Always pair splitting with summaries and propositions.
+**Do NOT split files unless the resulting atoms are independently retrievable.** Splitting alone degrades quality. An agent that retrieves one fragment of what used to be a unified file loses the context that made that file useful. Pair splits with clear opening definitions, `requires:` dependencies where necessary, and `_index.md` navigation — not summaries or propositions.
 
 **Do NOT sacrifice content readability for token efficiency.** Readable, well-structured prose with `##` headers and concrete examples outperforms tightly compressed bullet lists. Token count at retrieval time matters less than match quality and reasoning support.
 
@@ -534,10 +532,10 @@ EK ratio naturally **decreases** as models absorb more of the world's knowledge 
 
 EK ratio is not just a post-hoc measurement — it should guide hydration decisions during pack creation. See the [Hydration Guide](../guides/hydration.md) for the EK Triage process and the Hydration Priority Matrix.
 
-**The principle:** During hydration, every piece of content should pass through an EK filter before receiving full treatment. Content the model already knows gets minimal filing (brief glossary entry or one-line mention). Content the model cannot produce gets maximum effort (full extraction, careful structuring, proposition generation, lead summaries).
+**The principle:** During hydration, every piece of content should pass through an EK filter before receiving full treatment. Content the model already knows gets minimal embedded treatment or a one-line contextual mention. Content the model cannot produce gets maximum effort: full extraction, careful structuring, retriever-anchored opening definitions, and explicit `requires:` / `related:` links.
 
 **Pack-type considerations:** EK triage intensity varies by content type:
-- **Person packs** are almost entirely EK by nature — private stories, beliefs, voice patterns, and relationships exist nowhere in model weights. Skip blind probing for `verbatim/`, `mind/`, `presentation/`, and `relationships/` content. Probe only `facts/` (biographical data that may be publicly known for public figures) and background context added for scaffolding.
+- **Person packs** are almost entirely EK by nature — private stories, beliefs, voice patterns, and relationships exist nowhere in model weights. Skip blind probing for narrative atoms (`stories/`, `reflections/`, `opinions/`, `conversations/`), `mind/`, `presentation/`, and `relationships/` content. Probe only `facts/` (biographical data that may be publicly known for public figures) and background context added for scaffolding.
 - **Product packs** have the highest GK contamination risk — documentation, architecture overviews, and technology primers are often well-represented in training data. Probe all documentation-sourced content. Skip probing for expert walkthroughs and code-analysis findings.
 - **Process packs** fall between: official SOPs and standard methodology may be in training data, but practitioner experience, failure modes, timing realities, and regional variations are esoteric. Probe `fundamentals/` and formal process descriptions; skip `gotchas/`, `exceptions/`, and practitioner-contributed content.
 
@@ -695,14 +693,14 @@ sources:
 - Provenance is recommended for all content, required for content derived from video or interview sources
 - Multiple sources per file are allowed (a workflow might combine documentation + video + interview)
 - The `ref` field for video sources uses `MM:SS-MM:SS` or `HH:MM:SS-HH:MM:SS` format
-- Provenance frontmatter is metadata, not content — it does not count against the 1–3KB file size guideline
+- Provenance frontmatter is metadata, not content — it does not count against the 1,000-token concept ceiling
 - When a source is updated (new product version, revised documentation), provenance helps identify which pack files need review
 
 ---
 
-## Research Coverage (sources/_coverage.md)
+## Research Coverage (meta/source-coverage.md)
 
-Every pack should include a **coverage map** that honestly documents what knowledge sources were checked during pack creation, what was extracted, and what remains untouched. This makes the pack's depth and limitations transparent to consumers and maintainers.
+Every pack should include a **coverage map** (`meta/source-coverage.md`, `retrieval_strategy: navigation`) that honestly documents what knowledge sources were checked during pack creation, what was extracted, and what remains untouched. This makes the pack's depth and limitations transparent to consumers and maintainers.
 
 ### Why Coverage Tracking Matters
 
@@ -983,7 +981,7 @@ Not every query needs the full pack. A 50-file pack loaded entirely into context
 
 **Always (Tier 1)** — Files the agent must load at the start of every session. These establish identity: who/what the pack represents, how the agent should sound, and the essential facts needed to avoid obvious errors. Keep this tier small — ideally under 5KB total. If an always-loaded file exceeds 3KB, consider whether parts of it belong in Tier 2.
 
-**Searchable (Tier 2)** — The bulk of the pack's knowledge. These files are indexed by RAG or listed in `_index.md` files for agent navigation. They load when the conversation touches a relevant topic. Most content files — summaries, concepts, workflows, mind taxonomy, relationships — live here. Design these files to be independently useful: an agent loading a single file should get a complete, actionable answer without needing to load five other files first.
+**Searchable (Tier 2)** — The bulk of the pack's knowledge. These files are indexed by RAG or listed in `_index.md` files for agent navigation. They load when the conversation touches a relevant topic. Most content files — concepts, workflows, story/reflection/opinion atoms, mind taxonomy, relationships — live here. Design these files to be independently useful: an agent loading a single file should get a complete, actionable answer without needing to load five other files first.
 
 **On-demand (Tier 3)** — Content that's valuable but expensive or situational. Full verbatim transcripts (high token cost), training data (machine consumption only), raw exports, or archival material. An agent should only load these when the task specifically requires them — retelling a story in someone's exact words, generating fine-tuning data, or doing deep research.
 
@@ -997,14 +995,17 @@ context:
   always:
     - overview.md
     - facts/personal.md
-    - presentation/speech_patterns.md
+    - presentation/speech-patterns.md
   searchable:
-    - summaries/
     - relationships/
     - mind/
     - facts/
+    - stories/
+    - reflections/
+    - opinions/
+    - conversations/
   on_demand:
-    - verbatim/
+    - training/
     - training/
 ```
 
@@ -1030,7 +1031,7 @@ This is a safe default — no content is hidden from search, and identity files 
 ### Design Guidance
 
 - **Keep Tier 1 lean.** Every token in Tier 1 is spent on every conversation. A bloated always-load tier wastes budget on turns where the information isn't needed.
-- **Summaries belong in Tier 2, verbatim in Tier 3.** This is the core efficiency pattern: search against distilled summaries, load full text only when voice fidelity matters.
+- **Narrative atoms belong in Tier 2 unless intentionally private/on-demand.** In v4.1, verbatim material is folded into the appropriate story/reflection/opinion/conversation atom instead of mirrored through separate summaries.
 - **`_index.md` files are Tier 2 by default.** They help agents discover what's available without loading every file.
 - **Review tiers as the pack grows.** What starts as a 10-file pack with everything searchable may need tier refinement at 50 files.
 
@@ -1242,13 +1243,13 @@ ExpertPacks use three complementary versioning layers: schema versioning (for th
 
 ### Schema Versioning
 
-- Each type-specific schema file (e.g., `schemas/core.md`, `schemas/person.md`, `schemas/product.md`, `schemas/process.md`) carries a semantic schema version at the bottom of the file in the format `Schema version: MAJOR.MINOR` (for example `1.0`, `1.1`, `2.0`).
+- `schemas/schema-index.yaml` is the canonical compatibility matrix for the schema family. It records each schema file, version, extension/subtype relationship, and short description. The README schema table is generated from this index.
 - A **MAJOR** schema bump indicates a breaking structural change: renamed directories, removed required files, or fundamental reorganization that may require pack migration.
 - A **MINOR** schema bump indicates additive, backwards-compatible changes: new optional directories, clarified guidance, new templates, or additional recommendations. Packs targeting an older minor version remain conformant — the new features are optional.
 - Every pack's `manifest.yaml` MUST include a `schema_version` field declaring which version of the type-specific schema it was built against. Example (add to the required fields section in `manifest.yaml`):
 
 ```yaml
-schema_version: "1.0"  # Version of the type-specific schema this pack conforms to
+schema_version: "4.1"  # Version of the type-specific schema this pack conforms to
 ```
 
 - When a schema receives a MAJOR bump, pack authors and consumers should treat the change as requiring migration. When a schema receives a MINOR bump, packs on the previous minor version remain valid and can adopt new features at their discretion.
@@ -1287,7 +1288,7 @@ For a specific question, the agent either:
 - **Searches:** Uses RAG/vector search to find relevant chunks across all Tier 2 files
 - **Both:** RAG finds candidates, agent reads the full file for complete context
 
-**Atomic-conceptual retrieval:** Schema v4.0+ packs use self-contained concept files where each concept's definition, body, FAQs, related terms, and key propositions co-locate in one file. The EP MCP chunker splits at `##`/`###` section boundaries, producing fine-grained chunks (definition paragraph, body sections, each FAQ Q/A, related terms, propositions) that retrieve precisely while the graph-expansion layer pulls in wikilinked siblings for context. See [Atomic-Conceptual Content Files](#atomic-conceptual-content-files) above for the full pattern.
+**Atomic-conceptual retrieval:** Schema v4.1 packs use self-contained concept files where each concept's definition, body, FAQs, and related terms co-locate in one file. The EP MCP chunker splits at `##`/`###` section boundaries, producing fine-grained chunks (definition paragraph, body sections, each FAQ Q/A, related terms) that retrieve precisely while `requires:` expansion and wikilinks pull in needed context. See [Atomic-Conceptual Content Files](#atomic-conceptual-content-files) above for the full pattern.
 
 ### Deep Loading (Tier 3 — On-demand)
 When the task requires full source material:
@@ -1320,10 +1321,10 @@ These principles apply to every ExpertPack, regardless of type:
 | Entity relations | `_graph.yaml` generated by `ep-graph-export.py` (Schema 3.1); see [Graph Export](#graph-export-_graphyaml) |
 | Directory indexes | `_index.md` in every content directory |
 | Context strategy | Three tiers: always → searchable → on-demand, declared in manifest |
-| Retrieval optimization | Summaries (broad), propositions (precise), file splitting, lead summaries (front-loaded answers), and glossary (vocabulary bridging) — use together; see [Retrieval Optimization](#retrieval-optimization) |
+| Retrieval optimization | Atomic concept files with opening definitions, `requires:` dependencies, `_index.md` navigation, wikilinks, and embedded related terms/FAQs; avoid aggregator directories |
 | Concept scope | Use `concept_scope: single` (default) for all content files. Split any file covering 5+ distinct topics. Mark navigation/index files `concept_scope: navigation` + `retrieval_strategy: navigation` to exclude from retrieval index. See [Concept Scope](#concept_scope--retrieval-density-signal). |
 | Chunking strategy | The schema IS the chunking strategy. Author files to target size so every file passes through RAG chunkers intact (400–800 tokens). Atomic strategy for workflows/troubleshooting via frontmatter. Consumer config must set `chunking.tokens` ≥ pack's hard ceiling (1,000 recommended); see [Chunking Strategy](#chunking-strategy) |
-| Research coverage | Every pack includes `sources/_coverage.md` documenting what was checked, what was extracted, and what's untouched; see [Research Coverage](#research-coverage-sources_coveragemd) |
+| Research coverage | Every pack includes `meta/source-coverage.md` (`retrieval_strategy: navigation`) documenting what was checked, what was extracted, and what's untouched; `sources/` is reserved only for legacy/non-retrieval ingestion artifacts; see [Research Coverage](#research-coverage-metasource-coveragemd) |
 | Time variance | Annotate time-variant facts inline with `<!-- refresh -->` blocks; maintain `freshness.md` as supplementary index; for entirely time-bound files use `volatile/` directory with frontmatter TTL (`refresh`, `source`, `fetched_at`, `expires_at`); see [Time Variance](#time-variance) |
 | EK ratio | Measure and maximize esoteric knowledge ratio; declare in manifest; guide hydration priority; see [Esoteric Knowledge Ratio](#esoteric-knowledge-ek-ratio) |
 | Conflict resolution | Never overwrite — flag and ask the human |
@@ -1446,9 +1447,10 @@ The `concept_scope` field signals how many distinct topics a file covers. It is 
 | `concepts/` | `concept` | `standard` |
 | `workflows/` | `workflow` | `atomic` |
 | `troubleshooting/` | `troubleshooting` | `atomic` |
-| `glossary.md` (optional, root) | `glossary` | `standard` |
-| `summaries/` (person packs only) | `summary` | `standard` |
-| `verbatim/` (person packs only) | `verbatim` | `standard` |
+| `stories/` | `story` | `standard` |
+| `reflections/` | `reflection` | `standard` |
+| `opinions/` | `opinion` | `standard` |
+| `conversations/` | `conversation` | `standard` |
 | `overview.md` | `overview` | `standard` |
 | `_index.md` | `index` | `standard` |
 | `decisions/` | `decision` | `standard` |
@@ -1460,7 +1462,6 @@ The `concept_scope` field signals how many distinct topics a file covers. It is 
 | `facts/` | `fact` | `standard` |
 | `mind/` | `mind` | `standard` |
 | `relationships/` | `relationship` | `standard` |
-| `verbatim/` | `verbatim` | `standard` |
 | `commercial/` | `commercial` | `standard` |
 | `customers/` | `customer` | `standard` |
 | `interfaces/` | `interface` | `standard` |
@@ -1484,7 +1485,7 @@ frontmatter
 
 ExpertPacks use **Obsidian wikilinks** (`[[filename.md|Label]]`) for body cross-links. Wikilinks are the only link format that renders as graph edges in Obsidian's graph view — standard Markdown links (`[text](file.md)`) are invisible to the graph.
 
-Because all filenames are unique vault-wide (see [Filename Uniqueness](#filename-uniqueness-required)), wikilinks use **bare filenames only** — no paths. `[[sum-nina-street.md|Nina Street]]` not `[[../summaries/stories/sum-nina-street.md|Nina Street]]`.
+Because all filenames are unique vault-wide (see [Filename Uniqueness](#filename-uniqueness-required)), wikilinks use **bare filenames only** — no paths. `[[story-nina-street.md|Nina Street]]` not `[[../stories/story-nina-street.md|Nina Street]]`.
 
 **Trade-off:** Wikilinks render as raw text on GitHub. This is acceptable — the primary consumption surfaces are Obsidian and agent retrieval, not GitHub browsing. GitHub users can still navigate via directory structure.
 
@@ -1621,7 +1622,7 @@ A micro-record is a single JSON-LD object representing one pack file. It contain
 - **`source_span_uri`** — relative path to the source file (enables claim-to-span traceability)
 - **`label`** — short display name
 - **`canonical_statement`** — one sentence: the primary claim of the file
-- **`type`** — content type (see `schemas/registry/types.yaml`)
+- **`type`** — ExpertPack content type from this schema family (for example `concept`, `workflow`, `interface`, `story`, `fact`)
 - **`pack`** — pack slug
 - **`tags`** — semantic tags from frontmatter
 - **`provenance`** — `recorded_at`, `valid_from`, `verified_at`, `verified_by`, `source`, `content_hash`
@@ -1663,12 +1664,9 @@ Use AKS when token efficiency and deterministic citations matter more than archi
 
 | File | Purpose |
 |---|---|
-| `schemas/registry/agent-knowledge.schema.yaml` | Compact AKS v1 field definitions and constraints |
-| `schemas/registry/README.md` | Registry usage guide |
-| `schemas/registry/micro-record.schema.yaml` | Full micro-record field definitions and constraints |
-| `schemas/registry/micro-record.jsonld.json` | JSON-LD context (stable URIs at `expertpack.ai/schema/1.0/`) |
-| `schemas/registry/types.yaml` | All declared content types with descriptions |
-| `schemas/registry/edge-kinds.yaml` | All declared edge kinds (wikilink, related, context, supersedes, entity_mention, requires) |
+| `schemas/registry/agent-knowledge.spec.yaml` | Compact AKS v1 descriptive field definitions and constraints |
+| `schemas/registry/ontology.spec.yaml` | Accepted ontology registry descriptive field definitions and constraints |
+| `schemas/registry/README.md` | Registry usage guide and `.spec.yaml` format note |
 | `schemas/registry/examples/` | Concrete example records |
 
 
@@ -1708,10 +1706,10 @@ python tools/micro-record-exporter/ep-micro-record-export.py \
   --output exports/pack.aks.jsonl
 ```
 
-The `canonical_statement` is the one field that may require human or LLM authoring — it cannot always be derived mechanically from frontmatter alone. The exporter falls back to the lead summary or first prose paragraph when no generated statement is provided.
+The `canonical_statement` is the one field that may require human or LLM authoring — it cannot always be derived mechanically from frontmatter alone. The exporter falls back to the opening prose paragraph (or a legacy lead-summary blockquote) when no generated statement is provided.
 
 ---
 
-*Schema version: 3.4*
+*Schema version: 4.1*
 *Last updated: 2026-04-15*
 *Changes in 3.4: bi-temporal provenance fields (`valid_from`, `recorded_at`) added to frontmatter spec; W-PROV-05 validator rule added.*

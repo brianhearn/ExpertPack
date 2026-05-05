@@ -38,7 +38,7 @@ These apply to every ExpertPack. See [schemas/core.md](schemas/core.md) for the 
 |-----------|------|
 | **MD-Canonical** | Markdown is the source of truth for all content; JSON is navigation only |
 | **One Source of Truth** | Each fact lives in exactly one place |
-| **Small Files** | 1–3KB per content file, one topic per file |
+| **Small Atomic Files** | Concept atoms target 400–800 tokens with a 1,000-token ceiling; one dominant topic per file |
 | **RAG-Optimized** | `##` section headers at natural topic breaks for quality chunking |
 | **Retrieval-Optimized** | Atomic-conceptual files: one concept per file, retriever-anchored opening, FAQ surface, `requires:` dependencies |
 | **Layered Loading** | Three-tier context: always → searchable → on-demand |
@@ -75,11 +75,11 @@ Shared principles and conventions that apply to every ExpertPack:
 ### Type-Specific Schemas
 Each pack type has its own schema that extends core with domain-specific structure:
 
-- **[schemas/person.md](schemas/person.md)** (v4.1) — Mind taxonomy (9 universal categories), verbatim content with story card frontmatter, two-tier content system (verbatim → summary mirroring), biographical facts, timeline, relationships, legacy/memorial mode, privacy modes, presentation (voice, appearance), reasoning and conflict handling
+- **[schemas/person.md](schemas/person.md)** (v4.1) — Stories, reflections, opinions, conversations, mind taxonomy, biographical facts, timeline, relationships, privacy modes, presentation (voice, appearance), reasoning and conflict handling
 - **[schemas/product.md](schemas/product.md)** (v4.1) — Concepts, workflows, troubleshooting (errors, diagnostics, common mistakes), screens/interface specs, FAQ, commercial info, entity cross-references, timeline, decisions, customers, limitations, competitive landscape, mental model
-- **[schemas/process.md](schemas/process.md)** (v1.4) — Phases with enhanced structure, decisions, checklists, roles, resources, examples, gotchas, exceptions, variants
+- **[schemas/process.md](schemas/process.md)** (v4.1) — Phases with enhanced structure, decisions, checklists, roles, resources, examples, gotchas, exceptions, variants
 - **[schemas/composite.md](schemas/composite.md)** (v1.1) — Multi-pack deployments with role assignments, context tier overrides, cross-pack conflict resolution
-- **[schemas/eval.md](schemas/eval.md)** (v1.2) — Evaluation framework for measuring pack quality (response quality, retrieval quality, efficiency, pack health)
+- **[schemas/eval.md](schemas/eval.md)** (v1.3) — Evaluation framework for measuring pack quality (response quality, retrieval quality, efficiency, pack health)
 
 A pack declares its type in `manifest.yaml`, which determines which type-specific schema applies.
 
@@ -95,9 +95,9 @@ ExpertPack/
 │   ├── core.md            ← Shared principles (v4.1)
 │   ├── person.md          ← Person-pack schema (v4.1)
 │   ├── product.md         ← Product-pack schema (v4.1)
-│   ├── process.md         ← Process-pack schema (v1.4)
+│   ├── process.md         ← Process-pack schema (v4.1)
 │   ├── composite.md       ← Composite schema (v1.1)
-│   └── eval.md            ← Eval framework (v1.2)
+│   └── eval.md            ← Eval framework (v1.3)
 │
 ├── guides/                ← Practical how-to guides for pack builders
 │   ├── hydration.md           ← Complete hydration lifecycle

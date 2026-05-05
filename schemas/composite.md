@@ -100,7 +100,7 @@ Every constituent pack in a composite has a role that determines how the agent u
 ### Voice vs. Knowledge
 
 This distinction matters. When a founder's AI assistant answers a product question, it should:
-- **Sound like** the founder (voice pack → person pack's `presentation/speech_patterns.md`)
+- **Sound like** the founder (voice pack → person pack's `presentation/speech-patterns.md`)
 - **Know about** the product (knowledge pack → product pack's `concepts/`, `workflows/`, etc.)
 
 Without explicit roles, an agent might adopt the dry tone of a product manual or hallucinate personal opinions about technical features. The role system makes the separation clear.
@@ -121,7 +121,7 @@ Each constituent pack declares its own context tiers in its `manifest.yaml`. The
 
 ### 2. Apply Role-Based Defaults
 
-- **Voice pack:** `presentation/speech_patterns.md` is promoted to Tier 1 (always loaded) if not already there
+- **Voice pack:** `presentation/speech-patterns.md` is promoted to Tier 1 (always loaded) if not already there
 - **All packs:** `manifest.yaml` and `overview.md` remain Tier 1 per core defaults
 
 ### 3. Apply Composite Overrides
@@ -181,7 +181,7 @@ supplements/
 └── unified-glossary.md            ← Terms used across all constituent packs
 ```
 
-Supplement files follow the same rules as any ExpertPack content: Markdown, 1–3KB, section headers for RAG. They default to Tier 2 (searchable) unless overridden.
+Supplement files follow the same rules as any ExpertPack content: Markdown, one dominant topic per file, retriever-friendly opening paragraph, and `##` section headers for RAG. Concept-like supplements should target 400–800 tokens with a 1,000-token ceiling. They default to Tier 2 (searchable) unless overridden.
 
 **Keep supplements minimal.** If content logically belongs in one pack, put it there. Supplements are for genuinely cross-cutting content.
 
@@ -336,7 +336,7 @@ The distillation step is where most of the value is created. Raw state → struc
 - Transient session state (what was in-progress at a specific moment)
 - Routine heartbeat logs with no actionable findings
 - Duplicate or superseded information
-- Raw conversation transcripts (unless a specific exchange is worth preserving in `verbatim/decisions/`)
+- Raw conversation transcripts (unless a specific exchange is worth preserving as a `conversations/` atom or decision record)
 
 **What to always preserve:**
 - Learned behavioral patterns and preferences
@@ -406,7 +406,7 @@ context:
         - operational/safety.md
     "jamie-chen":
       on_demand:
-        - verbatim/
+        - conversations/
 ```
 
 ---

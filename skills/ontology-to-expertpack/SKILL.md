@@ -39,9 +39,9 @@ A complete ExpertPack at the output directory:
 - `_index.md` in each content directory
 - `relations.yaml` — typed entity relation graph (schema 4.1 compliant)
 - `glossary.md` — entity types and terms
-- Lead summaries and `##` section headers for optimal chunking
+- Retriever-anchored opening definitions and `##` section headers for optimal chunking
 
-Filenames use kebab-case. Content files kept under 3KB.
+Filenames use kebab-case. Concept atoms target 400–800 tokens with a 1,000-token ceiling; procedural/reference files stay focused and independently retrievable.
 
 ## Post-Conversion Steps
 

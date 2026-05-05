@@ -11,8 +11,7 @@ verified_by: agent
 requires:
   # - prerequisite-concept.md   # declare only when this atom is unintelligible without another
 related:
-  - other-concept.md
-  - related-workflow.md
+  - example-workflow.md
 ---
 
 # Example Concept
@@ -42,5 +41,4 @@ Keep answers tight and directly applicable. FAQ answers should not re-explain th
 
 ## Related Concepts
 
-- [[other-concept]]
-- [[related-workflow]]
+- [[example-workflow]]

@@ -157,7 +157,7 @@ def build_pack(output_dir, entities, relations, schema, pack_name, pack_type):
             entity_map[eid] = (label, rel_path)
 
             md = [f"# {label}\n"]
-            md.append(f"> **Lead summary:** {etype} record from ontology graph.")
+            md.append(f"{label} is a {etype} record from the ontology graph.")
 
             md.append(f"\n**Type:** {etype}")
             for k, v in props.items():

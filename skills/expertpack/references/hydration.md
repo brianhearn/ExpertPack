@@ -8,6 +8,8 @@
 
 **The goal of hydration is not to document everything — it's to document what only this pack can provide.** An ExpertPack is valued by its esoteric knowledge (EK) ratio: the proportion of content that frontier LLMs cannot produce on their own (see [AXIOMS.md](../AXIOMS.md) and [core.md — EK Ratio](../schemas/core.md#esoteric-knowledge-ek-ratio)). Every hydration decision should be filtered through this lens: *Does the model already know this? If yes, minimize. If no, maximize.*
 
+**EK ratio is a north star, not a deletion rule.** The goal is to make the pack's *substance* esoteric — not to strip out every piece of general knowledge. GK scaffolding that makes EK content retrievable or intelligible belongs in the pack; see [EK Triage](#ek-triage--the-default-hydration-filter) for when to compress vs. skip. Similarly, explanatory context that helps a model reason from EK — not just retrieve it — has value even if the explanation itself isn't esoteric. The failure mode to avoid is a pack so aggressively pruned that EK atoms become isolated facts the model can retrieve but can't reason from.
+
 An ExpertPack is only as good as its sources. The best packs combine multiple population methods because no single method captures everything:
 
 - **Documentation gives you the intended behavior.** What the product/process/person is *supposed* to do or be.
@@ -17,6 +19,23 @@ An ExpertPack is only as good as its sources. The best packs combine multiple po
 - **Feedback mining gives you the user reality.** What real people struggle with, not what designers assumed.
 
 No method is inherently superior. The right mix depends on what source materials exist and what kind of pack you're building. Start with whatever you have access to and layer in additional methods as they become available.
+
+---
+
+## Schema Negotiation
+
+Before populating a pack, review the typed schema against the pack's actual purpose. ExpertPack's schemas (person, product, process) provide a sensible default skeleton — but every domain is different, and a schema that fits an enterprise SaaS product poorly may cause the pack owner to disengage before hydration even begins.
+
+**The LLM's job during schema negotiation:**
+
+1. **Start with the typed skeleton.** Read the relevant type schema (person.md, product.md, or process.md) and scaffold the default directory structure.
+2. **Identify the pack's purpose.** Ask the pack owner 1–2 scoping questions: *What is the primary use case for this pack?* and *What kinds of questions should this pack be able to answer?* These answers take 30 seconds and prevent hours of misaligned content.
+3. **Propose adjustments — don't ask open-ended questions.** Based on the purpose, identify any default categories that clearly don't apply and any obvious gaps the schema doesn't cover. Present a concrete proposal: *"I'm adding a `pricing/` section and removing `philosophy/` since this is a technical reference. Confirm?"* The LLM proposes; the owner approves or adjusts.
+4. **Lock the schema before hydration begins.** Once confirmed, the agreed structure becomes the retrieval contract. Avoid adding new top-level categories mid-hydration — category drift produces near-duplicates (`use_cases/` and `applications/`) that fragment retrieval.
+
+**What stays fixed:** The `type` field and typed skeleton are the foundation. Schema negotiation shapes the *contents* of the structure, not the fundamental typing. This keeps composites and cross-pack reasoning coherent.
+
+**When to skip negotiation:** If the pack's purpose obviously maps cleanly to the default schema, skip the scoping questions and proceed. Negotiation is for cases where there's a meaningful mismatch — not a gate every hydration must pass through.
 
 ---
 
@@ -134,7 +153,7 @@ The percentages are rough guides, not targets. Some packs will reach 90% from do
 
 ### Pack-Type Notes
 - **Product:** Primary bootstrap method. Restructure from docs → concepts + workflows + specifications.
-- **Person:** Ingest published writing (books, articles, blog posts, social media) into `verbatim/` and `summaries/` (person packs retain the verbatim↔summary pattern in v4.0 pending RFC-002). Preserve the person's voice — don't rewrite their words.
+- **Person:** Ingest published writing (books, articles, blog posts, social media) into type-specific atoms such as `stories/`, `reflections/`, `opinions/`, and `conversations/`. Preserve the person's voice inside the atom — don't rewrite their words.
 - **Process:** Ingest SOPs, runbooks, checklists, compliance docs into `phases/` and `checklists/`.
 
 ---
@@ -206,7 +225,7 @@ The percentages are rough guides, not targets. Some packs will reach 90% from do
    - Conceptual explanations → `concepts/`
    - Error demonstrations → `troubleshooting/errors/`
    - Tips and gotchas → `troubleshooting/common-mistakes/`
-   - Stories and reflections → `verbatim/` (person packs)
+   - Stories and reflections → `stories/` / `reflections/` atoms (person packs)
 4. **Add provenance frontmatter** with source type, video title, and timestamp reference.
 5. **Update cross-references** — entities.json, _index.md files, and links between related content.
 6. **Track extraction status** in the source index — which scenes are fully extracted, partial, or remaining.
@@ -240,7 +259,7 @@ When building from multiple videos:
 
 ### Pack-Type Notes
 - **Product:** Tutorials and demos are gold for workflows and interfaces. Process by interaction moments.
-- **Person:** Talks, interviews, and appearances capture voice, reasoning, and personality. Extract into `verbatim/` preserving the person's words; generate `summaries/` for navigation. (Person packs retain verbatim↔summary mirroring in v4.0 pending RFC-002.)
+- **Person:** Talks, interviews, and appearances capture voice, reasoning, and personality. Extract into `stories/`, `reflections/`, `opinions/`, or `conversations/` atoms preserving the person's words. Use `_index.md` navigation and frontmatter metadata instead of generated summary mirrors.
 - **Process:** Recorded procedures and training sessions map directly to `phases/` and `checklists/`.
 
 ---
@@ -346,7 +365,7 @@ These observations come from applying source code extraction to a production sof
 
 ### Pack-Type Notes
 - **Product:** Focus on edge cases, undocumented behavior, known bugs, and the "why" behind design decisions. Validate findings from documentation and technical artifact analysis.
-- **Person:** The person *is* the expert. Story collection prompts, belief elicitation, and memory walks. Preserve their voice in `verbatim/`.
+- **Person:** The person *is* the expert. Story collection prompts, belief elicitation, and memory walks. Preserve their voice inside the appropriate narrative atom.
 - **Process:** Focus on practitioners who execute the process daily. Ask about failure modes, workarounds, and the gap between the official process and what actually happens.
 
 ---
@@ -360,8 +379,8 @@ These observations come from applying source code extraction to a production sof
 ### The Pipeline
 
 1. **Use targeted prompts** — One topic per turn. Request stories, not facts: "Tell me about a time when..." not "What is your opinion on..."
-2. **Preserve voice** — Store the person's exact words in `verbatim/`. Add structural headers between natural breaks but never alter phrasing.
-3. **Generate summaries** — After each verbatim capture, create a summary with standardized metadata (themes, people, emotions, stakes, turning point).
+2. **Preserve voice** — Store the person's exact words inside the appropriate `stories/`, `reflections/`, `opinions/`, or `conversations/` atom. Add structural headers between natural breaks but never alter phrasing.
+3. **Add metadata and opening anchors** — After each capture, add frontmatter/context metadata (themes, people, emotions, stakes, turning point) and a retriever-friendly opening paragraph without duplicating the atom into a summary file.
 4. **Cross-reference** — As people, events, and concepts emerge, create or update relationship entries and timeline events.
 5. **Elicit reasoning** — Don't just capture positions; capture *how* they think: "How did you decide that?" "What would change your mind?" "What's the strongest counterargument?"
 
@@ -494,7 +513,7 @@ When the heuristic check doesn't give a clear EK/GK signal:
 Not all content requires blind probing. Some content types are EK by definition:
 
 **Always EK (skip probing):**
-- Person pack `verbatim/` — the person's own words are definitionally esoteric
+- Person-pack narrative atoms (`stories/`, `reflections/`, `opinions/`, `conversations/`) — the person's own words are definitionally esoteric
 - Person pack `mind/` — personal beliefs, reasoning patterns, tensions
 - Person pack `relationships/` — private relationship context
 - Person pack `presentation/` — speech patterns, voice, mannerisms
@@ -516,7 +535,7 @@ Not all content requires blind probing. Some content types are EK by definition:
 
 | Classification | Treatment | Purpose |
 |---------------|-----------|---------|
-| **EK** (model wrong/refuses) | Full treatment: dedicated concept file with retriever-anchored opening paragraph, structured body, FAQs where relevant, and `## Key Propositions` if the concept has axiomatic statements | This is the pack's core value |
+| **EK** (model wrong/refuses) | Full treatment: dedicated concept file with retriever-anchored opening paragraph, structured body, FAQs where relevant, and explicit `requires:` / `related:` links | This is the pack's core value |
 | **Partial** (model vague/approximate) | Standard treatment: include in appropriate file, highlight the specific detail the model missed | The delta between "model knows roughly" and "pack knows precisely" is still valuable |
 | **GK scaffolding** (model correct, but needed for retrieval) | 1-3 sentences providing context for nearby EK content. No dedicated file. Glossary entry or inline context only. | Ensures EK content is retrievable — user queries match on GK terms, which lead to EK answers |
 | **GK unnecessary** (model correct, no EK depends on it) | Skip entirely. Do not file. | Adding this content would dilute EK ratio without improving retrieval |
@@ -597,7 +616,7 @@ The most common hydration mistake is spending equal effort on general and esoter
 
 ## Building Atomic-Conceptual Content Files (Schema v4.1+)
 
-Hydrating content is half the job. The other half is structuring each concept file so the retriever can find it precisely. Schema v4.1 consolidates that into a single pattern: **one concept = one self-contained file** carrying definition, body, FAQs, related terms, and (when appropriate) key propositions.
+Hydrating content is half the job. The other half is structuring each concept file so the retriever can find it precisely. Schema v4.1 consolidates that into a single pattern: **one concept = one self-contained file** carrying definition, body, FAQs, related terms, and explicit dependencies via `requires:`.
 
 This supersedes the v3.x pattern of separate `summaries/`, `propositions/`, per-domain `glossary-*.md`, and standalone `faq/` directories. Those aggregator files were empirically shown to score broadly on every query and displace specific content — the opposite of what hierarchical retrieval theory predicted. See [`schemas/rfcs/RFC-001-atomic-conceptual-chunks.md`](../schemas/rfcs/RFC-001-atomic-conceptual-chunks.md) for the validation data and [`schemas/references/granularity-guide.md`](../schemas/references/granularity-guide.md) for embed-vs-promote authoring decisions.
 
@@ -605,11 +624,11 @@ This supersedes the v3.x pattern of separate `summaries/`, `propositions/`, per-
 
 ```markdown
 ---
-id: my-pack/concepts/user-roles
+id: ezt-designer/concepts/user-roles
 title: "User Roles"
 type: concept
 tags: [user-roles, permissions]
-pack: my-pack
+pack: ezt-designer
 retrieval_strategy: standard
 concept_scope: single
 schema_version: "4.1"
@@ -621,7 +640,7 @@ related:
 
 # User Roles
 
-This product supports three user roles: Owner, Editor, and Viewer. Owners can manage team members and billing; Editors can create and modify content but cannot change team settings; Viewers can see content and reports but cannot edit them. There is no "Admin" role — Owner is the highest permission level.
+EZT Designer supports three user roles: Owner, Editor, and Viewer. Owners can manage team members and billing; Editors can create and modify territories but cannot change team settings; Viewers can see territories and reports but cannot edit them. There is no "Admin" role — Owner is the highest permission level.
 
 ## How It Works
 
@@ -640,12 +659,6 @@ Content stays with the account, not the user. When an Editor is removed, their t
 - **Seat:** A paid slot in the team plan; assigned to one user at a time.
 - **Team plan:** The billing relationship; separate from the role model.
 
-## Key Propositions
-
-- There is no "Admin" role; Owner is the highest permission level.
-- Roles are assigned per-user per-account and do not inherit.
-- Billing access is exclusive to the Owner role.
-
 ## Related Concepts
 - [[managed-projects]]
 - [[access-control]]
@@ -657,12 +670,12 @@ Content stays with the account, not the user. When an Editor is removed, their t
 - **Body sections (`##`).** Each sub-topic a coherent sub-chunk. Write them so a reader (or a retriever) can understand the section without having to have read the others.
 - **`## Frequently Asked` (H3 per question).** The chunker splits on `###` too, so each Q/A becomes its own sub-chunk with a strong natural-language match surface. Phrase questions the way users actually ask them ("Why won't my ZIP codes move?" — not "How does locked territory behavior manifest?").
 - **`## Related Terms`.** For relative vocabulary that doesn't stand alone — terms whose definition requires the parent concept. Terms that *do* stand alone earn their own concept file instead (see granularity guide).
-- **`## Key Propositions`** (optional). For concepts with genuinely axiomatic statements: invariants, hard rules, formal properties. Omit when the concept's truth is carried by body prose. This replaces the deprecated `propositions/` directory as the path for declarative retrieval.
+- **No `## Key Propositions` by default in v4.1.** Body prose carries propositions. If a legacy v4.0 pack has this section, migrate genuinely useful statements into the relevant body sections.
 - **`## Related Concepts`** with wikilinks. EP MCP's graph expansion pulls in wikilinked siblings during retrieval, so you don't need to duplicate content across files.
 
 ### Authoring guidance
 
-- **Size target:** 500–900 tokens per concept file; hard ceiling 1,500. Files below ~200 tokens are almost always better embedded as related terms in a parent concept.
+- **Size target:** 500–800 tokens per concept file; hard ceiling 1,000 (schema v4.1). Files below ~250 tokens are almost always better embedded as related terms in a parent concept. Concepts that exceed the ceiling split into independent atoms linked by `requires:`, not into numbered parts.
 - **Co-locate, don't spread.** If something is about this concept, it belongs in this file. Don't split the concept's definition, its FAQs, and its glossary entries across three files.
 - **Granularity.** Err toward embedding when in doubt. Promotion to a standalone concept file is cheap later; demotion creates broken wikilinks and orphan files. See the [granularity guide](../schemas/references/granularity-guide.md) for the full decision procedure with worked examples.
 - **Vocabulary bridging.** The old pattern of a separate glossary mapping user language to technical terms is replaced by inline anti-hallucination language in the opening paragraph ("There is NO Admin role…"), user-phrased FAQ questions, and Related Terms entries. If a pack has a cross-cutting optional `glossary.md` at the root for product-name-style terms, keep it lean — it's an author/agent navigation aid, not a retrieval layer.
@@ -677,18 +690,18 @@ A concept file is definitional: what something is, why it matters, how it behave
 
 #### Authoring for Retrieval
 
-Author every content file to the 400–800 token target (1,500 token ceiling). These files become self-contained retrieval units. Any standard RAG chunker will pass them through intact.
+Author every concept file to the 500–800 token target (1,000 token ceiling in schema v4.1). These files become self-contained retrieval units. Any standard RAG chunker will pass them through intact.
 
 This preserves:
-- Lead summaries attached to titles
-- Proposition groups
-- Glossary tables
+- Opening definitions attached to titles
+- Body sections that carry atomic facts in context
+- Related terms tables
 - `<!-- refresh -->` metadata
 - Complete `##` sections
 
 **Evidence: What Works and What Doesn't**
 
-These results come from 6 controlled experiments on a real product pack (204 source files), each changing one variable at a time:
+These results come from 6 controlled experiments on a real product pack (EZT Designer, 204 source files), each changing one variable at a time:
 
 | Change | Correctness | Hallucination | Tokens | Verdict |
 |--------|------------|---------------|--------|---------|
@@ -699,9 +712,9 @@ These results come from 6 controlled experiments on a real product pack (204 sou
 | **Schema-aware chunking** | **88.4%** (+9.4%) | **4.0%** (-6%) | **2,111** (-52%) | 🔥 Best single change |
 
 **Key lessons:**
-- **Splitting alone loses context.** Sub-files miss the surrounding context that helped the model understand relationships. Don't split without adding retrieval layers.
+- **Splitting alone loses context.** Sub-files miss the surrounding context that helped the model understand relationships. Do not split unless each resulting atom is independently retrievable with a clear opening definition, `requires:` dependencies where necessary, and `_index.md` navigation.
 - **Compaction hurts.** Removing examples and shortening explanations makes text *harder* for models to parse. The "redundant" content was serving as reasoning scaffolding.
-- **Three layers together work.** Summaries + propositions + splits compensate for each other: summaries recover broad context, propositions enable precise fact retrieval, splits provide focused detail.
+- **Schema v4.1 replaces retrieval layers with self-contained atoms.** Opening definitions recover broad context, body prose carries precise facts, `requires:` preserves true dependencies, and `_index.md` provides navigation without polluting retrieval.
 - **Schema-aware chunking is transformative.** Pre-computing semantically coherent chunks means every retrieved result is self-contained and relevant. The insight: **retrieval precision > model capability for factual correctness.** A weaker model with precise chunks outperforms a stronger model with sloppy chunks.
 
 #### Integration
@@ -734,29 +747,29 @@ For Schema 2.5+ packs, point your RAG system at the pack root. Author files to t
 - **minScore: 0.35** — filters low-confidence results; prevents noise from unrelated files in large packs
 - **vectorWeight: 0.7 / textWeight: 0.3** — semantic search dominates, keyword matching assists
 - **candidateMultiplier: 4** — retrieves 4× candidates before MMR re-ranking for better diversity
-- **MMR enabled (λ=0.7)** — prevents near-duplicate proposition/summary/content chunks from crowding results
+- **MMR enabled (λ=0.7)** — prevents near-duplicate chunks from crowding results
 - **Temporal decay off** — pack knowledge doesn't expire by file modification date
 
-### The Three-Layer System
+### The Atomic-Conceptual System
 
-Lead summaries, summaries, propositions, glossary, and schema-aware chunking work as a system. Each layer handles what the others can't:
+Schema v4.1 retrieval works by making each atom self-contained instead of creating separate summary/proposition/glossary aggregators:
 
-| Layer | Handles | Without It |
-|-------|---------|-----------|
-| **Lead summaries** | Front-loads answers into the highest-ranked chunk position | First chunk is preamble, not the answer |
-| **Summaries** | Broad questions ("what can it do?") | Every query competes against hundreds of fine-grained files |
-| **Propositions** | Specific factual questions ("what's the max?") | Model must extract facts from prose paragraphs |
-| **Glossary** | Vocabulary bridging between user language and pack terms | Queries using informal language miss relevant content |
-| **Small self-contained files** | Preserves all structural conventions during retrieval | Large files get split by generic chunkers |
+| Element | Handles | Without It |
+|---------|---------|------------|
+| **Opening definition** | Front-loads the answer and concept category | First chunk is preamble, not the answer |
+| **Body prose** | Carries exact facts, examples, constraints, and reasoning scaffolding | Propositions become contextless fragments |
+| **`requires:` dependencies** | Pulls true prerequisites with the atom | Split concepts lose necessary context |
+| **`## Related Terms`** | Bridges local vocabulary without a glossary hub | Informal/relative terms miss relevant content |
+| **`_index.md` navigation** | Helps agents browse without polluting retrieval | Broad hub files compete with atoms |
 
-Don't build one layer and skip the rest. The three-layer approach (summaries + propositions + split/chunked content files) consistently outperforms any single layer alone.
+Do not recreate `summaries/`, `propositions/`, or per-domain glossary hubs for v4.1 packs. If a concept is too large, split it into independently useful atoms and declare only true comprehension dependencies in `requires:`.
 
 ### Retrieval Anti-Patterns
 
 Based on eval experiments, avoid these common mistakes:
 
 - **Do NOT compact or compress prose to save tokens.** Denser text is harder for models to parse. Examples, explanations, and context that feel redundant to a human serve as reasoning scaffolding for a model. Content quality was never the bottleneck — retrieval precision was.
-- **Do NOT split files without adding retrieval layers.** Splitting alone degrades quality. Each fragment loses the surrounding context that made the unified file useful. Always pair splitting with summaries and propositions.
+- **Do NOT split files unless resulting atoms are independently retrievable.** Splitting alone degrades quality. Each fragment loses the surrounding context that made the unified file useful. Pair splits with clear opening definitions, `requires:` dependencies where necessary, and `_index.md` navigation — not summaries or propositions.
 - **Do NOT sacrifice content readability for token efficiency.** Readable prose with `##` headers and concrete examples outperforms tightly compressed bullet lists. Token count at retrieval time matters less than match quality and reasoning support.
 
 ---
@@ -878,7 +891,7 @@ When the product ships a new version, documentation is revised, or new expert kn
 1. **Identify affected files** — use source provenance frontmatter to trace which pack files came from the updated source
 2. **Re-extract** — run the relevant population method on the updated source
 3. **EK triage the delta** — new content passes through the same EK filter as initial hydration
-4. **Regenerate retrieval layers** — update summaries, propositions, and re-run the schema-aware chunker
+4. **Update retrieval metadata** — refresh opening definitions, `requires:` / `related:` frontmatter, `_index.md` navigation, and any generated graph/export artifacts
 5. **Re-run evals** — verify that updates improved (or at least didn't degrade) quality
 
 ### EK Ratio Decay
@@ -891,7 +904,7 @@ EK ratio naturally **decreases** over time as frontier models absorb more knowle
 
 ### Research Coverage Tracking
 
-Every pack should include a `sources/_coverage.md` that honestly documents what knowledge sources were checked, what was extracted, and what remains untouched. This makes the pack's depth and limitations transparent. See [core.md — Research Coverage](../schemas/core.md#research-coverage-sources_coveragemd) for the format and status key.
+Every pack should include a `meta/source-coverage.md` that honestly documents what knowledge sources were checked, what was extracted, and what remains untouched. This makes the pack's depth and limitations transparent. See [core.md — Research Coverage](../schemas/core.md#research-coverage-metasource-coveragemd) for the format and status key.
 
 Update coverage status as you deepen the pack: ⬜ Identified → 🟡 Sampled → ✅ Mined. Known gaps should be specific and actionable — "More research needed" is useless; "Installer forum threads about firmware failure modes not yet mined" tells the next hydrator exactly what to do.
 

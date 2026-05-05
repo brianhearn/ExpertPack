@@ -14,10 +14,10 @@
 What it **cannot** do automatically (requires agent judgment):
 - EK triage (which content has real esoteric value vs. general knowledge)
 - Retriever-anchored opening paragraphs on each concept file (v4.1: the opening paragraph IS the summary)
-- Co-locating FAQs, related terms, and key propositions into each concept file per the atomic-conceptual v4.1 model (RFC-001)
-- `sources/_coverage.md` research audit
+- Co-locating FAQs and related terms into each concept file per the atomic-conceptual v4.1 model (RFC-001); body prose carries propositions
+- `meta/source-coverage.md` research audit
 - Meaningful glossary entries (and in v4.0 these typically embed as `## Related Terms` inside concepts rather than a root-level glossary)
-- File size splitting (files >1,500 tokens should be split at `##` boundaries)
+- File size splitting (concept files >1,000 tokens should be split into independent atoms with `requires:` where needed)
 
 ## Pack Type Decision Tree
 
@@ -81,7 +81,7 @@ python3 /path/to/ExpertPack/tools/validator/ep-validate.py /path/to/output
 ```
 
 Then (agent-assisted):
-- Restructure each concept into the v4.0 atomic-conceptual format: retriever-anchored opening paragraph, body sections, optional `## Frequently Asked` / `## Related Terms` / `## Key Propositions`
+- Restructure each concept into the v4.1 atomic-conceptual format: frontmatter with `requires:` / `related:`, retriever-anchored opening paragraph, body sections, optional `## Frequently Asked` / `## Related Terms` / `## Related Concepts`
 - Populate an optional lean `glossary.md` only for cross-cutting terms (product name, industry vocabulary)
 - Run `expertpack-eval` to measure EK ratio
 
@@ -112,4 +112,4 @@ Files are authored at 400–800 tokens — retrieval-ready by design, no externa
 
 ## File Size Guidance
 
-EP target: 1–3KB per file (~200–600 words). Files above 3KB should be split on natural topic boundaries using `##` headers as split points. The validator flags oversized files as warnings. Use editorial judgment — don't split arbitrarily.
+EP v4.1 target: concept atoms should land around 400–800 tokens with a 1,000-token hard ceiling. Files above the ceiling should be split into independent atoms with clear opening definitions and `requires:` dependencies where needed. Procedural atomic files may exceed this when the complete workflow/phase must retrieve whole.

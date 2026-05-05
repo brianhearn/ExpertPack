@@ -37,7 +37,7 @@ Do not ingest suggestions automatically into production retrieval without owner 
 
 ## Accepted Ontology Format
 
-Accepted ontology lives in `ontology.yaml` at the pack root by default and follows `schemas/registry/ontology.schema.yaml`:
+Accepted ontology lives in `ontology.yaml` at the pack root by default and follows `schemas/registry/ontology.spec.yaml`:
 
 ```yaml
 schema: expertpack.ontology.v1

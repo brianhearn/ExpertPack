@@ -46,7 +46,7 @@ Use `--provenance` to check stable citation/freshness fields (`id`, `verified_at
 | `W-AKS-01` | File will be skipped by AKS export because it lacks stable `id` |
 | `W-AKS-02` | AKS row will lack `verified_at` freshness metadata |
 | `W-AKS-03` | Exporter can compute `content_hash`, but no stored frontmatter hash exists for drift detection |
-| `W-AKS-04` | Exporter has weak `canonical_statement` fallback; add lead summary or opening prose |
+| `W-AKS-04` | Exporter has weak `canonical_statement` fallback; add a retriever-anchored opening prose paragraph |
 
 ## ep-doctor.py
 

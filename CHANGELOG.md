@@ -8,11 +8,21 @@ Schema versions use the format `core.X.Y` for core schema and `type.X.Y` for typ
 
 ## [Unreleased]
 
+### Fixed
+- Added `schemas/schema-index.yaml` as the central compatibility matrix and synchronized README schema versions from it.
+- Replaced stale v3 retrieval-layer guidance with v4.1 atom guidance (`requires:`, opening definitions, `_index.md` navigation).
+- Updated product concept and interface templates to match core v4.1 atom/interface patterns.
+- Promoted process guidance to explicit v4.1, including concept-like vs procedural atom treatment and `requires:` phase dependencies.
+- Updated eval person-pack guidance for v4.1 atom directories and bumped eval schema to 1.3.
+- Renamed registry YAML descriptions from `.schema.yaml` to `.spec.yaml` to avoid implying JSON Schema/OpenAPI compatibility.
+- Standardized agent/composite speech pattern path to `presentation/speech-patterns.md`.
+- Clarified source coverage as `meta/source-coverage.md`; legacy `sources/` is non-retrieval ingestion/audit material only.
+
 ### Added
 - **Graph export consumes accepted ontology** — `ep-graph-export.py` now reads accepted `ontology.yaml` (or `--ontology`) and emits ontology entity nodes plus `entity_mention` and accepted relation edges into `_graph.yaml`. Suggestions remain ignored until promoted into the accepted ontology registry.
-- **Ontology suggestion CLI** — added `tools/ontology-suggest/ep-ontology-suggest.py`. It builds on the compact AKS projection plus existing `requires:` / `related` edges to propose review-first category nodes, repeated domain entities/terms, and explicit graph edges. Output is suggestions only (`ontology-suggestions.yaml` by default); maintainers accept/reject into `ontology.yaml`, the new accepted ontology registry (`schemas/registry/ontology.schema.yaml`).
+- **Ontology suggestion CLI** — added `tools/ontology-suggest/ep-ontology-suggest.py`. It builds on the compact AKS projection plus existing `requires:` / `related` edges to propose review-first category nodes, repeated domain entities/terms, and explicit graph edges. Output is suggestions only (`ontology-suggestions.yaml` by default); maintainers accept/reject into `ontology.yaml`, the new accepted ontology registry (`schemas/registry/ontology.spec.yaml`).
 - **AKS export-readiness gates** — `ep-validate.py --aks` now checks whether content files can produce complete compact Agent Knowledge Schema rows (stable IDs, freshness metadata, stored content hashes, and canonical-statement surfaces). `ep-micro-record-export.py` now supports `--strict` and `--report-json` for CI/export gates; `--strict` exits nonzero when exportable content would be skipped.
-- **Agent Knowledge Schema (AKS) v1** — added `schemas/registry/agent-knowledge.schema.yaml` and `schemas/registry/README.md`. AKS formalizes the compact provenance-first JSONL shape for grounded agent retrieval pipelines: stable `id`, `canonical_statement`, `title`, `type`, `pack`, `canonical_path`, `source_span_uri`, `content_hash`, `source_checksum`, plus optional verification and graph fields.
+- **Agent Knowledge Schema (AKS) v1** — added `schemas/registry/agent-knowledge.spec.yaml` and `schemas/registry/README.md`. AKS formalizes the compact provenance-first JSONL shape for grounded agent retrieval pipelines: stable `id`, `canonical_statement`, `title`, `type`, `pack`, `canonical_path`, `source_span_uri`, `content_hash`, `source_checksum`, plus optional verification and graph fields.
 - **Compact provenance-first micro-record export** — `tools/micro-record-exporter/ep-micro-record-export.py --compact` now emits lean JSONL for token-efficient agent pipelines. Compact records keep the fields agents need for deterministic grounding (`id`, `canonical_statement`, `type`, `pack`, `source_span_uri`, `content_hash`, `verified_at`, `requires`, `related`) without the full JSON-LD envelope. Full exports also promote provenance fields (`content_hash`, `verified_at`, `recorded_at`, `valid_from`) to top-level while preserving the nested `provenance` block for registry compatibility.
 
 ---
@@ -53,7 +63,7 @@ Schema versions use the format `core.X.Y` for core schema and `type.X.Y` for typ
 
 ## [Core 4.0] — 2026-04-18 — Atomic-Conceptual Chunks (RFC-001)
 
-**Breaking change** — MAJOR version bump. Product and process packs adopt a single self-contained content model; v3.x aggregator directories are deprecated. Person packs retain their verbatim↔summary model pending a follow-up RFC.
+**Breaking change** — MAJOR version bump. Product and process packs adopt a single self-contained content model; v3.x aggregator directories are deprecated. Person packs had not yet been migrated in this release; v4.1 folds verbatim material into type-specific narrative atoms.
 
 ### Added
 - `schemas/rfcs/RFC-001-atomic-conceptual-chunks.md` — Accepted RFC documenting the atomic-conceptual content model: one concept = one self-contained file carrying definition, body, FAQs, related terms, and key propositions. Records motivation, resolved design decisions, migration plan, and validation findings.
@@ -70,7 +80,7 @@ Schema versions use the format `core.X.Y` for core schema and `type.X.Y` for typ
 ### Deprecated
 - `summaries/` directory (product/process packs) — content absorbed into concept-file opening paragraphs.
 - `propositions/` directory — content absorbed into concept-file body prose and optional `## Key Propositions` sections.
-- `sources/` ingestion-artifacts directory — source-provenance tracking lives in per-file `verified_at`/`source:` frontmatter and pack-level `sources/_coverage.md`.
+- `sources/` ingestion-artifacts directory — source-provenance tracking lives in per-file `verified_at`/`source:` frontmatter and pack-level `meta/source-coverage.md`.
 - Per-domain `glossary-{domain}.md` files — terms either earn standalone concept files or embed as `## Related Terms`. A lean, optional `glossary.md` at pack root remains for cross-cutting terms only.
 - Standalone `faq/` directory for per-concept FAQs — FAQs move into primary concept files' `## Frequently Asked` sections. Cross-cutting FAQs may remain in `faq/` sparingly.
 - Lead-summary blockquote pattern — opening paragraph of concept file is the summary.
@@ -219,7 +229,7 @@ Schema versions use the format `core.X.Y` for core schema and `type.X.Y` for typ
   - Full EP directory structure with stubs for every content type
   - `manifest.yaml`, `overview.md`, `glossary.md`, `Dashboard.md` pre-filled
   - Example content files for `concepts/`, `workflows/`, `troubleshooting/`, `faq/`
-  - `sources/_coverage.md`, `volatile/README.md`, `eval/benchmark.yaml` stubs
+  - coverage stub (now `meta/source-coverage.md` in v4.1), `volatile/README.md`, `eval/benchmark.yaml` stubs
   - `.obsidian/` pre-configured: Dataview + Templater enabled, relative link format
   - 5 Templater templates (concept, workflow, FAQ, troubleshooting, volatile) — frontmatter auto-populates on note creation
   - `Dashboard.md` with 7 live Dataview queries: content by type, missing frontmatter, expiring volatile, atomic files, tag browser, EK scores, file count by directory

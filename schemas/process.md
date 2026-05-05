@@ -2,6 +2,10 @@
 
 *Blueprint for ExpertPacks that capture a complex process — multi-phase endeavors like building a home, starting a business, or designing a landscape. This schema extends [core.md](core.md); all shared principles apply.*
 
+**Schema version:** 4.1 (2026-04-19)
+
+**What changed in 4.1** — Process packs now explicitly adopt the core atomic model. Concept-like directories (`fundamentals/`, `roles/`, `regulations/`, and promoted terminology) use v4.1 concept atoms; procedural directories (`phases/`, `checklists/`, `exceptions/`, `scheduling/`, `budget/`, `templates/`) use atomic procedural files with `requires:` dependencies for phase/order prerequisites. Standalone `glossary/` aggregators are discouraged; embed terms in `## Related Terms` or promote them to concepts.
+
 ---
 
 ## Purpose
@@ -25,7 +29,7 @@ The target user is someone undertaking a process for the first (or second) time 
 1. Capture the sequential flow (phases) and the decision points that cause branches.
 2. Surface the hard-won heuristics (gotchas) and examples that make novices competent quickly.
 3. Provide the operational artifacts people actually need: checklists, templates, budgets, schedules, and regulatory references.
-4. Keep files small and focused so RAG retrieves precise chunks (1–3KB per file guideline).
+4. Keep files atomic and focused: concept-like files target 400–800 tokens with a 1,000-token hard ceiling; procedural files may be longer when a complete workflow/phase must be retrieved whole.
 5. Make the pack discoverable via `_index.md` files and manifest-declared context tiers.
 
 ---
@@ -38,8 +42,8 @@ packs/{process-slug}/
 ├── overview.md            ← What this process is, who it's for (required)
 ├── variants.md            ← Major process forks and alternative paths (recommended)
 │
-├── fundamentals/          ← Core concepts & domain knowledge required before starting
-├── glossary/              ← Terminology and short definitions (searchable)
+├── fundamentals/          ← Core concept atoms required before starting
+├── concepts/              ← Promoted domain terms/concepts that need standalone treatment (optional)
 ├── phases/                ← Sequential stages of the process (backbone)
 ├── decisions/             ← Key decision points with criteria and tradeoffs
 ├── checklists/            ← Actionable, phase-aligned checklists
@@ -58,7 +62,7 @@ packs/{process-slug}/
 Notes:
 - Each directory should include `_index.md` describing contents and links to files.
 - Files should be named kebab-case and kept focused (one topic per file).
-- `fundamentals/` and `glossary/` help novices build mental models before they act.
+- `fundamentals/` and optional `concepts/` help novices build mental models before they act. Embed short terms in `## Related Terms`; promote only terms with standalone properties/relationships.
 - `gotchas/` captures preventive knowledge ("don't forget X"); `exceptions/` captures reactive knowledge ("X happened, now what").
 
 ---
@@ -87,7 +91,7 @@ regions: ["US"]                     # Geographic relevance (if applicable)
 # Sections included (manifest-driven inventory)
 sections:
   - fundamentals
-  - glossary
+  - concepts
   - phases
   - decisions
   - checklists
@@ -109,7 +113,7 @@ context:
     - manifest.yaml
   searchable:
     - fundamentals/
-    - glossary/
+    - concepts/
     - phases/
     - decisions/
     - checklists/
@@ -173,29 +177,11 @@ for full detail on how each variant changes the phase sequence.
 Which parts typically require external experts.
 ```
 
-### Fundamentals (`fundamentals/{topic}.md`)
+### Concept Atoms (`concepts/{concept}.md` and `fundamentals/{topic}.md`)
 
-Conceptual material that helps the user understand *why* steps exist.
+Use the core v4.1 concept atom template: frontmatter with `id`, `retrieval_strategy`, `schema_version: "4.1"`, `requires`, and `related`; a retrieval-anchored opening paragraph; body sections; optional `## Frequently Asked`; `## Related Terms`; and `## Related Concepts` with wikilinks.
 
-```markdown
-# Fundamentals: {Topic}
-
-## What It Is
-Short definition and why it matters.
-
-## How It Works
-High-level mechanics and mental models.
-
-## Where It Shows Up
-Links to phases/decisions where this concept matters.
-
-## Further Reading
-Links to deeper resources.
-```
-
-### Glossary (`glossary/{term}.md`)
-
-Short, plain-English definitions for domain terms. Useful for RAG when users ask "what is X?".
+Short terms do **not** get standalone files by default. Embed relative terminology under `## Related Terms` inside the concept/phase where it matters. Promote a term into `concepts/{term}.md` only when it has its own definition, properties, dependencies, or enough content to retrieve independently.
 
 ### Phases (`phases/{phase}.md`)
 
@@ -418,7 +404,7 @@ or validated by this experience.
 
 ### Resources, Gotchas, FAQ
 
-Keep these as before but follow the small-file guideline. Cross-link heavily.
+Keep these as focused atomic procedural files. Cross-link heavily with wikilinks and use `requires:` for true prerequisites.
 
 ---
 
@@ -432,6 +418,12 @@ Schema v4.1 process packs use **atomic-conceptual concept files** the same way p
 - `gotchas/` entries live as their own atomic files (same as `troubleshooting/common-mistakes/` in product packs).
 - Fundamental concepts and conceptual knowledge gain the same atomic-conceptual treatment: one self-contained file per concept with `## Frequently Asked` and `## Related Terms` sections as needed.
 
+**`requires:` for process dependencies:**
+- Phase files list prerequisite phases, required decisions, regulatory approvals, or prerequisite concepts in frontmatter `requires:`.
+- Checklist files `requires:` the phase or workflow they operationalize.
+- Exception/recovery files `requires:` the phase, system state, or diagnostic file needed to interpret the failure.
+- Concepts use `requires:` only for true comprehension dependencies, not loose relatedness. Put loose associations in `related:` and `## Related Concepts`.
+
 See [core.md § Atomic-Conceptual Content Files](core.md#atomic-conceptual-content-files) for the full pattern, and [`references/granularity-guide.md`](references/granularity-guide.md) for embed-vs-promote and when-to-split decision rules.
 
 ---
@@ -440,7 +432,7 @@ See [core.md § Atomic-Conceptual Content Files](core.md#atomic-conceptual-conte
 
 - Start with `overview.md` (Tier 1) to route the user's question and understand the phase map.
 - Use `_index.md` files to identify candidate files.
-- Prefer `fundamentals/` and `glossary/` for conceptual questions.
+- Prefer `fundamentals/` and `concepts/` for conceptual questions; use embedded `## Related Terms` for local terminology.
 - Use `phases/` for step-by-step guidance and `checklists/` for action items.
 - Check `phases/{phase}.md` **Inputs / Prerequisites** to determine readiness before advising someone to start a phase.
 - Use `decisions/` for tradeoff reasoning and `budget/` and `scheduling/` for planning tasks.
