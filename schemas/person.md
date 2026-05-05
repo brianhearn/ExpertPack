@@ -154,7 +154,8 @@ The story card frontmatter that identified v3.x summary files is **retained** as
 
 ```yaml
 ---
-id: "childhood-fishing-trip"                # Matches the file slug
+id: "{person-slug}/stories/childhood-fishing-trip"  # Core citation format: {pack-slug}/{path-without-extension}
+slug: "childhood-fishing-trip"              # Short local reference; matches the filename stem
 title: "The Fishing Trip That Changed Everything"
 type: story
 tags: [story, father, childhood]
@@ -187,7 +188,9 @@ verified_at: "2026-04-19"
 ```
 
 **Field notes:**
-- `id` must match the filename slug for cross-referencing
+- `id` follows core's stable citation format: `{pack-slug}/{relative-path-without-extension}` (e.g., `nina-smith/stories/childhood-fishing-trip`). Set at creation and never changed, even if the file is renamed.
+- `slug` matches the filename stem and may be used for short local references within the pack
+- `id` is the canonical key for AKS exports and cross-pack citations; `slug` is for human convenience
 - `date_range` is deliberately flexible — memories rarely come with exact dates
 - `people` uses stable IDs from the relationships registry (see [Relationships](#relationships) below)
 - `verification` and `memory_quality` prevent the avatar from projecting false confidence about uncertain memories. A `memory_quality: uncertain` story should be prefaced with "I think..." or "If I remember right..."

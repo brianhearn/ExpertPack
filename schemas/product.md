@@ -210,6 +210,22 @@ Integrations, handoff points, and explicit non-goals.
 Step-by-step procedures for accomplishing tasks. The Steps section adapts to the product type — for software this may describe screens and UI interactions; for hardware or physical products it may describe physical operations, adjustments, or checks; for APIs it may describe request sequences and expected responses.
 
 ```markdown
+---
+id: "{product-slug}/workflows/{workflow-slug}"
+title: "{Task Name}"
+type: workflow
+tags: [workflow, {product-domain-tag}]
+pack: "{product-slug}"
+retrieval_strategy: atomic
+schema_version: "4.1"
+verified_at: "YYYY-MM-DD"
+requires:
+  - relevant-concept.md
+related:
+  - related-workflow.md
+sources: []
+---
+
 # {Task Name}
 
 ## Goal
@@ -259,6 +275,16 @@ Documentation for an interface — UI screen, physical panel, API endpoint, or o
 
 ```markdown
 ---
+id: "{product-slug}/interfaces/{interface-slug}"
+title: "{Screen/View Name}"
+type: interface
+tags: [interface, ui]
+pack: "{product-slug}"
+retrieval_strategy: standard
+schema_version: "4.1"
+verified_at: "YYYY-MM-DD"
+related:
+  - relevant-workflow.md
 sources:
   - type: screenshot-ingestion
     screen: "{screen-name}"
