@@ -245,7 +245,6 @@ Standard prefixes for person packs:
 | `relationships/` | `rel-` | `rel-people.md` |
 | `presentation/` | `pres-` | `pres-modes.md` |
 
-*Note: person-pack prefixes above reflect the v4.1 atom directories. Legacy `summaries/`, `verbatim/`, and `propositions/` directories are retired/deprecated; capture verbatim material inside the appropriate story/reflection/opinion/conversation atom instead.*
 
 For other pack types (product, process, etc.), define prefixes in the pack's `manifest.yaml` under `file_prefixes`. Choose short (3–5 char) abbreviations that reflect content type.
 
@@ -257,13 +256,11 @@ The EP CLI validator (when available) will enforce this rule and flag any duplic
 
 ## Atomic-Conceptual Content Files
 
-*Schema v4.1 refines the v4.0 atomic-conceptual model: one concept = one file = one retrieval unit. Directional `requires` dependencies replace the `composite` / `parent_concept` hierarchy. See [`rfcs/RFC-001-atomic-conceptual-chunks.md`](rfcs/RFC-001-atomic-conceptual-chunks.md) for the original rationale and the "v4.1 refinement" note for why composite hierarchy was retired.*
-
 ### Core principle
 
 **One concept = one file = one retrieval unit.** All knowledge about a concept — definition, mechanics, examples, relative terminology, common questions — lives in a single markdown file sized to fit in a single RAG chunk. No hidden co-retrieval, no parent/child file groups, no aggregator layers. If a would-be-concept exceeds the size ceiling, that is the signal that it is not one concept — split it into independent atoms and declare any cross-atom dependencies explicitly via `requires:`.
 
-Aggregator directories (`summaries/`, `propositions/`, per-domain `glossary-*.md`, standalone `faq/`) remain deprecated from v4.0. Empirical results showed they score broadly on every query and displace specific atomic files.
+Do not create aggregator directories (`summaries/`, `propositions/`, per-domain `glossary-*.md`, standalone `faq/`). They score broadly on every query and displace specific atomic files at retrieval time.
 
 ### Concept file structure
 
@@ -277,7 +274,7 @@ pack: {pack-slug}
 retrieval_strategy: standard
 schema_version: "4.1"
 verified_at: "YYYY-MM-DD"
-supersedes:                    # optional — files replaced by this one (for migration tracking)
+supersedes:                    # optional — files this one replaces (for pack hygiene/pruning)
   - old-filename.md
 requires:                      # optional — directional dependencies; retrieved with this atom
   - prerequisite-concept.md
@@ -378,11 +375,11 @@ The `requires:` frontmatter field declares that an atom depends on one or more o
 
 ### Optional root-level glossary
 
-A lean, optional `glossary.md` may live at the pack root for genuinely cross-cutting terms — the product name, industry vocabulary, or terms that don't belong to any single concept. Its role is **navigation for authors and agents**, not a retrieval layer. Do NOT create per-domain `glossary-{domain}.md` files — those are aggregators and are flagged by `ep-validate` in v4.0+ packs.
+A lean, optional `glossary.md` may live at the pack root for genuinely cross-cutting terms — the product name, industry vocabulary, or terms that don't belong to any single concept. Its role is **navigation for authors and agents**, not a retrieval layer. Do NOT create per-domain `glossary-{domain}.md` files — those are aggregators that score broadly and displace specific content.
 
-### Deprecation tracking (`supersedes:`)
+### Tracking replaced files (`supersedes:`)
 
-When a new atomic-conceptual file replaces one or more legacy files, list the legacy filenames in the new file's `supersedes:` frontmatter. This gives migration tooling a way to prune replaced files once the new file is validated, lets `ep-validate` detect orphans, and preserves the audit trail without baking stale paths into the content body.
+When a new file replaces one or more older files (e.g., a split, a rename, or a consolidation), list the old filenames in `supersedes:` frontmatter. This lets `ep-validate` detect orphaned files and gives pack maintenance tooling a clean way to prune them.
 
 ---
 
@@ -478,7 +475,7 @@ A pack full of content the model already knows is dead weight — it burns token
 
 EK ratio is measured empirically using **proposition-level blind probing:**
 
-1. **Extract propositions** — pull atomic factual statements from concept body prose, one atomic fact per line. For packs at v4.0 that still carry `## Key Propositions` sections, use those too. For packs predating v4.0 with a `propositions/` directory, use those files directly.
+1. **Extract propositions** — pull atomic factual statements from concept body prose, one atomic fact per line.
 
 2. **Generate probe questions** — convert each proposition into a natural question. *"The TSP optimizer uses a genetic algorithm with population size 32"* → *"What algorithm does EZT Designer use for route optimization, and what is the default population size?"*
 
@@ -961,7 +958,7 @@ JSON indexes answer the question "where should I look?" Markdown files answer "w
 
 ### Entity Relation Graph
 
-As of Schema 3.1, the recommended entity relation graph format is `_graph.yaml`, generated automatically by `ep-graph-export.py` from wikilinks, `related:` frontmatter, and context hints. See the [Graph Export](#graph-export-_graphyaml) section. The legacy `relations.yaml` format is superseded.
+The entity relation graph format is `_graph.yaml`, generated automatically by `ep-graph-export.py` from wikilinks, `related:` frontmatter, and context hints. See the [Graph Export](#graph-export-_graphyaml) section.
 
 ---
 
@@ -1324,7 +1321,7 @@ These principles apply to every ExpertPack, regardless of type:
 | Retrieval optimization | Atomic concept files with opening definitions, `requires:` dependencies, `_index.md` navigation, wikilinks, and embedded related terms/FAQs; avoid aggregator directories |
 | Concept scope | Use `concept_scope: single` (default) for all content files. Split any file covering 5+ distinct topics. Mark navigation/index files `concept_scope: navigation` + `retrieval_strategy: navigation` to exclude from retrieval index. See [Concept Scope](#concept_scope--retrieval-density-signal). |
 | Chunking strategy | The schema IS the chunking strategy. Author files to target size so every file passes through RAG chunkers intact (400–800 tokens). Atomic strategy for workflows/troubleshooting via frontmatter. Consumer config must set `chunking.tokens` ≥ pack's hard ceiling (1,000 recommended); see [Chunking Strategy](#chunking-strategy) |
-| Research coverage | Every pack includes `meta/source-coverage.md` (`retrieval_strategy: navigation`) documenting what was checked, what was extracted, and what's untouched; `sources/` is reserved only for legacy/non-retrieval ingestion artifacts; see [Research Coverage](#research-coverage-metasource-coveragemd) |
+| Research coverage | Every pack includes `meta/source-coverage.md` (`retrieval_strategy: navigation`) documenting what was checked, what was extracted, and what's untouched; see [Research Coverage](#research-coverage-metasource-coveragemd) |
 | Time variance | Annotate time-variant facts inline with `<!-- refresh -->` blocks; maintain `freshness.md` as supplementary index; for entirely time-bound files use `volatile/` directory with frontmatter TTL (`refresh`, `source`, `fetched_at`, `expires_at`); see [Time Variance](#time-variance) |
 | EK ratio | Measure and maximize esoteric knowledge ratio; declare in manifest; guide hydration priority; see [Esoteric Knowledge Ratio](#esoteric-knowledge-ek-ratio) |
 | Conflict resolution | Never overwrite — flag and ask the human |

@@ -4,10 +4,6 @@
 
 **Schema version:** 4.1 (2026-04-19)
 
-**What changed in 4.1 (refinement of 4.0)** — Atomic-conceptual is now strictly single-file: one concept = one file = one retrieval unit. The `composite` / `parent_concept` hierarchy from 4.0 is **removed** — oversized concepts split into independent atoms with directional `requires:` dependencies. Size ceiling tightened from 1,500 to 1,000 tokens. `## Key Propositions` section deprecated (body prose already carries the propositions). See [core.md § Atomic-Conceptual Content Files](core.md#atomic-conceptual-content-files).
-
-**What changed in 4.0** — Adopted the atomic-conceptual content model per [RFC-001](rfcs/RFC-001-atomic-conceptual-chunks.md). Removed `summaries/`, `propositions/`, and `sources/` directory recommendations. Per-concept FAQs and related terms now live inside concept files.
-
 ---
 
 ## Purpose
@@ -53,7 +49,7 @@ packs/{product-slug}/
 │   └── common-mistakes/   ← Gotchas and forgotten steps
 │       └── {mistake}.md
 │
-├── faq/                   ← Cross-cutting questions only (optional, v4.0+: per-concept FAQs live in concept files)
+├── faq/                   ← Cross-cutting questions only (optional — per-concept FAQs live inside concept files)
 │   └── {category}.md
 │
 ├── facts/                 ← Product history (optional)
@@ -759,7 +755,7 @@ See [references/interface-vocabulary.md](references/interface-vocabulary.md) for
 
 ## Atomic-Conceptual Content
 
-Schema v4.1 product packs use **atomic-conceptual concept files**: each concept in `concepts/` is a self-contained retrieval unit carrying its definition, body, FAQs, and related terms in a single markdown file sized to fit in one RAG chunk (1,000-token ceiling). Concepts that would exceed the ceiling split into independent atoms; cross-atom dependencies are declared via the `requires:` frontmatter field. The deprecated v3 aggregator pattern (`summaries/`, `propositions/`, per-domain `glossary-{domain}.md`, standalone `faq/`) is replaced by this model.
+Product packs use **atomic-conceptual concept files**: each concept in `concepts/` is a self-contained retrieval unit carrying its definition, body, FAQs, and related terms in a single markdown file sized to fit in one RAG chunk (1,000-token ceiling). Concepts that would exceed the ceiling split into independent atoms; cross-atom dependencies are declared via the `requires:` frontmatter field.
 
 See [core.md § Atomic-Conceptual Content Files](core.md#atomic-conceptual-content-files) for the full pattern, and [`references/granularity-guide.md`](references/granularity-guide.md) for embed-vs-promote and when-to-split decision rules.
 
@@ -794,11 +790,13 @@ Technical parameters, tolerances, compliance statements, or API contracts.
 
 ---
 
-## Source Ingestion Artifacts — DEPRECATED in v4.0
+## Source Ingestion Tracking (optional)
 
-*The old `sources/` ingestion-artifacts directory is deprecated in schema v4.0. It was found to score broadly as an aggregator during retrieval and was deleted from the reference ezt-designer pack on 2026-04-17 with measurable retrieval improvement. Source-provenance tracking lives in per-file `verified_at` / `source:` frontmatter (see [core.md](core.md#provenance-metadata)) and in the pack-level `meta/source-coverage.md` coverage map. The old `sources/{source}.md` per-source index files are no longer part of the schema. If legacy source indexes are kept for audit, mark `sources/` as non-retrieval/on-demand and do not index it for normal RAG.*
+Source-provenance tracking lives in per-file `verified_at` / `source:` frontmatter (see [core.md](core.md#provenance-metadata)) and in the pack-level `meta/source-coverage.md` coverage map.
 
-### Legacy Source Index File (sources/{source}.md)
+For packs built from rich source material (recorded walkthroughs, documentation sites, expert interviews), you may keep per-source index files under `meta/sources/` to track extraction progress. Mark this directory `on_demand` in `manifest.yaml` — it is a build artifact, not retrieval content.
+
+### Source Index File (meta/sources/{source}.md)
 
 One file per major source material. For a video, this is a scene-by-scene index with timestamps and extracted artifacts. For a documentation site, this is a page inventory with extraction status.
 

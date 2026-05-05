@@ -4,8 +4,6 @@
 
 **Schema version:** 4.1 (2026-04-19)
 
-**What changed in 4.1** — Process packs now explicitly adopt the core atomic model. Concept-like directories (`fundamentals/`, `roles/`, `regulations/`, and promoted terminology) use v4.1 concept atoms; procedural directories (`phases/`, `checklists/`, `exceptions/`, `scheduling/`, `budget/`, `templates/`) use atomic procedural files with `requires:` dependencies for phase/order prerequisites. Standalone `glossary/` aggregators are discouraged; embed terms in `## Related Terms` or promote them to concepts.
-
 ---
 
 ## Purpose
@@ -56,7 +54,7 @@ packs/{process-slug}/
 ├── resources/             ← Tools, vendors, materials, buying guides
 ├── examples/              ← Case studies, post-mortems, and retrospectives
 ├── gotchas/               ← Common mistakes, traps, and prevention patterns
-└── faq/                   ← Cross-cutting questions only (optional, v4.0+: per-concept FAQs live inside concept files)
+└── faq/                   ← Cross-cutting questions only (optional — per-concept FAQs live inside concept files)
 ```
 
 Notes:
@@ -410,7 +408,7 @@ Keep these as focused atomic procedural files. Cross-link heavily with wikilinks
 
 ## Atomic-Conceptual Content
 
-Schema v4.1 process packs use **atomic-conceptual concept files** the same way product packs do: each concept in `concepts/` (or fundamentals file) is a self-contained retrieval unit sized to fit in one RAG chunk (1,000-token ceiling). Concepts that would exceed the ceiling split into independent atoms; cross-atom dependencies are declared via the `requires:` frontmatter field. The deprecated v3 aggregator pattern (`summaries/`, `propositions/`, per-domain `glossary-{domain}.md`, standalone `faq/`) is replaced by this model.
+Process packs use **atomic-conceptual concept files**: each concept in `concepts/` (or `fundamentals/`) is a self-contained retrieval unit sized to fit in one RAG chunk (1,000-token ceiling). Concepts that would exceed the ceiling split into independent atoms; cross-atom dependencies are declared via the `requires:` frontmatter field.
 
 **Process-pack specifics:**
 - `phases/*.md` files are atomic workflows by default (`retrieval_strategy: atomic`) — they retain their step-by-step structure and are NOT absorbed into concept files.

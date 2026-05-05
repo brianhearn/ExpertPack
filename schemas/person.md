@@ -106,7 +106,7 @@ packs/{person-slug}/
 
 Not every directory is required from day one. Start with `facts/`, `stories/`, and `relationships/`, then expand as content is collected.
 
-**Retired in v4.1:** `verbatim/` and `summaries/` (folded into type-specific atom directories); per-file `propositions/` (propositions live in atom body prose).
+
 
 ---
 
@@ -148,7 +148,7 @@ Retrieving the overview auto-expands to include the full detail (directional `re
 
 ## Story Cards (Frontmatter for Story/Reflection/Opinion Atoms)
 
-The story card frontmatter that identified v3.x summary files is **retained** as the canonical metadata schema for story/reflection/opinion atoms in v4.1. This makes atoms filterable and retrievable by date, people, themes, emotions, and more.
+Story/reflection/opinion atoms use rich frontmatter to make them filterable and retrievable by date, people, themes, emotions, and more.
 
 **Required frontmatter for story atoms:**
 
