@@ -284,6 +284,7 @@ def build_micro_record(
     api_key: str = "",
     model: str = DEFAULT_STATEMENT_MODEL,
     delay: float = 0.3,
+    compact: bool = False,
 ) -> dict | None:
     """Build a micro-record for a single file. Returns None if file should be skipped."""
     rel_path = file_path.relative_to(pack_path)
@@ -343,34 +344,47 @@ def build_micro_record(
     if isinstance(tags, str):
         tags = [t.strip() for t in tags.split(",") if t.strip()]
 
-    # Provenance
-    provenance: dict[str, Any] = {}
-    verified_at = fm.get("verified_at")
+    # Provenance — first-class fields in the record, with a nested block kept
+    # for JSON-LD/registry compatibility.
+    content_hash = str(fm.get("content_hash") or compute_hash(body))
+    verified_at = str(fm["verified_at"]) if "verified_at" in fm else None
+    verified_by = str(fm["verified_by"]) if "verified_by" in fm else None
+    source = str(fm["source"]) if "source" in fm else None
+    recorded_at = str(fm.get("recorded_at") or fm.get("created")) if (fm.get("recorded_at") or fm.get("created")) else None
+    valid_from = str(fm["valid_from"]) if "valid_from" in fm else None
+
+    provenance: dict[str, Any] = {
+        "id": record_id,
+        "source_span_uri": f"{pack_slug}/{rel_str}",
+        "content_hash": content_hash,
+    }
     if verified_at:
-        provenance["verified_at"] = str(verified_at)
-    verified_by = fm.get("verified_by")
+        provenance["verified_at"] = verified_at
     if verified_by:
-        provenance["verified_by"] = str(verified_by)
-    source = fm.get("source")
+        provenance["verified_by"] = verified_by
     if source:
-        provenance["source"] = str(source)
-    content_hash = fm.get("content_hash")
-    if content_hash:
-        provenance["content_hash"] = str(content_hash)
-    else:
-        provenance["content_hash"] = compute_hash(body)
-
-    # valid_from and recorded_at — not yet in frontmatter (Schema 3.4 will add them)
-    # For now, derive from created/updated if present
-    created = fm.get("created") or fm.get("recorded_at")
-    if created:
-        provenance["recorded_at"] = str(created)
-    valid_from = fm.get("valid_from")
+        provenance["source"] = source
+    if recorded_at:
+        provenance["recorded_at"] = recorded_at
     if valid_from:
-        provenance["valid_from"] = str(valid_from)
+        provenance["valid_from"] = valid_from
 
-    # Related edges from _graph.yaml
+    # Related edges from _graph.yaml plus explicit frontmatter edges.
     related = edges_by_file.get(rel_str, [])
+    fm_related = fm.get("related", [])
+    if isinstance(fm_related, str):
+        fm_related = [fm_related]
+    related.extend({"id": str(r), "kind": "related"} for r in fm_related if str(r).strip())
+
+    requires = fm.get("requires", [])
+    if isinstance(requires, str):
+        requires = [requires]
+    requires = [str(r) for r in requires if str(r).strip()]
+
+    supersedes = fm.get("supersedes", [])
+    if isinstance(supersedes, str):
+        supersedes = [supersedes]
+    supersedes = [str(s) for s in supersedes if str(s).strip()]
 
     # Lifecycle
     lifecycle: dict[str, Any] = {"status": fm.get("lifecycle_status", "active")}
@@ -382,6 +396,23 @@ def build_micro_record(
     if valid_until:
         lifecycle["valid_until"] = str(valid_until)
 
+    if compact:
+        record = {
+            "id": record_id,
+            "canonical_statement": canonical_statement,
+            "type": content_type,
+            "pack": pack_slug,
+            "source_span_uri": f"{pack_slug}/{rel_str}",
+            "content_hash": content_hash,
+        }
+        if verified_at:
+            record["verified_at"] = verified_at
+        if requires:
+            record["requires"] = requires
+        if related:
+            record["related"] = related
+        return record
+
     record = {
         "@context": "https://expertpack.ai/schema/1.0/context.jsonld",
         "id": record_id,
@@ -390,14 +421,24 @@ def build_micro_record(
         "canonical_statement": canonical_statement,
         "type": content_type,
         "pack": pack_slug,
+        "content_hash": content_hash,
     }
 
+    if verified_at:
+        record["verified_at"] = verified_at
+    if recorded_at:
+        record["recorded_at"] = recorded_at
+    if valid_from:
+        record["valid_from"] = valid_from
     if tags:
         record["tags"] = tags
-    if provenance:
-        record["provenance"] = provenance
+    record["provenance"] = provenance
     if related:
         record["related"] = related
+    if requires:
+        record["requires"] = requires
+    if supersedes:
+        record["supersedes"] = supersedes
     if lifecycle["status"] != "active" or len(lifecycle) > 1:
         record["lifecycle"] = lifecycle
 
@@ -487,6 +528,7 @@ def run(args):
             api_key=api_key,
             model=model,
             delay=args.delay,
+            compact=args.compact,
         )
         if record is None:
             rel = str(fp.relative_to(pack_path))
@@ -551,6 +593,8 @@ def main():
                         help=f"LLM model for statement generation (default: {DEFAULT_STATEMENT_MODEL})")
     parser.add_argument("--delay", type=float, default=0.3,
                         help="Seconds between LLM calls when --generate-statements (default: 0.3)")
+    parser.add_argument("--compact", action="store_true",
+                        help="Emit lean JSONL with first-class provenance fields for token-efficient pipelines")
     parser.add_argument("--dry-run", action="store_true",
                         help="Show what would be exported without writing files")
     parser.add_argument("--verbose", action="store_true",
