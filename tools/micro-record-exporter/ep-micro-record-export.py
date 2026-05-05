@@ -84,7 +84,7 @@ OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 DEFAULT_STATEMENT_MODEL = "openrouter/openai/gpt-4o-mini"
 
 # Files to skip
-SKIP_FILES = {"_graph.yaml", "_index.json", "_access.json", "manifest.yaml", "STATUS.md", "README.md", "SCHEMA.md"}
+SKIP_FILES = {"_graph.yaml", "_index.json", "_access.json", "manifest.yaml", "STATUS.md", "README.md", "SCHEMA.md", "LEGACY.md", "Dashboard.md"}
 SKIP_PREFIXES = {".obsidian", ".git"}
 
 
